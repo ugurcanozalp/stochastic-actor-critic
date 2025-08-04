@@ -1,7 +1,7 @@
 
 
-envs=(Ant-v4 HalfCheetah-v4 Hopper-v4 Humanoid-v4 InvertedDoublePendulum-v4 Walker2d-v4 BipedalWalker-v3 BipedalWalkerHardcore-v3 LunarLander-v2)
-total_steps=(5000000 3000000 1000000 5000000 100000 3000000 1000000 5000000 500000)
+envs=(Ant-v4 HalfCheetah-v4 Hopper-v4 Humanoid-v4 Swimmer-v4 Walker2d-v4 BipedalWalker-v3 BipedalWalkerHardcore-v3 LunarLander-v2)
+total_steps=(3000000 3000000 1000000 3000000 1000000 3000000 1000000 3000000 1000000)
 target_entropies=(-8 -6 -3 -17 -1 -6 -4 -4 -2)
 env_kw_params=('{}' '{}' '{}' '{}' '{}' '{}' '{}' '{}' '{"continuous":true,"enable_wind":true,"wind_power":20.0,"turbulence_power":2.0}')
 
@@ -23,49 +23,6 @@ do
 		for seed in {1..5}
 		do 
 			echo "Seed: ${seed}"
-
-			echo "No dropout"
-			python -m scripts.stac \
-			--env_name=$env \
-			--autotune \
-			--target_entropy=$target_ent \
-			--beta=$beta \
-			--pi_dropout=0 \
-			--q_dropout=0 \
-			--seed=$seed \
-			--render_mode none \
-			--algo_tag "__@beta=${beta}" \
-			--max_train_steps=$step \
-			--env_kwargs $env_kw
-
-			echo "Policy dropout: 0.01"
-			python -m scripts.stac \
-			--env_name=$env \
-			--autotune \
-			--target_entropy=$target_ent \
-			--beta=$beta \
-			--pi_dropout=0.01 \
-			--q_dropout=0 \
-			--seed=$seed \
-			--render_mode none \
-			--algo_tag "__@beta=${beta}__@delta_{@pi}=0.01" \
-			--max_train_steps=$step \
-			--env_kwargs $env_kw
-
-			echo "Critic dropout: 0.01"
-			python -m scripts.stac \
-			--env_name=$env \
-			--autotune \
-			--target_entropy=$target_ent \
-			--beta=$beta \
-			--pi_dropout=0 \
-			--q_dropout=0.01 \
-			--seed=$seed \
-			--render_mode none \
-			--algo_tag "__@beta=${beta}__@delta_{Q}=0.01" \
-			--max_train_steps=$step \
-			--env_kwargs $env_kw
-
 			echo "Policy/Critic dropout: 0.01"
 			python -m scripts.stac \
 			--env_name=$env \
