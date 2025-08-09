@@ -11,12 +11,13 @@ import matplotlib.ticker as ticker
 
 
 @staticmethod
-def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int], colormap: str = "tab10", smooth_window: int = 11, figsize: Tuple[int] = (16, 9)):
+def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int], colormap: str = "tab10", smooth_window: int = 11):
     """Summarize everything about the results
     """
     # ex: Agent.summarize("logs", "res", (6, 1), colormap="Set1", smooth_window=3)
     COLORMAP = colormaps.get(colormap)
     ncol, nrow = ncolsrows
+    figsize = (nrow * 4, ncol * 3)
     fig_score = plt.figure(figsize=figsize)
     fig_error = plt.figure(figsize=figsize)
     num_envs = len(os.listdir(path))

@@ -20,7 +20,7 @@ do
 	for beta in $betas 
 	do
 		echo "Beta: ${beta}"
-		for seed in {1..5}
+		for seed in {1..10}
 		do 
 			echo "Seed: ${seed}"
 
