@@ -53,6 +53,8 @@ def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int]
             step = list(results.keys())
             step.sort() # sort stuff
             eval_score = np.array([results[s]["eval_score"] for s in step]) # shape: step, trial
+            if algo=="SAC":
+                print(eval_score)
             eval_error = np.array([results[s]["eval_value_error"] for s in step]) # shape: step, trial
             step = np.array(step) # make it also numpy array
             num_steps = len(step)
@@ -67,10 +69,10 @@ def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int]
                 eval_score_window = eval_score[i-lft_lim:i+rht_lim, :].flatten()
                 eval_error_window = eval_error[i-lft_lim:i+rht_lim, :].flatten()
                 # 
-                mean_eval_score[i] = eval_score_window.mean()             
-                std_eval_score[i] = eval_score_window.std()
-                mean_eval_error[i] = eval_error_window.mean()                
-                std_eval_error[i] = eval_error_window.std()
+                mean_eval_score[i] = np.nanmean(eval_score_window)            
+                std_eval_score[i] = np.nanstd(eval_score_window)
+                mean_eval_error[i] = np.nanmean(eval_error_window)                
+                std_eval_error[i] = np.nanstd(eval_error_window)
             # ----- eval score -----
             ax_score.plot(step, mean_eval_score, color=COLORMAP(j), alpha=1.0, label=algo_for_legend)
             ax_score.fill_between(step, 
