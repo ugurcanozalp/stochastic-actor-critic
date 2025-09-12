@@ -5,8 +5,8 @@ import sys
 from summarize import summarize
 
 
-summarize("logs/stac-pessimism", 
-	"results/stac-pessimism", (3, 3))
+summarize("logs/stac-fixed-pessimism", 
+	"results/stac-fixed-pessimism", (3, 3))
 
 #summarize("logs/stac-dropout", 
 #	"results/stac-dropout", (3, 3))
