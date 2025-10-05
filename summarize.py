@@ -2,6 +2,7 @@
 import os 
 from typing import List, Tuple, Union, Dict, Any
 import jsonlines
+import math
 
 import numpy as np
 import pandas as pd
@@ -10,8 +11,22 @@ from matplotlib import colormaps
 import matplotlib.ticker as ticker
 
 
+def naniqmean(x, axis=None):
+    """Compute the interquartile mean of an array, ignoring NaN values.
+    
+    Args:
+        x (np.ndarray): Input array.
+    Returns:
+        y (np.ndarray): Mean of the array within interquartile, ignoring NaN values.
+    """
+    q1 = np.nanquantile(x, 0.25, axis=axis)
+    q3 = np.nanquantile(x, 0.75, axis=axis)
+    x_iqr = x[(x >= q1) & (x <= q3)]
+    return np.nanmean(x_iqr, axis=axis)
+
+
 @staticmethod
-def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int], colormap: str = "tab10", smooth_window: int = 11):
+def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int], colormap: str = "tab10", smooth_ratio: float = 0.02):
     """Summarize everything about the results
     """
     # ex: Agent.summarize("logs", "res", (6, 1), colormap="Set1", smooth_window=3)
@@ -62,7 +77,18 @@ def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int]
             mean_eval_score = np.zeros(num_steps)         
             std_eval_score = np.zeros(num_steps)
             mean_eval_error = np.zeros(num_steps)                
-            std_eval_error = np.zeros(num_steps)            
+            std_eval_error = np.zeros(num_steps)       
+            #
+            median_eval_score = np.zeros(num_steps)  
+            iqm_eval_score = np.zeros(num_steps)
+            lowquant_eval_score = np.zeros(num_steps)  
+            highquant_eval_score = np.zeros(num_steps)   
+            median_eval_error = np.zeros(num_steps)
+            iqm_eval_error = np.zeros(num_steps)
+            lowquant_eval_error = np.zeros(num_steps)  
+            highquant_eval_error = np.zeros(num_steps)                          
+            smooth_window = math.floor(num_steps * smooth_ratio) # make it integer
+            print(f"smooth window: {smooth_window}")
             for i in range(num_steps):
                 lft_lim = smooth_window if i>=smooth_window else i
                 rht_lim = smooth_window if i<=num_steps-smooth_window else num_steps - i
@@ -73,24 +99,46 @@ def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int]
                 std_eval_score[i] = np.nanstd(eval_score_window)
                 mean_eval_error[i] = np.nanmean(eval_error_window)                
                 std_eval_error[i] = np.nanstd(eval_error_window)
+                #
+                median_eval_score[i] = np.nanquantile(eval_score_window, 0.5)
+                iqm_eval_score[i] = naniqmean(eval_score_window)
+                lowquant_eval_score[i] = np.nanquantile(eval_score_window, 0.25)            
+                highquant_eval_score[i] = np.nanquantile(eval_score_window, 0.75)
+                median_eval_error[i] = np.nanquantile(eval_error_window, 0.5)          
+                iqm_eval_error[i] = naniqmean(eval_error_window)      
+                lowquant_eval_error[i] = np.nanquantile(eval_error_window, 0.25)                
+                highquant_eval_error[i] = np.nanquantile(eval_error_window, 0.75)                
             # ----- eval score -----
-            ax_score.plot(step, mean_eval_score, color=COLORMAP(j), alpha=1.0, label=algo_for_legend)
+            #ax_score.plot(step, mean_eval_score, color=COLORMAP(j), alpha=1.0, label=algo_for_legend)
+            #ax_score.plot(step, mean_eval_score - std_eval_score, color=COLORMAP(j), alpha=0.4, linestyle=":")
+            #ax_score.plot(step, mean_eval_score + std_eval_score, color=COLORMAP(j), alpha=0.4, linestyle=":")
+            ax_score.plot(step, iqm_eval_score, color=COLORMAP(j), alpha=1.0, label=algo_for_legend)
+            #ax_score.plot(step, lowquant_eval_score, color=COLORMAP(j), alpha=0.4, linestyle="dotted")
+            #ax_score.plot(step, highquant_eval_score, color=COLORMAP(j), alpha=0.4, linestyle="dotted")            
+            
             ax_score.fill_between(step, 
-                mean_eval_score - std_eval_score,
-                mean_eval_score + std_eval_score,
-                facecolor=COLORMAP(j), alpha=0.3)
+                lowquant_eval_score,
+                highquant_eval_score,
+                facecolor=COLORMAP(j), alpha=0.3)            
+            
             # ----- eval value error -----
-            ax_error.plot(step, mean_eval_error, color=COLORMAP(j), alpha=1.0, label=algo_for_legend)
+            #ax_error.plot(step, mean_eval_error, color=COLORMAP(j), alpha=1.0, label=algo_for_legend)      
+            #ax_error.plot(step, mean_eval_error - std_eval_error, color=COLORMAP(j), alpha=0.4, linestyle=":")
+            #ax_error.plot(step, mean_eval_error + std_eval_error, color=COLORMAP(j), alpha=0.4, linestyle=":")   
+            ax_error.plot(step, iqm_eval_error, color=COLORMAP(j), alpha=1.0, label=algo_for_legend)      
+            #ax_error.plot(step, lowquant_eval_error, color=COLORMAP(j), alpha=0.4, linestyle="dotted")
+            #ax_error.plot(step, highquant_eval_error, color=COLORMAP(j), alpha=0.4, linestyle="dotted")                               
+            
             ax_error.fill_between(step, 
-                mean_eval_error - std_eval_error,
-                mean_eval_error + std_eval_error,
+                lowquant_eval_error,
+                highquant_eval_error,
                 facecolor=COLORMAP(j), alpha=0.3)
             # 
+            
             algo_dict[algo] = {
-                "auc_scores": eval_score.mean(), 
-                "max_scores": eval_score.max(), 
-                "last_score_mean": mean_eval_score[-1], 
-                "last_score_std": std_eval_score[-1]
+                "avg_scores": eval_score.mean(), 
+                "std_scores": eval_score.std(), 
+                "last_score_iqm": iqm_eval_score[-1], 
             }
         env_dict[env] = algo_dict
         ax_score.set_ylabel("total reward", fontsize=10)
@@ -98,8 +146,8 @@ def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int]
         ax_error.set_ylabel("value error", fontsize=10)
         ax_error.set_xlabel("# env interactions", fontsize=10)
         #if i == 0: # only for first plot
-        ax_score.legend(loc="lower right", framealpha=0.25, prop={'size': 7})
-        ax_error.legend(loc="lower right", framealpha=0.25, prop={'size': 7})
+        ax_score.legend(loc="lower right", framealpha=0.2, prop={'size': 6}) # lower right
+        ax_error.legend(loc="lower right", framealpha=0.2, prop={'size': 6}) # lower right
         ax_score.grid()
         ax_error.grid()
         ax_score.xaxis.set_major_formatter(ticker.EngFormatter()) 
