@@ -32,7 +32,8 @@ def summarize(path: os.PathLike, result_path: os.PathLike, ncolsrows: Tuple[int]
     # ex: Agent.summarize("logs", "res", (6, 1), colormap="Set1", smooth_window=3)
     COLORMAP = colormaps.get(colormap)
     ncol, nrow = ncolsrows
-    figsize = (nrow * 4, ncol * 3)
+    #figsize = (nrow * 4, ncol * 3)
+    figsize = (16, 9)
     fig_score = plt.figure(figsize=figsize)
     fig_error = plt.figure(figsize=figsize)
     num_envs = len(os.listdir(path))
