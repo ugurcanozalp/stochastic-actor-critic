@@ -1,0 +1,1 @@
+{"autotune": true, "target_entropy": -2.0, "gamma": 0.99, "alpha": 0.2, "beta": 0.0, "autopessimism": false, "pi_dropout": 0.0, "q_dropout": 0.0, "tau": 0.005, "batch_per_step": 1, "policy_delay": 1, "batch_size": 256, "q_lr": 0.0003, "pi_lr": 0.0003}
