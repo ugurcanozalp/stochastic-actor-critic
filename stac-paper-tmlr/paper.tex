@@ -1,0 +1,913 @@
+
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{tmlr}
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{tmlr}
+% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
+%\usepackage[preprint]{tmlr}
+
+%% TODO when published:
+% - change \usepackage{tmlr} usage
+% - Update github links
+% - Update openreview link 
+% - Update acknowledgement depending on review process 
+% - Update Month/Year
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}
+\usepackage{graphicx}
+\graphicspath{{media/}}     % organize your images and other figures under media/ folder
+% Extra packages to arxiv format
+%\usepackage{dirtytalk}
+\usepackage{bbm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage[colorinlistoftodos,prependcaption,textsize=small]{todonotes}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{subcaption} % although gives warning of unsupported package.
+\usepackage[title]{appendix}
+\usepackage{multirow}
+\usepackage{multicol}
+
+%\usepackage[dvipsnames]{xcolor}
+
+\usepackage{tikz}
+\tikzset{>=latex} % for LaTeX arrow head
+\usepackage{pgfplots} % for the axis environment
+\usepackage{xcolor}
+\usepackage[outline]{contour} % halo around text
+\contourlength{1.2pt}
+\usetikzlibrary{positioning,calc}
+\usetikzlibrary{backgrounds}% required for 'inner frame sep'
+%\usepackage{adjustbox} % add whitespace (trim)
+\usetikzlibrary{arrows.meta, shadows} % positioning, 
+
+% Define basic TikZ styles for layers
+\tikzset{
+	%every node/.style={draw,minimum height=0.5cm,minimum width=4cm,anchor=center},
+	inplayer/.style={draw,minimum height=0.5cm,minimum width=4cm,anchor=center,rectangle,fill=white!20},  
+	layer/.style={draw,minimum height=0.5cm,minimum width=4cm,anchor=center,rectangle,fill=blue!20},
+	dropout/.style={draw,minimum height=0.5cm,minimum width=4cm,anchor=center,rectangle,fill=orange!20},
+	norm/.style={draw,minimum height=0.5cm,minimum width=4cm,anchor=center,rectangle,fill=green!20},
+	activation/.style={draw,minimum height=0.5cm,minimum width=4cm,anchor=center,rectangle,fill=red!20},
+	output/.style={draw,minimum height=0.5cm,minimum width=4cm,anchor=center,rectangle,fill=purple!20},
+	frame/.style={
+		rectangle, draw,
+		text width=6em, text centered,
+		minimum height=4em,drop shadow,fill=white,
+		rounded corners,
+	},
+	line/.style={
+		draw, -{Latex},rounded corners=3mm,
+	}, 
+}
+
+% define gaussian pdf and cdf
+\pgfmathdeclarefunction{gauss}{3}{%
+	\pgfmathparse{1/(#3*sqrt(2*pi))*exp(-((#1-#2)^2)/(2*#3^2))}%
+}
+\pgfmathdeclarefunction{cdf}{3}{%
+	\pgfmathparse{1/(1+exp(-0.07056*((#1-#2)/#3)^3 - 1.5976*(#1-#2)/#3))}%
+}
+\pgfmathdeclarefunction{fq}{3}{%
+	\pgfmathparse{1/(sqrt(2*pi*#1))*exp(-(sqrt(#1)-#2/#3)^2/2)}%
+}
+\pgfmathdeclarefunction{fq0}{1}{%
+	\pgfmathparse{1/(sqrt(2*pi*#1))*exp(-#1/2))}%
+}
+
+\colorlet{mydarkblue}{blue!30!black}
+
+% to fill an area under function
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{patterns}
+\pgfplotsset{compat=1.12} % TikZ coordinates <-> axes coordinates
+% https://tex.stackexchange.com/questions/240642/add-vertical-line-of-equation-x-2-and-shade-a-region-in-graph-by-pgfplots
+
+% plot aspect ratio
+%\def\axisdefaultwidth{8cm}
+%\def\axisdefaultheight{6cm}
+
+% number of sample points
+\def\N{50}
+
+% Declerations
+% Added by ugurcan ozalp
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}{Lemma}[theorem]
+\newcommand\disteq{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny D}}}{=}}}
+
+\title{Stochastic Actor-Critic: Mitigating Overestimation Bias with a Single Distributional Critic}
+%      A Single Distributional Critic is Enough to Mitigate Overestimation Bias of Actor-Critic Reinforcement Learning
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the tmlr package is used without the [accepted] or [preprint] options.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\name Uğurcan Özalp \email ugurcanozalp06@gmail.com \\
+	\addr Turkish Aerospace \\
+	Ankara, Turkey
+	%\AND
+	%\name Raia Hadsell \email raia@google.com \\
+	%\addr DeepMind
+	%\AND
+	%\name Hugo Larochelle \email hugolarochelle@google.com\\
+	%\addr Mila, Universit\'e de Montr\'eal \\
+	%Google Research\\
+	%CIFAR Fellow}
+	}
+	% The \author macro works with any number of authors. Use \AND 
+	% to separate the names and addresses of multiple authors.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\month{11}  % Insert correct month for camera-ready version
+\def\year{2024} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
+	
+	
+\begin{document}
+\maketitle
+
+\begin{abstract}
+	
+	Actor-critic methods in reinforcement learning train a critic with temporal-difference updates and use it as a learning signal for the policy (actor). This design typically achieves higher sample efficiency than on-policy methods. However, critic networks tend to overestimate value estimate systematically. This is often addressed by introducing a pessimistic bias based on uncertainty estimates. Many recent methods employ techniques such as ensembling to quantify the critic’s epistemic uncertainty for scaling pessimistic updates. Moreover, certain network regularization methods are shown to reduce overestimation bias. 
+	In this work, we propose a new algorithm called Stochastic Actor-Critic (STAC) that incorporates only aleatoric uncertainty to scale pessimistic bias in the temporal-difference targets. STAC uses a distributional critic network to model aleatoric uncertainty in value predictions, and applies dropout to both the critic and actor networks for regularization. 
+	Our results show that pessimism based on the distributional critic alone suffices to mitigate overestimation. Introducing dropout further improves performance by means of regularization. With this combination, STAC achieves high sample efficiency using just a single distributional critic network. 
+	
+\end{abstract}
+
+% Even without dropout, this approach is enough to mitigate overestimation to some level. 
+
+% keywords can be removed
+%\keywords{Reinforcement Learning \and Uncertainty \and Pessimism \and Actor-Critic \and Dropout}
+
+
+\section{Introduction}
+
+Actor-critic methods leverage off-policy samples to train critics, promising higher sample-efficient learning than on-policy algorithms. Despite this advantage, actor-critic agents often struggle with \emph{overestimation bias} in value function learning due to \emph{deadly triad} of function approximation, temporal difference, and off-policy learning \citep{thrun2014issues, sutton2018reinforcement, van2018deep}, which destabilizes training. In this work, we revisit these issues from a fresh perspective, focusing on the use of uncertainty modeling in actor-critic architectures. 
+
+For this purpose, we introduce a novel off-policy actor-critic algorithm, Stochastic Actor-Critic (STAC), specifically designed to address both sample and computation inefficiencies. STAC is an off-policy maximum entropy distributional actor-critic algorithm employing experience buffer to sample off-policy transition tuples. 
+
+Most actor-critic methods use epistemic uncertainty for pessimism to mitigate critic overestimation, which hinders exploration of state-action space \citet{moskovitz2021tactical, chen2021randomized}, while some works propose to use both epistemic and aleatoric uncertainty for this purpose \citet{kuznetsov2020controlling}. Our contribution is that using only aleatoric uncertainty is enough to mitigate overestimation. Therefore, a single distributional critic is sufficient to capture all uncertainty sources that contribute to overestimation: transition stochasticity, the policy-induced noise in bootstrapped targets, and learning errors. By applying pessimism directly on this distribution, STAC eliminates the need for ensembles, reducing both computation and memory costs. 
+
+Our method differs from other methods using aleatoric uncertainty for safety \citet{tang2019worst, yang2021wcsac, kim2022efficient}. These methods, incorporate uncertainty into policy updates, whereas STAC uses it on both critic and policy updates for overestimation mitigation rather than safe learning.
+
+Recent work of \citet{nauman2024overestimation} has also shown that network regularization has positive impact on overestimation by reducing over-fitting. Ensemble based methods inherently regularized by using multiple critic networks. Since STAC employs single critic network, it is sensitive to learning errors and over-fitting. For this purpose, dropout mechanism \citep{srivastava2014dropout} and layer normalization \citep{ba2016layer} is employed in both actor and critic networks. In the experiments, we present controlled ablation study to isolate dropout’s role: while distributional pessimism eliminates overestimation bias, dropout primarily increases training stability and performance. 
+
+The implementation is very simple and can be obtained by introducing dropout to networks and defining and pessimistic learning objective upon Distributional Soft Actor-Critic algorithm \citep{duan2021distributional}. We conduct experiments on standard RL benchmarks to evaluate the performance of STAC compared to existing methods. Our results demonstrate the effectiveness of STAC in achieving competitive performance to SOTA methods while requiring fewer computational resources and fewer samples, making it a promising approach for real-world RL applications. 
+
+\section{Preliminaries}
+
+\label{sec:preliminaries}
+
+\subsection{Aleatoric and Epistemic Uncertainty}
+
+In this part, we explain the differences between two main types of uncertainties, \textit{aleatoric} and \textit{epistemic} uncertainty \citep{der2009aleatory, kendall2017uncertainties, gal2016uncertainty}. 
+
+\paragraph{Aleatoric Uncertainty} 
+This type of uncertainty comes from the inherent randomness within the data. Even if more data are collected, it is unavoidable and cannot be reduced, because it is an intrinsic part of the process being modeled, including measurement errors or natural variability in the data. 
+
+For regression problems in deep learning setting, we can model this by having a distributional (heteroscedastic) network (with parameter $\theta$) that outputs a probability distribution $p_{\theta}(y|x)$ conditioned on input $x$ \citep{lakshminarayanan2017simple, kendall2017uncertainties}. Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$, the loss function for training the network can be derived from the negative log-likelihood of the normal distribution: $\mathcal{L}_{\theta}(\mathcal{D}) = \mathbb{E}_{\{(x_i, y_i)\} \sim \mathcal{D}} [ -\log{p_{\theta}(y_i|x_i)} ] $. 
+
+\paragraph{Epistemic Uncertainty} 
+Epistemic uncertainty reflects the uncertainty in the model parameters due to insufficient training data. Aleatoric uncertainty is high in inherently random regions while epistemic uncertainty is high where there is no (or less) data. 
+
+Given the training data $\mathcal{D}$ and prior distribution $p(\theta)$ over the network parameters $\theta$, we can compute the posterior distribution over the parameters $p(\theta \mid \mathcal{D})$ using Bayesian inference. During prediction, we marginalize over the posterior distribution of the parameters to obtain the predictive distribution of outputs: $p(y \mid x, \mathcal{D}) = \int p(y \mid x, \theta) p(\theta \mid \mathcal{D}) d\theta$, and it is often approximated by sampling several sets of parameters from the posterior distribution $p(\theta \mid \mathcal{D})$ representing epistemic uncertainty, and averaging predictions from distribution $p(y \mid x, \theta)$ representing aleatoric uncertainty. 
+
+\subsection{Reinforcement Learning}
+This section is dedicated to briefly explain the reinforcement learning concept and actor-critic methodology. Throughout the paper, $\mathcal{P}(\Omega)$ denotes the set of all possible probability distributions on set $\Omega$. 
+
+\paragraph{Model-free Reinforcement Learning}
+In reinforcement learning language, the agent lives in a Markov Decision Process (MDP) which is represented by a tuple $\mathcal{M} = (\mathcal{S}, \mathcal{A}, d_0, \tau, R)$, where $\mathcal{S}$ is state space, $\mathcal{A}$ is action space, $d_0 \in \mathcal{P}(\mathcal{S})$ is initial state distribution, $\tau: \mathcal{S}\times\mathcal{A} \rightarrow \mathcal{P}(\mathcal{S})$ is transition kernel and $R: \mathcal{S}\times\mathcal{A} \rightarrow \mathbb{R}$ is reward function. 
+
+The initial state is sampled first, $s_0 \sim d_0(\cdot)$. At each time $t$ being on $s_t \in \mathcal{S}$; next state is obtained from the environment, $s_{t+1} \sim \tau(\cdot \mid s_t,a_t)$ depending on the taken action $a_t \sim \pi(\cdot \mid s_t)$. Finally, a reward is obtained, $r_t=R(s_t, a_t)$ from the reward function $R$.   
+The ultimate goal of the agent is to derive a policy $\pi: \mathcal{S} \rightarrow \mathcal{P}(\mathcal{A})$ to maximize discounted cumulative return, i.e., state value function for a given state $s$, 
+\begin{equation}
+	\label{eqn:value_defn}
+	V^{\pi}(s) = \mathbb{E}_{\pi,\tau} \Big[ \sum_{t=0}^{\infty} \gamma^{t} R(s_t, a_t) \Big| s_0=s \Big].
+\end{equation}
+
+\paragraph{Maximum Entropy Actor-Critic}
+To promote random actions for exploration and algorithm robustness, maximum entropy framework introduces policy entropy bonus into value functions \citep{haarnoja2017reinforcement, haarnoja2018soft}, 
+\begin{equation}
+	\label{eqn:maxent_value_defn}
+	V^{\pi}(s) = \mathbb{E}_{\pi,\tau} \Big[ \sum_{t=0}^{\infty} \gamma^{t} R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \Big| s_0=s \Big], 
+\end{equation}
+\begin{equation}
+	\label{eqn:maxent_qvalue_defn}
+	Q^{\pi}(s, a) = R(s, a) + \mathbb{E}_{\pi,\tau} \Big[ \sum_{t=1}^{\infty} \gamma^{t} R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \Big| s_0=s, a_0=a \Big]. 
+\end{equation}
+where $Q$ is state-action value function. Learning iterates between solving policy evaluation and policy improvement. For the definition of state-action value function, Bellman backup operator $\mathcal{T}^{\pi}$ is defined, 
+\begin{equation}
+	\label{eqn:q_eval}
+	\mathcal{T}^{\pi} Q(s,a) = R(s,a) + \gamma \mathbb{E}_{\substack{s'\sim\tau(\cdot \mid s,a) \\ a' \sim \pi(\cdot \mid s')}} \big[ Q(s',a') - \alpha \log \pi(a' \mid s') \big], 
+\end{equation}
+and the critic is expected to remain same if this operator applied on itself, i.e., $Q^{\pi}(s,a) = \mathcal{T}^{\pi} Q^{\pi}(s,a)$. Policy evaluation minimizes the temporal difference, i.e., the difference between $Q$ and $\mathcal{T}^{\pi} Q$ to satisfy this condition. Therefore, at each iteration $k$, error norm is minimized to update critic, 
+
+\begin{equation}
+	\label{eqn:q_update}
+	Q^{k+1} = \arg\min_{Q} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ \big\| \mathcal{T}^{\pi} Q^{k} (s, a) - Q(s, a) \big\| \Big], 
+\end{equation}	
+
+where  $\pi_B$ is behavioral policy and $\rho_{\pi_B}$ represents distribution of visited states by $\pi_B$. In practice, the temporal difference (TD) target is used instead of the Bellman backup $\mathcal{T}^{\pi} Q(s,a)$ for learning. TD target is calculated by a random action drawn from the policy $\pi$, instead of expectation. 
+
+The optimal policy gives the maximum value, i.e., $\pi^*(\cdot|s) = \arg\max_{\pi} V^{\pi}(s)$. Policy improvement is minimizing KL divergence from policy to softmax policy on critic, 
+
+\begin{equation}
+	\label{eqn:pi_update}
+	\pi^{k+1}(\cdot \mid s) 
+	= \mathbb{E}_{\substack{s\sim\rho_{\pi_B}}} \Big[ \arg\min_{\pi} \text{KL} \Big( \pi(\cdot \mid s) \Big|\Big| \frac{\exp({\alpha}^{-1} Q^{k}(s,\cdot))}{ \int_{\mathcal{A}} \exp( {\alpha}^{-1} Q^{k}(s,a)) da} \Big) \Big]
+	= \arg\max_{\pi} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi }} \Big[ Q^{k}(s,a) - \alpha \log \pi(a|s) \Big],
+\end{equation}
+
+After sufficient iteration, both policy and critic converge to optimality in the ideal case. In this iteration, critic is also updated, $Q^{k+1}(s,a) = \mathcal{T}^{*} Q^{k}(s,a)$, where $\mathcal{T}^{*}$ is the Bellman optimality opertor (Equation 5 from \citet{haarnoja2017reinforcement}), 
+
+\begin{equation}
+	\label{eqn:q_optimal}
+	\mathcal{T}^{*} Q(s,a) = R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Q}(s',a')) da' \Big) \Big]. 
+\end{equation}
+
+and the optimal critic function satisfies the Bellman optimality condition, $Q^{*}(s,a) = \mathcal{T}^{*} Q^{*}(s,a)$. $\Tilde{\alpha} \in [ \alpha, \infty ) $ is defined to demonstrate the continuum of policy improvement, i.e., the fact that policy is updated by partially exploiting state-action value function at each iteration. As $\Tilde{\alpha} \rightarrow \infty$, $\mathcal{T}^{*}Q$ boils down to $\mathcal{T}^{\mathcal{U}}Q$, which represents state-action value for uniform policy. On the other hand, $\Tilde{\alpha} = \alpha$ represents updated state-action value after complete exploitation. 
+
+\section{Distributional Reinforcement Learning and Overestimation}
+
+\subsection{Distributional Maximum Entropy Actor-Critic}
+Instead of learning expectation of discounted return (value function), probability distribution of return can also be modeled as a random variable to identify possible consequences of given policy \citep{bellemare2017distributional}. This also constitutes the methodology of Distributional Soft Actor-Critic (DSAC) algorithm \citep{duan2021distributional} with maximum entropy policy. For this, state-action return distribution  $\mathcal{Z}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ is defined, where state-action return is sampled from this distribution, $Z(s, a) \sim \mathcal{Z}(s, a)$. Recall that $Q(s,a) = \mathbb{E}_{\mathcal{Z}, \tau} [ Z(s,a) ]$. 
+
+\begin{equation}
+	\label{eqn:maxent_zreturn_defn}
+	Z^{\pi}(s, a) = R(s, a) + \sum_{t=1}^{\infty} \gamma^{t} \big( R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \big) , \quad s_0=s, \quad  a_0=a,  
+\end{equation}
+where $a_t \sim \pi(\cdot|s_t)$, $s_{t+1} \sim \tau(\cdot|s_t, a_t)$. Corresponding definition by Bellman backup operator $\mathcal{T}^{\pi}$ is defined as 
+\begin{equation}
+	\label{eqn:z_eval}
+	\mathcal{T}^{\pi} Z(s,a) \disteq R(s,a) + \gamma \big( Z(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
+\end{equation}
+where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. 
+
+\paragraph{Expected Value Substitution} \citet{duan2025distributional} proposed using expected return (value) instead of random return for bootstrapping in Bellman backup for their DSACT algortihm. This way, uncertainty due to environment stochasticity is modeled for only one step. Therefore, Bellman backup is redefined as
+
+\begin{equation}
+	\label{eqn:z_evs_eval}
+	\mathcal{T}^{\pi} Z(s,a) \disteq R(s,a) + \gamma \big( Q(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'). 
+\end{equation}
+
+To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled returns are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback-Leibler divergence from distributional Bellman backup,
+
+\begin{equation}
+	\label{eqn:z_update}
+	\mathcal{Z}^{k+1} = \arg\min_{\mathcal{Z}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Z}^k(s, a) || \mathcal{Z}(s, a) \big) \Big]. 
+\end{equation}	
+
+Policy update follows same rule shown in Equation \ref{eqn:pi_update} using average return (state-action value function). Policy update exploits return estimations, the Bellman optimality opertor for return distribution (similar to Equation \ref{eqn:q_optimal} ) is as follows, 
+
+\begin{equation}
+	\label{eqn:z_optimal}
+	\mathcal{T}^{*} Z(s,a) \disteq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Z}(s',a')) da' \Big), \quad s'\sim\tau(\cdot \mid s,a)
+\end{equation}
+
+\subsection{Quantifying Overestimation for Sub-Gaussian Return Distributions}
+
+Equation \ref{eqn:q_optimal} and \ref{eqn:z_optimal} has a fundamental difference. Although $Q(s,a) = \mathbb{E}_{\mathcal{Z}, \tau} [ Z(s,a) ]$, the Bellman optimality backups are not equal, $\mathcal{T}^{*} Q(s,a) \neq \mathbb{E}_{\mathcal{Z}, \tau} [ \mathcal{T}^{*} Z(s,a) ]$. In fact, it is difficult to calculate $\mathcal{T}^{*}Q(s,a)$ accurately even in non-distributional actor-critic since $Q$ is just deterministic guess of return, which is usually not true. 
+
+Now, we analyze overestimation bias, similar to the work of \citet{chen2021randomized} and \citet{lan2020maxmin} but in the soft learning framework instead of discrete actions. We define overestimation error as difference between $\mathbb{E}_{\mathcal{Z}, \tau} [ \mathcal{T}^{*} Z(s,a) ]$ and average $\mathcal{T}^{*} Q(s,a)$ as $\epsilon$, 
+\begin{equation}
+	\epsilon(s,a) = \mathbb{E}_{\mathcal{Z}, \tau} [ \mathcal{T}^{*} Z(s,a) ] - \mathcal{T}^{*} Q(s,a). 
+\end{equation}
+
+In the ideal case, $\epsilon(s,a)$ should be zero if there is no overestimation, which is not the case due to critic uncertainty. To quantify it, we assume that critic distribution $\mathcal{Z}(s, a)$ is sub-Gaussian with variance proxy $S^2(s,a)$. 
+
+\begin{definition}
+	\label{defn:subgauss}
+	A random variable $X \in \mathbb{R}$ with mean $\mu=\mathbb{E}[X]$ is called sub-Gaussian with variance proxy $\sigma^2$ if its moment generating function satisfies
+	\begin{equation}
+		\mathbb{E}[\exp(\lambda X)] \leq \exp \big( \lambda \mu + \frac{1}{2} \lambda^2 \sigma^2 \big), \quad \forall \lambda \in \mathbb{R}. 
+	\end{equation}
+\end{definition}
+
+Under sub-Gaussian assumption, if there exist an upper bound for overestimation, this bound can be used to devise a conservative Bellman backup operator. For this, we present Theorem \ref{thm:overestimation}. The proof is available in Appendix \ref{app:proofs}. 
+
+\begin{theorem}[Overestimation quantification for sub-Gaussian critics]
+	\label{thm:overestimation}
+	Let given state-action return distribution $\mathcal{Z}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ be sub-Gaussian with mean $Q(s,a)$ and variance proxy $S^2(s,a)$ for all state-action pairs, with bounded support. Then,  
+	\begin{equation}
+		\mathbb{E}_{\mathcal{Z}, \tau} [ \mathcal{T}^{*} Z(s,a) ] \leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} Q(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} S^2(s',a') ) da' \Big) \Big]. \\
+	\end{equation}
+\end{theorem}
+
+\begin{corollary}[Pessimistic critic target]
+	\label{cor:pessimism}
+	For policy evaluation, using pessimistic Bellman backup, 
+	\begin{equation}
+		\label{eqn:z_evs_eval_pessimistic}
+		\mathcal{T}_{\beta}^{\pi} Z(s,a) \disteq R(s,a) + \gamma \big( Q(s',a') - \beta S(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
+	\end{equation}
+	in which shifted value estimation $\Tilde{Q} = Q - \beta S$ is used instead of $Q$, prevents overestimation as long as $\beta \geq \max\limits_{(s, a)} \frac{1}{2}{\Tilde{\alpha}}^{-1} S(s, a)$. 
+\end{corollary}
+
+\begin{theorem}[Overestimation bound]
+	\label{thm:overestimation_bound}
+	Overestimation due to uncertainty of distribution $\mathcal{Z}$, denoted as $\epsilon$, is upper bounded for Bellman updates, 
+	\begin{align}
+		\epsilon(s,a) \leq \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \max_{a'} S^2(s',a') \Big]. 
+	\end{align} 
+\end{theorem}
+
+The source of overestimation and necessity of pessimistic training is revealed in Theorem \ref{thm:overestimation}, Corollary \ref{cor:pessimism}. Moreover, maximum overesimation bound is demonstrated in Theorem \ref{thm:overestimation_bound}. As an additional notation, we introduce pessimistic distributional Bellman backup $\mathcal{T}_{\beta, D}^{\pi}\mathcal{Z}$ where pessimistic Bellman backup of sampled returns are sampled from this distribution, i.e.,  $\mathcal{T}_{\beta}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{\beta, D}\mathcal{Z}(s, a)$. The difference between $\mathcal{T}^{\pi}_{\beta, D}\mathcal{Z}(s, a)$ and $\mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$ is illustrated in Figure \ref{fig:evol_bellman_backup}. 
+
+\subsection{Optimal Pessimism Rate}
+Although using pessimistic critic targets for critic and policy training is not a new idea \citep{moskovitz2021tactical, kuznetsov2020controlling, chen2021randomized}, the question of how to determine pessimism $\beta$ remains. 
+
+There is no analytical way to determine the optimum pessimism level. \citet{moskovitz2021tactical} focus on updating pessimism \textit{on the fly} as a bandit problem instead of fixing it but this requires evaluating on-policy returns and introduces an online bandit to update pessimism. \citet{cetin2023learning} proposed generalized pessimism learning based on expected bias between temporal difference target and base value of critic. Both of these methods use pessimism upon epistemic uncertainty as overestimation mitigation mechanism. 
+
+
+\section{Stochastic Actor-Critic}
+\label{sec:stac}
+
+In this section, we discuss key mechanisms needed for computation and sample efficient actor-critic learning and propose our algorithm \textit{Stochastic Actor-Critic}. This algorithm employs \textit{single distributional} critic network $\mathcal{Z}_{\theta}$ by parameter set $\theta$ which captures aleatoric uncertainty, and dropout along with layer normalization for network regularization. Policy $\pi_{\phi}$ outputs a \verb|tanh| transformed normal distribution to bound actions to $[-1, 1]$, and parameterized by set $\phi$. Unlike other methods, STAC uses critic estimates in a pessimistic manner using only aleatoric uncertainty, for policy evaluation and policy improvement. 
+
+The rationale behind this argument is that most of the TD target randomness due to environment stochasticity and ongoing policy updates (policy improvement) are inherently appears as aleatoric uncertainty, and overestimation is the result of this randomness. Moreover, out-of-distribution states and actions are detected by high epistemic uncertainty, and should not be disregarded by pessimism. On the contrary, these state-action pairs should be explored with suitable methods. Therefore, in our opinion, epistemic uncertainty should not be used for overestimation mitigation unlike previous methods. 
+
+\citep{nauman2024overestimation} demonstrated that pessimism on critic ensemble (they call it critic regularization) degrades performance when combined with network regularization methods. Our idea is that using epistemic uncertainty for pessimism slows down learning and inherently regularizes learning. STAC directly employs network regularization by dropout and layer normalization. 
+
+\begin{figure}
+	\centering
+	% GAUSSIANs: CLs, p-value
+	\begin{tikzpicture}	
+		\def\rew{-1.3}	
+		\def\gam{0.85}
+		\def\pess{1.2}
+		\def\zmu{4.2};
+		\def\zsig{1.9};
+		\def\nzmu{9.0};
+		\def\nzsig{1.5};
+		\def\xmax{\nzmu+3.5*\nzsig};
+		\def\xmin{\zmu-3.5*\zsig}
+		\def\ymin{{-0.2*gauss(\nzmu,\nzmu,\nzsig)}};
+		\def\ymax{{1.4*gauss(\nzmu,\nzmu,\nzsig)}}
+		
+		\begin{axis}[every axis plot post/.append style={
+				mark=none,domain={-0.05*(\xmax)}:{1.08*\xmax},samples=\N,smooth},
+			xmin=\xmin, xmax=\xmax,
+			ymin=\ymin, ymax=\ymax,
+			axis lines=middle,
+			axis line style=thick,
+			enlargelimits=upper, % extend the axes a bit to the right and top
+			ticks=none,
+			xlabel=$Z$,
+			every axis x label/.style={at={(current axis.right of origin)},anchor=north west},
+			width=0.7*\textwidth, height=0.5*\textwidth,
+			y=250pt
+			]
+			
+			% PLOTS
+			\addplot[blue, name path=B,thick] {gauss(x,\nzmu,\nzsig)};
+			\addplot[teal, name path=B,thick] {gauss(x,\nzmu-\pess*\nzsig,\nzsig)};
+			%\addplot[cyan, name path=B,thick] {gauss(x,\nzmu-\pess*\nzsig,\gam*\nzsig)};	
+			%\addplot[violet, name path=B,thick] {gauss(x,\rew+\nzmu-\pess*\nzsig,\gam*\nzsig)};		
+			\addplot[red,  name path=S,thick] {gauss(x,\zmu,\zsig)};
+			% LINES
+			\addplot[black,dashed,thin]
+			coordinates {(\nzmu,0) (\nzmu, {1.05*gauss(\nzmu,\nzmu,\gam*\nzsig)})}
+			node[below=0pt,pos=0] {};			
+			\addplot[black,dashed,thin]
+			coordinates {(\nzmu-\pess*\nzsig,0) (\nzmu-\pess*\nzsig, {1.01*gauss(\nzmu,\nzmu,\gam*\nzsig)})}
+			node[below=0pt,pos=0] {};
+			%\addplot[black,dashed,thin]
+			%coordinates {(\rew+\nzmu-\pess*\nzsig,0) (\rew+\nzmu-\pess*\nzsig, {1.01*gauss(\nzmu,\nzmu,\gam*\nzsig)})}
+			%node[below=0pt,pos=0] {};
+			
+			\addplot[<-,black,thin,dashed]
+			coordinates {(\nzmu-\pess*\nzsig,{1.01*gauss(\nzmu,\nzmu,\nzsig)}) (\nzmu, {1.01*gauss(\nzmu,\nzmu,\nzsig)})}
+			node[above,at end] {$-\gamma \beta S(s',a')$};
+			
+			%\addplot[<-,violet,thin,dashed]
+			%coordinates {(\rew+\nzmu-\pess*\nzsig,{1.01*gauss(\nzmu,\nzmu,\gam*\nzsig)}) (\nzmu-\pess*\nzsig, {1.01*gauss(\nzmu,\nzmu,\gam*\nzsig)})}
+			%node[above,at start] {$+r(s,a)$};			
+			
+			% \mathcal{T}^{\pi}_D
+			% LABELS
+			\node[above=2pt,     black!12!blue] at (\nzmu+1.75*\pess*\nzsig,0.15) {$\mathcal{T}_{D}\mathcal{Z}(s,a)$};
+			% LABELS
+			\node[above=2pt,     black!12!teal] at (\nzmu-2.5*\pess*\nzsig,0.2) {$\mathcal{T}_{\beta,D}\mathcal{Z}(s,a)$};									
+			\node[above=2pt,     black!12!red]  at (\zmu-1.25*\pess*\zsig,0.1) {$\mathcal{Z}(s,a)$};
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Evolution of Pessimistic Distributional Bellman Backup. While $\mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$ is overestimated, a corrected backup $\mathcal{T}^{\pi}_{\beta, D}\mathcal{Z}(s, a)$ is closer to $\mathcal{Z}(s, a)$. }	
+	\label{fig:evol_bellman_backup}
+\end{figure}
+
+
+\subsection{Policy Evaluation}
+
+For simplicity, STAC models critic as normal distribution. This contradicts with bounded distribution assumption of Theorem \ref{thm:overestimation}, but it yields a simple loss function and is easy to interpret. Still, it is reasonable to assume critic distribution is bounded for finite horizon or discounted MDPs ($\gamma<1$) with bounded reward functions. This assumption yields the tightest bound for overestimation, converting second inequality into an equality in the proof of Theorem \ref{thm:overestimation}. This way, overestimation is closer to the upper bound and yields the worst case. 
+
+Using transition tuples from experience replay as batch, $\mathcal{D}_b = \{(s_i, a_i, r_i, s_i', \texttt{done}_i)\}_{i=1}^{N_b}$, temporal difference (TD) target $Z_i^{TD}$, representing Bellman backup, is $\beta$-pessimistic, 
+
+\begin{equation}
+	\label{eqn:td_target}
+	Z_i^{TD} = r_i + \gamma (Q_{\bar{\theta}}(s_i', \Tilde{a}_{i}') - \beta S_{\bar{\theta}}(s_i', \Tilde{a}_{i}') - \alpha \log \pi_{\phi}(s_i', \Tilde{a}_{i}')) (\neg\texttt{done}_i), \quad \Tilde{a}_{i}'\sim\pi_{\phi}(\cdot \mid s_i'). 
+\end{equation}
+
+Learning objective is cross-entropy loss (log loss), 
+
+\begin{equation}
+	\mathcal{L}_{\theta}(\mathcal{D}_b) = \frac{1}{N_{b}} \sum_{i=1}^{N_b}  - \log{\mathcal{Z}_{\theta} (Z_i^{TD} \mid s_i,a_i)} = \frac{1}{2} \log{2\pi} + \frac{1}{2 N_{b}} \sum_{i=1}^{N_b}  \Big( \log{S^2_{\theta}(s_i,a_i)} + \frac{(Z_i^{TD} - Q_{\theta} (s_i,a_i))^2}{S^2_{\theta}(s_i,a_i)} \Big). 
+\end{equation}
+
+\subsection{Policy Improvement}
+
+According to Corollary \ref{cor:pessimism}, pessimistic TD targets should be used to train critic network. However, this analysis do not account for policy learning since policy is assumed as softmax over action values. In actor-crtic framework, same pessimistic objective should be used for policy improvement, since policy evaluation objective and policy improvement objective should be the same. In other words, at learning step $k$, Bellman backup must be equal to Bellman policy evaluation with the new policy, $\mathcal{T}^* Z^k \disteq \mathcal{T}^{\pi^{k+1}} Z^k$. It is only possible by using same pessimistic critic value for policy improvement. 
+
+\subsection{Pessimistic Objective}
+
+In STAC, pessimism is modeled as a fixed parameter, unlike the work of \citep{moskovitz2021tactical} and \citep{cetin2023learning}. There are two reasons behind this. First, introducing such a mechanism would increase complexity of the algorithm. Secondly, it is observed that a properly selected pessimism rate is enough to obtain sufficient performance, as shown in the experiments. 
+
+\subsection{Dropout}
+
+STAC employs dropout to prevent over-fitting, and overestimation indirectly \citet{nauman2024overestimation}. While dropout may also promote exploration by injecting stochasticity into the policy and value estimates, we do not attempt to isolate or prove this effect here. 
+
+Dropout also allows to capture the probabilistic nature of a network, representing Bayesian neural networks \citep{Gal2016Dropout}. Previous methods also use dropout or ensembles to approximate Bayesian posterior of critic network, for overestimation correction \citep{hiraoka2021dropout, chen2021randomized}. However, both dropout and ensemble methods regularize learning process, and STAC employs it both critic and policy networks for this purpose. 
+
+\subsection{Other Details and Algorithm Summary}
+
+\paragraph{Layer Normalization} 
+We implement Layer Normalization \citep{ba2016layer} after all hidden activations of critic and policy networks, similar to \citet{hiraoka2021dropout}, to regularize learning and prevent possible numerical instabilities. 
+
+\paragraph{Lagged critic for TD target}
+When the trained critic network is also used in calculating the target value, the critic training is prone to divergence \citep{li2023realistic}. For this, a common approach is to use another critic network to evaluate TD target \citep{mnih2013playing}. Similar to \citet{lillicrap2015continuous}, \citet{fujimoto2018addressing}, and \citet{haarnoja2018soft}, we use a delayed form of critic network for TD target evaluations as demonstrated in Equation \ref{eqn:td_target}. The parameters of target critic are only updated by Polyak averaging of main critic network weights through learning steps; $\bar{\theta} \leftarrow \rho \bar{\theta} + (1-\rho) \theta $. This strategy is important to ensure the stability of temporal difference learning. 
+
+\paragraph{Automatic temperature tuning} Using constant temperature results in different policies if the reward magnitude changes. To mitigate this, \citet{haarnoja2018soft} proposed a policy entropy constraint, representing temperature as the Lagrange multiplier of the constraint. Given target entropy $\mathcal{\bar{H}}$ as hyper-parameter, the loss function related to this constraint is as follows;  
+\begin{equation}
+	\mathcal{L}_{\alpha}(\mathcal{D}_b) = - \alpha \mathcal{\bar{H}} + \alpha \sum_{i=1}^{N_b} \mathbb{E}_{a\sim\pi_{\phi}(\cdot \mid s_i)} \big[ -\log \pi_{\phi}(a \mid s_i) \big].  
+\end{equation} 
+
+Networks illustrations are available in Appendix \ref{app:network_archs}. Note that the bar notation stands for the lagged network with non-trainable parameters. STAC is summarized in Algorithm \ref{alg:stac} with gradient descent but Adam optimizer \citep{kingma2014adam} is used in our experiments. 
+
+\begin{algorithm}
+	\caption{Stochastic Actor-Critic}
+	\label{alg:stac}
+	\begin{algorithmic}
+		\Require Environment $\texttt{env}$ 
+		\Require Experience buffer $\mathcal{D}$ 
+		\Require Critic $\mathcal{Z}_{\theta}$, lagged critic $\mathcal{Z}_{\bar{\theta}}$, policy $\pi_{\phi}$, all with dropout 
+		\Require Initial temperature $\alpha$, target entropy $\Bar{\mathcal{H}}$  
+		\Require Pessimism $\beta$ 
+		\Require Learning rates $\eta_{Q}$, $\eta_{\pi}$, $\eta_{\alpha}$, Polyak parameter $\rho$
+		\Require Total training steps $N$, batch size $N_b$
+		%\Require Number of warm-up episodes $N_{warm}$
+		\State $s \sim \texttt{env.reset}()$ \Comment{Reset the environment}
+		\For{$N$ timesteps} 
+		\State $a \sim \pi_{\phi}(\cdot \mid s)$  \Comment{Sample action}
+		\State $r, s', \texttt{done} \sim \texttt{env.step}(a)$ \Comment{Act on environment}
+		\State $\mathcal{D} \leftarrow \mathcal{D} \cup (s, a, r, s', \texttt{done})$  \Comment{Record transition tuple}
+		\State \algorithmicif\ $\texttt{~done}$ \algorithmicthen\ $s \leftarrow s'$ \algorithmicelse\ $s \sim \texttt{env.reset}() $  \Comment{State transition or reset}
+		\For{$G$ gradient steps}
+		%\State Sample $\mathcal{D}_b=(s,a,r,s',\texttt{done}) \sim \mathcal{D}$
+		\State $\mathcal{D}_b = \{(s_i, a_i, r_i, s_i', \texttt{done}_i)\}_{i=1}^{N_b}  \sim  \mathcal{D} $  \Comment{Sample minibatch for training}
+		\State $\Tilde{a}_{i}'\sim\pi_{\phi}(\cdot \mid s_i'), \quad \forall i \in \{1,2,...,N_b\}$ \Comment{Sample next actions}
+		\State $Z_i^{TD} = r_i + \gamma (Q_{\bar{\theta}}(s_i', \Tilde{a}_{i}') - \beta S_{\bar{\theta}}(s_i', \Tilde{a}_{i}')) (\neg\texttt{done}_i), \quad \forall i \in \{1,2,...,N_b\}$ \Comment{Build TD targets}
+		\State $\theta \leftarrow \theta - \eta_{Q} \nabla_{\theta} \Big( \frac{1}{N_{b}} \sum_{i=1}^{N_b}  - \log{\mathcal{Z}_{\theta} (Z_i^{TD} \mid s_i,a_i)} \Big) $ \Comment{Update critic}
+		\State $\phi \leftarrow \phi - \eta_{\pi} \nabla_{\phi} \Big( \frac{1}{N_{b}} \sum_{i=1}^{N_b} \mathbb{E}_{a\sim\pi_{\phi}(\cdot \mid s_i)} \big[ Q_{\theta}(s_i, a) - \beta S_{\theta}(s_i, a) - \alpha \log{\pi_{\phi}(a \mid s_i)} \big] \Big) $  \Comment{Update policy}
+		\State $\alpha \leftarrow \alpha - \eta_{\alpha} \nabla_{\alpha} \Big( - \alpha \mathcal{\bar{H}} + \alpha \sum_{i=1}^{N_b} \mathbb{E}_{a\sim\pi_{\phi}(\cdot \mid s_i)} \big[ -\log \pi_{\phi}(a \mid s_i) \big] \Big) $  \Comment{Update temperature}
+		
+		\State $\bar{\theta} \leftarrow \rho \bar{\theta} + (1-\rho) \theta $  \Comment{Update target critic network}
+		\EndFor
+		\EndFor
+		
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Experiments}
+\label{sec:experiments}
+
+Through Gymnasium API \citep{towers_gymnasium_2023}, six MuJoCo and three Box2D environments are used for experiments as they are tested by most algorithms in the literature. Box2D environments are inherently random, \verb|BipedalWalker-v3| and \verb|BipedalWalkerHardcore-v3| models a two-legged robot on randomly generated terrain, while \verb|LunarLander-v3| models a landing spaceship under wind and turbulence, which is maximized in our experiments. 
+
+Hyper-parameters per environment can be found in Table \ref{tab:parameters_algos} of Appendix \ref{app:hyperparam_exp}. For all experiments, PyTorch (version 2.7.1) \citep{paszke2019pytorch} is used. Please refer to Appendix \ref{app:code} for the codebase. 
+
+For evaluation, after each 1000 time steps, we execute a single test episode using the online policy and measure its performance by calculating the total reward accumulated during the episode. Specified environments are trained through a fixed number of environment interactions, repeated 5 times to assess the stability of the algorithm. Further experimental details are presented in Appendix \ref{app:hyperparam_exp}.
+
+\subsection{Comparison to Other Algorithms}
+
+Our experiments aim to investigate whether enhancing off-policy actor-critic methodology with STAC can improve their sample and computation efficiency on difficult continuous-control benchmarks. For this purpose, STAC is compared to similar competitive algorithms; DSACT \citep{duan2025distributional} without variance-based critic gradient adjustment and SAC \citep{haarnoja2018soft}. All algorithm results are obtained using in-house code with the same network architectures (including layer normalization but not dropout) to make a fair comparison. 
+
+The pessimism rate and dropout configuration used for comparison is resulted from ablation studies, and explained in the next section. Optimal configurations are summarized in Table \ref{tab:target_ent_pessimism_algos}. 
+
+\paragraph{Learning curves} In Figure \ref{fig:main_comparison}, the performance of STAC is shown against previously mentioned SOTA algorithms. Additionally, value estimation errors are presented in Figure \ref{fig:error_comparison}. The bold lines represent the interquartile mean, while the shaded area indicates the quartiles (to represent randomness through seeds) of the total reward across evaluation episodes. Average returns through all learning processes averaged over random seeds are summarized in Table \ref{tab:env_auc_results} and final performance is summarized in Table \ref{tab:env_pess_results}. 
+
+% Learning curves are available in Appendix \ref{app:stac_and_others_curves}.
+
+\begin{table}[h!]
+	\addtolength{\tabcolsep}{12pt}
+	\centering
+	\caption{Average episodic return through learning procedure and over five training runs on MuJoCo and Box2D tasks. ± sign represents mean and standard deviation of overall score. } 
+	\label{tab:env_auc_results}
+	\resizebox{\columnwidth}{!}{
+		\begin{tabular}{|c c c c c |}
+			\hline
+			Env  & \# steps & DSACT & SAC & STAC \\ 
+			\hline			
+			\verb~Ant-v4~ & 3M & 4369.8±2289.2 & \textbf{5676.6±2032.5} & 5088.0±2295.8 \\
+			\verb~BipedalWalker-v3~ & 1M & \textbf{262.7±123.1} & 245.7±150.2 & 261.5±113.3 \\
+			\verb~BipedalWalkerHardcore-v3~ & 3M & 37.7±100.7 & -41.7±83.3 & \textbf{83.5±143.2} \\
+			\verb~HalfCheetah-v4~ & 3M & 10320.4±2640.7 & 9363.6±2136.8 & \textbf{11291.8±3095.7} \\
+			\verb~Hopper-v4~ & 1M & 1354.0±1087.9 & 1998.2±1238.5 & \textbf{2614.3±1167.4} \\
+			\verb~Humanoid-v4~ & 3M & 6034.8±2738.5 & 5179.4±2161.3 & \textbf{6105.4±2739.0} \\
+			\verb~LunarLander-v3~ & 1M & 154.2±166.0 & \textbf{212.6±138.2} & 201.6±135.0 \\
+			\verb~Swimmer-v4~ & 1M & 76.7±26.2 & 57.3±23.2 & \textbf{97.7±32.9} \\
+			\verb~Walker2d-v4~ & 1M & \textbf{4934.8±1596.1} & 3935.1±1571.9 & 4829.7±2383.8 \\		
+			\hline
+		\end{tabular}
+	}
+\end{table}
+
+
+\begin{table}[h!]
+	\addtolength{\tabcolsep}{2pt}
+	\centering
+	\caption{Interquartile mean results of last \%1 of evaluation episodes, $\beta$ for STAC is selected with best performance, and dropout rate is 0.01. } 
+	\label{tab:env_pess_results}
+	\begin{tabular}{|c c c c c |}
+		\hline
+		Env  & \# steps & DSACT & SAC & STAC \\ 
+		\hline		
+		\verb~Ant-v4~ & 3M & 5798.9 & \textbf{7407.1} & 6907.3 \\
+		\verb~BipedalWalker-v3~ & 1M & 319.2 & \textbf{326.3} & 308.0 \\
+		\verb~BipedalWalkerHardcore-v3~ & 3M & 32.3 & -50.8 & \textbf{159.9} \\
+		\verb~HalfCheetah-v4~ & 3M & 13241.6 & 11475.6 & \textbf{14489.5} \\
+		\verb~Hopper-v4~ & 1M & 944.3 & 3196.4 & \textbf{3363.7} \\
+		\verb~Humanoid-v4~ & 3M & 8608.9 & 6990.4 & \textbf{8726.2} \\
+		\verb~LunarLander-v3~ & 1M & 258.3 & \textbf{268.9} & 265.7 \\
+		\verb~Swimmer-v4~ & 1M & 104.1 & 54.2 & \textbf{125.0} \\
+		\verb~Walker2d-v4~ & 3M & 5952.5 & 5036.4 & \textbf{6634.7} \\
+		\hline
+	\end{tabular}
+\end{table}
+
+%% Main results
+\begin{figure}%[H]
+	\centering
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{figures/main-comparison/score.png}
+	\caption{Episodic score curves of STAC and other algorithms. }
+	\label{fig:main_comparison}
+\end{figure}
+
+\begin{figure}%[H]
+	\centering
+	\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{figures/main-comparison/error.png}
+	\caption{Average episodic value estimation error of STAC and other algorithms.}
+	\label{fig:error_comparison}
+\end{figure}
+%%
+
+\paragraph{Sample efficiency} As seen from Figure \ref{fig:main_comparison} and Table \ref{tab:env_auc_results}, STAC only outperforms other algorithms on many environments in terms of sample efficiency (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|Hopper-v4|, \verb|Swimmer-v4| \verb|Walker-v4|). Although DSACT and SAC performs better on some environments, STAC still has a competitive performance, no convergence issue, and achieves this by using single critic while others use double. STAC has different components compared to other algorithms: pessimism is a must for convergence, while policy dropout is optional for performance improvement. However, critic dropout is necessary for some environments. Details will be discussed in the next section. 
+
+% significance test? unpaired t-test ? ...
+
+\subsection{Sweeping Pessimism and Dropout}
+
+STAC is experimented by varying levels of pessimism $\beta$ and dropout rates to isolate effect of pessimism and dropout individually. We used 5 pessimism level and 4 dropout configurations: no dropout, policy dropout, critic dropout and policy\&critic dropout. 
+
+\begin{table}[h!]
+\addtolength{\tabcolsep}{2pt}
+\centering
+\caption{Average episodic scores through learning procedure (first lines), and interquartile mean scores of last \%1 of evaluation episodes (second lines), for varying $\beta$. Dropout rate is 0.01 for critic and policy. } 
+\label{tab:stac_ablation}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{|c c c c c c|}
+	\hline
+	Env & $\beta=0.0$ & $\beta=0.125$ & $\beta=0.25$ & $\beta=0.375$ & $\beta=0.5$ \\
+	\hline
+	\multirow[t]{3}{*}{\verb~Ant-v4~}  & 3181.2±2643.0 & 4623.6±2569.6 & \textbf{5088.0±2295.8} & 5084.5±1998.5 & 4392.7±1506.6 \\
+	& 5264.4 & \textbf{7082.7} & 6907.3 & 6246.4 & 4834.4 \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~BipedalWalker-v3~}  & 171.5±163.3 & 204.3±156.7 & 241.5±131.8 & \textbf{261.5±113.3} & 249.4±124.0 \\
+	& 171.9 & 125.4 & 262.6 & \textbf{308.0} & 305.1 \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~BipedalWalkerHardcore-v3~}  & 73.2±139.9 & \textbf{78.6±138.5} & 37.5±98.9 & -17.1±30.5 & -42.8±43.7 \\
+	& 61.8 & \textbf{118.8} & 43.4 & -0.0 & -59.8 \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~HalfCheetah-v4~}  & \textbf{11291.8±3095.7} & 9815.4±2794.4 & 10769.5±3028.2 & 9938.3±2441.2 & 8528.9±2823.5 \\
+	& \textbf{14489.5} & 12299.6 & 13385.4 & 11042.1 & 7602.7 \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~Hopper-v4~}  & 1040.9±515.2 & 1350.8±858.7 & 2107.5±1192.3 & \textbf{2620.3±1130.2} & 2614.3±1167.4 \\
+	& 1132.4 & 1308.8 & 2643.4 & 3318.2 & \textbf{3363.7} \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~Humanoid-v4~}  & 3753.4±2973.4 & 5245.1±3211.9 & \textbf{5695.8±2748.9} & 5480.4±2404.1 & 5402.0±2387.7 \\
+	& 5623.9 & \textbf{8407.2} & 8277.9 & 7587.2 & 6930.8 \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~LunarLander-v3~}  & \textbf{201.6±135.0} & 199.9±135.3 & 99.7±131.7 & -23.9±100.1 & -85.3±77.2 \\
+	& \textbf{265.7} & 263.8 & 157.2 & 14.3 & -77.7 \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~Swimmer-v4~}  & \textbf{70.3±29.4} & 66.4±26.8 & 54.5±16.1 & 48.2±10.5 & 43.4±6.0 \\
+	& \textbf{103.7} & 93.5 & 70.0 & 54.2 & 45.9 \\
+	\cline{1-6}
+	\multirow[t]{3}{*}{\verb~Walker2d-v4~}  & 3164.1±2203.5 & 4571.3±2146.6 & 4834.9±1654.7 & \textbf{4949.6±1449.0} & 4690.1±1361.2 \\
+	& 4299.2 & \textbf{6306.4} & 5842.1 & 5795.2 & 5539.1 \\
+	\cline{1-6}
+	\hline
+\end{tabular}
+}
+\end{table}
+
+\paragraph{Learning curves} 
+Both learning curves are available in Appendix \ref{app:results_of_ablations}. Episodic scores and related episodic value estimation errors for varying level of pessimism under joint policy/critic dropout are summarized in Figure \ref{fig:pess_sens_pol_cri_dropout} and Figure \ref{fig:pess_sens_error_pol_cri_dropout}. Tabular results regarding average and final performance for different pessimism levels are summarized in Table \ref{tab:stac_ablation}. In addition, same curves for different dropout configurations under same level of pessimism are summarized in Figure \ref{fig:drop_sens} and Figure \ref{fig:drop_sens_error}, where $\beta$ values are explained in Table \ref{tab:target_ent_pessimism_algos}. The shaded area represents quartile limits, while the solid line represents interquartile mean across different seeds and \%1 of evaluation episodes through environment steps (for smoothing). 
+
+\paragraph{Pessimism} Results indicate that $\beta$ is a sensitive parameter, the higher $\beta$ yields a negative error (see Figure \ref{fig:pess_sens_error_pol_cri_dropout}), consistent with our assumptions. In addition, score curves are worse if value estimations tend to be positive, meaning that critic overestimation is not mitigated enough (see \verb|Ant-v4|, \verb|BipedalWalker-v3|, \verb|Hopper-v4|, \verb|Humanoid-v4|, \verb|Walker-v4|). On the other hand, score curves are again worse when error curves are negative than it should be, meaning that the learner is stuck on critic underestimation caused by high pessimism (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|LunarLander-v3|, \verb|Swimmer-v4|). In the end, pessimism sensitivity varies for different environments, possibly because of varying task difficulties. For easier tasks, less pessimism is enough but difficult tasks require it significantly. This parameter stands as the major bottleneck of STAC and can only be determined by this heuristic for now. 
+
+\paragraph{Dropout}
+Dropout is a regularization method, and expected to fix overestimation caused by over-fitting \citep{nauman2024overestimation}. Dropout’s primary role in STAC is as a regularization tool to improve optimization stability and robustness to noisy data. In Figure \ref{fig:drop_sens}, independent of critic dropout, policy dropout increases performance in all experiments, enhancing training stability. According to Figure \ref{fig:drop_sens_error}, the overestimation trends observed with and without dropout are qualitatively similar, confirming that our core contribution—mitigating overestimation via aleatoric uncertainty—remains effective independent of dropout, except \verb|Hopper-v4|. However, in this environment, learning does not converge without critic dropout. Therefore, critic dropout is necessary in some environments for training stability rather than overestimation mitigation. Double/ensemble critic approaches mitigate training instability naturally, whereas STAC requires a convenient dropout in some cases. 
+
+\section{Related Work}
+
+%This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional}. 
+
+\paragraph{Pessimism upon epistemic uncertainty} In the literature, the overestimation problem is mainly solved by pessimistic learning based on \textit{epistemic uncertainty} of critic \citep{chen2021randomized, hiraoka2021dropout}. The same approach is also used in model-based RL methods \citep{janner2019trust, chua2018deep, depeweg2016learning}. Recently, for off-policy model-free actor-critic algorithms, epistemic uncertainty is estimated by using double network \citep{fujimoto2018addressing, haarnoja2018soft} or ensemble network \citep{chen2021randomized, moskovitz2021tactical}. Ensemble methods are computationally expensive as there are multiple of parameters to be optimized. Using dropout is a kind of Bayesian approximation, so another way to assess epistemic uncertainty \citep{Gal2016Dropout}. It has applications on model-based \citep{Gal2016ImprovingPILCO, gal2017concrete, kahn2017uncertainty} and model-free \citep{moerland2017efficient, jaques2019way, he2021mepg} reinforcement learning. For actor-critic learning, \citet{hiraoka2021dropout} found out that using Bayesian dropout also reduces the necessary critic ensemble size. \citet{he2021mepg} also demonstrated that a single critic network is enough when dropout is also used to evaluate Bellman backup. The mentioned methods use a constant level of pessimism for policy evaluation and improvement, while \citet{moskovitz2021tactical} focused on updating pessimism \textit{on the fly} as a bandit problem rather than fixing it. 
+
+\paragraph{Pessimism upon aleatoric uncertainty}  
+Aleatoric uncertainty representation for the value function carries fundamental importance, especially in the presence of approximation \citep{bellemare2017distributional}. This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional}, and a probability distribution \citep{tang2019worst, yang2021wcsac}. \citet{kuznetsov2020controlling} claims \textit{aleatoric uncertainty} is also responsible for overestimation since any randomness is exploited when the Bellman optimality operator ($\mathcal{T}^*$) is employed. For this purpose, they use ensemble networks for epistemic uncertainty, in which each network is a distributional network (as quantiles) for aleatoric uncertainty assessment, and used both types of uncertainties for overestimation correction. For safety-critical RL applications to avoid catastrophic situations, pessimistic policy updates upon aleatoric uncertainty are modeled as normal distribution by \citet{tang2019worst} and \citet{yang2021wcsac}. These methods use pessimism only on actor update for safety, while STAC method uses it on Bellman optimality operator (so on both actor and critic updates) to mitigate overestimation. 
+
+\section{Conclusion \& Future Directions}
+
+In this paper, we introduced Stochastic Actor-Critic (STAC), a novel off-policy actor-critic algorithm. The main idea is to mitigate overestimation for the sake of faster and more robust learning by incorporating the pessimistic learning objective using aleatoric uncertainty. For this, critic is modeled as a distributional (heteroscedastic) neural network. Although normal distribution is used for this purpose, our analysis is valid for all sub-Gaussian critic distributions or quantile representations. We derived an upper bound for overestimation, demonstrating that an adequate level of pessimism mitigates overestimation without succumbing to underestimation, thus facilitating computation and sample-efficient learning. Lastly, dropout for both policy and value function is utilized to enable training stability and robustness. 
+
+\paragraph{Adaptive Pessimism} Our ablation studies demonstrate the effects of dropout rate and pessimism, revealing the sensitivity of the learning procedure to these parameters. For each specific environment and optimization method, an optimal level of pessimism and dropout exists. A promising direction for future research is to develop a grounded method to adjust the pessimism level for specific environments and agents to allow better adaptation for the learner to the environment. In addition, the sensitivity of similar algorithms to pessimism and dropout rate should be investigated in depth. 
+
+\paragraph{Pessimism under Stochastic Environments} The effect of pessimism on highly stochastic environments is also an important topic for research. Pessimistic updates may affect exploration capability. While mitigating overestimation, adjusting risk-seeking/averse behavior is worth investigating. 
+
+\paragraph{Exploration} Current methods use epistemic critic uncertainty for overestimation problem, which contradicts with \textit{optimism in the face of uncertainty} principle. Future researches might consider using epistemic critic uncertainty for exploration, retaining pessimism on aleatoric critic uncertainty. 
+
+\paragraph{Broader Impact} STAC tackles critical challenges such as accelerating learning, improving stability, and ensuring computation efficiency. Our research not only pushes the boundaries of reinforcement learning but also promises significant implications for enhancing the safety and intelligence of robots, self-driving cars, and autonomous systems in healthcare and finance.
+
+\subsubsection*{Acknowledgments}
+% We want to thank the reviewers for taking the time and effort to go through our manuscript. We really appreciate the helpful comments and suggestions, which have helped us make the paper better.
+This research has received no external funding. 
+
+\newpage
+
+%Bibliography
+\bibliography{references}
+\bibliographystyle{tmlr}
+%\printbibliography
+
+\newpage 
+
+% \mathbb{E}_{q\sim \mathcal{Q}} \Big[   \Big]
+\begin{appendices}
+	
+	\section{Proofs}
+	\label{app:proofs}
+	
+	\begin{proof}[Proof of Theorem \ref{thm:overestimation}]
+		%\label{proof:overest2}
+		% R(s,a) + \gamma \mathbb{E}_{\substack{ q\sim \mathcal{Q} \\ s'\sim\tau(\cdot \mid s,a) }} \Big[ \alpha \log \int_{\mathcal{A}} \exp({\alpha}^{-1} q(s',a')) da' \Big] \\
+		Analyzing expected Bellman update $\mathbb{E}_{\tau,\mathcal{Z}} [ \mathcal{T}^{*} Z(s,a) ]$, 
+		\begin{align*}
+			\mathbb{E}_{\tau,\mathcal{Z}} [ \mathcal{T}^{*} Z(s,a) ] &= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \mathbb{E}_{Z\sim \mathcal{Z}} \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp({\alpha}^{-1} Z(s',a')) da' \Big) \Big] \Big] \\
+			&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \mathbb{E}_{Z\sim \mathcal{Z}} \Big[ \int\limits_{\mathcal{A}} \exp({\alpha}^{-1} Z(s',a')) da'  \Big] \Big) \Big] \\
+			&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \mathbb{E}_{Z\sim \mathcal{Z}} \Big[ \exp({\alpha}^{-1} Z(s',a')) \Big] da' \Big) \Big] \\
+			&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} Q(s',a') + \frac{1}{2} {\alpha}^{-2} S^2(s',a') ) da' \Big) \Big] \\
+		\end{align*}
+		First inequality comes from Jensen's inequality (using concave property of $\log$ function) while the following equality is a result of Tonelli's theorem. The second inequality results from the property of sub-Gaussian distribution \ref{defn:subgauss}. 
+	\end{proof} 
+	
+	% \mathbb{R}^{\mathcal{S}\times\mathcal{A}}
+	\begin{proof}[Proof of Corollary \ref{cor:pessimism}]
+		From the Theorem \ref{thm:overestimation}, we can show that 
+		\begin{align*}
+			\mathbb{E}_{Q\sim \mathcal{Q} } [ \mathcal{T}^{*} Q(s,a) ] &\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} (Q(s',a') - \beta S(s',a') + \frac{1}{2} {\alpha}^{-1} S^2(s',a')) ) da' \Big) \Big] \\
+			&=  R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} Q^{\dagger}(s',a')) da' \Big) \Big] = \mathcal{T}^{*} Q^{\dagger}(s,a). 
+		\end{align*}
+		where we have defined $Q^{\dagger}(s',a') = Q(s',a') - \beta S(s',a') + \frac{1}{2} {\alpha}^{-1} S^2(s',a')) $. If $\beta \geq \max\limits_{(s', a')} \frac{1}{2}{\alpha}^{-1} S(s', a')$, then $Q^{\dagger}(s',a') < Q(s',a')$. So we can show that
+		\begin{equation}
+			\mathbb{E}_{Q\sim \mathcal{Q} } [ \mathcal{T}^{*} Q(s,a) ] \leq \mathcal{T}^{*} Q^{\dagger}(s,a) \leq \mathcal{T}^{*} Q(s,a).  
+		\end{equation}
+	\end{proof}
+	
+	\begin{proof}[Proof of Theorem \ref{thm:overestimation_bound}]
+		From the Theorem \ref{thm:overestimation}, we can show that
+		\begin{align*}
+		\mathbb{E}_{\tau,\mathcal{Z}} [ \mathcal{T}^{*} Z(s,a) ] &\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} Q(s',a') + \frac{1}{2} {\alpha}^{-2} S^2(s',a') ) da' \Big) \Big] \\
+		&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} Q(s',a') ) da' \big) \cdot \big( \max_{a'} \exp( \frac{1}{2} {\alpha}^{-2} S^2(s',a') \big) \Big) \Big] \\  
+		&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} Q(s',a') ) da' \Big) + \frac{1}{2\alpha} \max_{a'} S^2(s',a') \Big] \\ 
+		&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} Q(s',a') ) da' \Big) \Big] + \frac{\gamma}{2\alpha} \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \max_{a'} S^2(s',a') \Big]. \\ 
+	\end{align*}
+	
+	The following inequality is a result of the mean value theorem for integrals. In the last equality, the first two terms are equal to $\mathcal{T}^{*} Q(s,a)$. Therefore, 
+		\begin{align*}
+			\epsilon(s, a) = \mathbb{E}_{Q\sim \mathcal{Q} } [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} Q(s,a) \leq \frac{\gamma}{2\alpha} \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \max_{a'} S^2(s', a') \Big]. 
+		\end{align*} 
+	\end{proof}
+		
+	\newpage
+
+	\section{Results of Ablation Studies}
+	\label{app:results_of_ablations}
+	
+	\subsection{Pessimism Ablation}
+	\label{app:pessimism_ablation}
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.95\textwidth,height=\textheight,keepaspectratio]{figures/stac-fixed-pessimism/score.png}
+		\caption{Episodic score curves of STAC with varying pessimism ($\beta$) parameter, with policy and critic dropout equal to $0.01$. }
+		\label{fig:pess_sens_pol_cri_dropout}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.95\textwidth,height=\textheight,keepaspectratio]{figures/stac-fixed-pessimism/error.png}
+		\caption{Average episodic value estimation error curves of STAC with varying pessimism ($\beta$) parameter, with policy and critic dropout equal to $0.01$. }
+		\label{fig:pess_sens_error_pol_cri_dropout}
+	\end{figure}	
+
+	\subsection{Dropout Configuration Ablation}
+	\label{app:dropout_ablation}
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.95\textwidth,height=\textheight,keepaspectratio]{figures/stac-dropout/score.png}
+		\caption{Episodic score curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref{tab:target_ent_pessimism_algos}). }
+		\label{fig:drop_sens}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.95\textwidth,height=\textheight,keepaspectratio]{figures/stac-dropout/error.png}
+		\caption{Average episodic value estimation error curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref{tab:target_ent_pessimism_algos}). }
+		\label{fig:drop_sens_error}
+	\end{figure}	
+	
+	
+	\section{Hyper-parameters and Experiment Details}
+	\label{app:hyperparam_exp}
+	
+	%Hyper-parameter values used in the experiments per method are listed in Table \ref{tab:parameters_algos}. 
+	
+	\begin{table}[h]
+		\centering
+		\caption{Experimental Parameters per Algorithm}
+		\label{tab:parameters_algos}
+		
+		\begin{tabular}{@{}lll@{}}
+			\toprule
+			\textbf{Algorithm}             & \textbf{Parameter}      & \textbf{Value}          \\ \midrule
+			\multirow{11}{*}{SAC, DSACT, STAC}    & Optimizer               & Adam (\citep{kingma2014adam}) \\
+			& Critic Learning Rate    & $3 \times 10^{-4}$      \\
+			& Actor Learning Rate     & $3 \times 10^{-4}$      \\
+			& Discount Rate ($\gamma$)& 0.99                    \\
+			& Target-Smoothing Coefficient ($\rho$) & 0.995       \\
+			& Target Entropy ($\bar{H}$) & $-|\mathcal{A}|$       \\			
+			& Replay Buffer Size      & $1 \times 10^{6}$       \\
+			& Mini-Batch Size         & 256                     \\
+			& Random Starting Data    & 10000                   \\
+			& UTD Ratio ($G$)         & 1                        \\                  		
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\begin{table}[h]
+		\centering
+		\caption{Target policy entropy ($\bar{H}$), pessimism $\beta$ and dropout rates per environment, yielding best results. SAC and DSACT shares same policy entropies. }
+		\label{tab:target_ent_pessimism_algos}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			\textbf{Environment}   & \textbf{Entropy ($\bar{H}$)} & \textbf{Pessimism ($\beta$)} & \textbf{Policy Dropout} & \textbf{Critic Dropout} \\ \midrule
+			\verb~Ant-v4~                      & -4        & 0.25      & 0.01      &  0.01     \\
+			\verb~BipedalWalker-v3~            & -2        & 0.375     & 0.01      &  0.01     \\
+			\verb~BipedalWalkerHardcore-v3~    & -2        & 0.125     & 0.01      &  0    \\						
+			\verb~HalfCheetah-v4~              & -3        & 0.0       & 0.01      &  0.01     \\			
+			\verb~Hopper-v4~                   & -1        & 0.5       & 0.01      &  0.01     \\
+			\verb~Humanoid-v4~                 & -8        & 0.25      & 0.01      &  0    \\
+			\verb~LunarLander-v3~   		   & -2        & 0.0       & 0.01      &  0.01     \\ 
+			\verb~Swimmer-v4~                  & -1        & 0.0       & 0.01      &  0     \\	
+			\verb~Walker2d-v4~                 & -3        & 0.125     & 0.01      &  0     \\								
+			\bottomrule
+		\end{tabular}
+	\end{table}	
+	
+	\section{Network Architectures of STAC}
+	\label{app:network_archs}
+	
+	%% Network illustrations
+	\begin{figure}[H]
+		\centering
+		\begin{minipage}{.5\textwidth}
+			\centering
+			
+			\begin{tikzpicture}[node distance=0.2cm, baseline]
+				
+				% Input Layer
+				\node[inplayer] (input) {Input ($d_s + d_a$): $(s,a)$};
+				
+				% First Layer
+				\node[layer,below=of input] (fc1) {Linear (256)};
+				\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
+				\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
+				\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
+				
+				% Second Layer
+				\node[layer,below=of relu1] (fc2) {Linear (256)};
+				\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
+				\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
+				\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
+				
+				% Output Layer
+				\node[layer,below=of relu2] (output) {Linear (2)};
+				\node[output,below=0.2cm of output] (gaussian) {$\mathcal{N} (\mu(1), \sigma^2(1))$};
+				
+				
+				% Draw connections
+				\draw[->] (input) -- (fc1);
+				\draw[->] (fc1) -- (dropout1);
+				\draw[->] (dropout1) -- (norm1);
+				\draw[->] (norm1) -- (relu1);
+				\draw[->] (relu1) -- (fc2);
+				\draw[->] (fc2) -- (dropout2);
+				\draw[->] (dropout2) -- (norm2);
+				\draw[->] (norm2) -- (relu2);
+				\draw[->] (relu2) -- (output);
+				\draw[->] (output) -- (gaussian);
+				
+				%% Label for Critic
+				%\node[above=0.5cm of input] {Critic Network};
+				
+			\end{tikzpicture}
+			
+			\captionof{figure}{Critic network architecture}
+			\label{fig:critic_visual}
+		\end{minipage}%
+		\begin{minipage}{.5\textwidth}
+			\centering
+			
+			% Policy Network
+			\begin{tikzpicture}[node distance=0.2cm]
+				
+				% Input Layer
+				\node[inplayer] (input) {Input ($d_s$): $s$};
+				
+				% First Layer
+				\node[layer,below=of input] (fc1) {Linear (256)};
+				\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
+				\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
+				\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
+				
+				% Second Layer
+				\node[layer,below=of relu1] (fc2) {Linear (256)};
+				\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
+				\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
+				\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
+				
+				% Output Layer
+				\node[layer,below=of relu2] (output) {Linear (2$d_a$)};
+				\node[output,below=0.2cm of output] (squashed) {$\tanh_{\#}\mathcal{N} ( \mu(d_a), \sigma^2(d_a) )$};
+				
+				% Draw connections
+				\draw[->] (input) -- (fc1);
+				\draw[->] (fc1) -- (dropout1);
+				\draw[->] (dropout1) -- (norm1);
+				\draw[->] (norm1) -- (relu1);
+				\draw[->] (relu1) -- (fc2);
+				\draw[->] (fc2) -- (dropout2);
+				\draw[->] (dropout2) -- (norm2);
+				\draw[->] (norm2) -- (relu2);
+				\draw[->] (relu2) -- (output);
+				\draw[->] (output) -- (squashed);
+				
+				%% Label for Policy
+				%\node[above=0.5cm of input] {Policy Network};
+			\end{tikzpicture}
+			
+			\captionof{figure}{Policy network architecture}
+			\label{fig:policy_visual}
+		\end{minipage}
+	\end{figure}
+	%%	
+	
+	\section{Source Code}
+	\label{app:code}
+	Our results can be accessed publicly at \url{https://github.com/authors-github/stochastic-actor-critic-results}. This code uses our in-house developed RL framework as a sub-repository, available on \url{https://github.com/authors-github/rl-warehouse}. 
+	
+\end{appendices}
+
+\end{document}
+

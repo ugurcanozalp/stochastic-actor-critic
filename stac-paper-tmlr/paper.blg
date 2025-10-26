@@ -1,0 +1,51 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: paper.aux
+The style file: tmlr.bst
+Database file #1: references.bib
+Warning--can't use both volume and number fields in cetin2023learning
+Warning--can't use both volume and number fields in dabney2018distributional
+Warning--empty journal in gal2016uncertainty
+Warning--can't use both volume and number fields in yang2021wcsac
+You've used 42 entries,
+            2773 wiz_defined-function locations,
+            803 strings with 13398 characters,
+and the built_in function-call counts, 23345 in all, are:
+= -- 1946
+> -- 1878
+< -- 19
++ -- 628
+- -- 585
+* -- 2023
+:= -- 3662
+add.period$ -- 131
+call.type$ -- 42
+change.case$ -- 317
+chr.to.int$ -- 41
+cite$ -- 88
+duplicate$ -- 949
+empty$ -- 1575
+format.name$ -- 644
+if$ -- 4815
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 42
+newline$ -- 218
+num.names$ -- 168
+pop$ -- 640
+preamble$ -- 1
+purify$ -- 276
+quote$ -- 0
+skip$ -- 820
+stack$ -- 0
+substring$ -- 532
+swap$ -- 136
+text.length$ -- 10
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 457
+warning$ -- 4
+while$ -- 158
+width$ -- 0
+write$ -- 537
+(There were 4 warnings)
