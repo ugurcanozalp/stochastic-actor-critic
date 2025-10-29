@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.5)  26 OCT 2025 22:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.5)  29 OCT 2025 17:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1119,7 +1119,11 @@ File: pgflibrarypatterns.code.tex 2023-01-15 v3.1.10 (3.1.10)
 \c@theorem=\count360
 \c@corollary=\count361
 \c@lemma=\count362
- (./paper.aux)
+ (./paper.aux
+
+LaTeX Warning: Label `eqn:q_update' multiply defined.
+
+)
 \openout1 = `paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 146.
@@ -1140,8 +1144,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 146.
 LaTeX Font Info:    ... okay on input line 146.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 146.
 LaTeX Font Info:    ... okay on input line 146.
-
-(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+ (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count363
 \scratchdimen=\dimen324
@@ -1301,10 +1304,10 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 [6]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 467.
+put line 469.
  [7]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 5
-22.
+26.
  (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -1318,13 +1321,13 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 File: figures/main-comparison/score.png Graphic file (type png)
 <use figures/main-comparison/score.png>
 Package pdftex.def Info: figures/main-comparison/score.png  used on input line 
-569.
+573.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
 <figures/main-comparison/error.png, id=380, 1156.32pt x 650.43pt>
 File: figures/main-comparison/error.png Graphic file (type png)
 <use figures/main-comparison/error.png>
 Package pdftex.def Info: figures/main-comparison/error.png  used on input line 
-576.
+580.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
 [8] [9 <./figures/main-comparison/score.png> <./figures/main-comparison/error.p
 ng>]
@@ -1337,18 +1340,18 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 File: figures/stac-fixed-pessimism/score.png Graphic file (type png)
 <use figures/stac-fixed-pessimism/score.png>
 Package pdftex.def Info: figures/stac-fixed-pessimism/score.png  used on input 
-line 731.
+line 740.
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
 <figures/stac-fixed-pessimism/error.png, id=535, 1156.32pt x 650.43pt>
 File: figures/stac-fixed-pessimism/error.png Graphic file (type png)
 <use figures/stac-fixed-pessimism/error.png>
 Package pdftex.def Info: figures/stac-fixed-pessimism/error.png  used on input 
-line 738.
+line 747.
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
 <figures/stac-dropout/score.png, id=536, 1156.32pt x 650.43pt>
 File: figures/stac-dropout/score.png Graphic file (type png)
 <use figures/stac-dropout/score.png>
-Package pdftex.def Info: figures/stac-dropout/score.png  used on input line 748
+Package pdftex.def Info: figures/stac-dropout/score.png  used on input line 757
 .
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
  [17 <./figures/stac-fixed-pessimism/score.png> <./figures/stac-fixed-pessimism
@@ -1356,7 +1359,7 @@ Package pdftex.def Info: figures/stac-dropout/score.png  used on input line 748
 <figures/stac-dropout/error.png, id=545, 1156.32pt x 650.43pt>
 File: figures/stac-dropout/error.png Graphic file (type png)
 <use figures/stac-dropout/error.png>
-Package pdftex.def Info: figures/stac-dropout/error.png  used on input line 755
+Package pdftex.def Info: figures/stac-dropout/error.png  used on input line 764
 .
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
 
@@ -1366,7 +1369,7 @@ Underfull \vbox (badness 6094) has occurred while \output is active []
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [19]
-Underfull \hbox (badness 10000) in paragraph at lines 908--909
+Underfull \hbox (badness 10000) in paragraph at lines 917--918
 \T1/lmr/m/n/10 (+20) Our re-sults can be ac-cessed pub-licly at []$\T1/lmtt/m/n
 /10 https : / / github . com / authors-[]github /
  []
@@ -1376,17 +1379,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 908--909
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
+
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `paper.out' has not changed.
-(rerunfilecheck)             Checksum: 84D6EF92497C2C730DFC2BCFA631C3FB;4811.
+(rerunfilecheck)             Checksum: EC4E6FFE78E55398E017C4AD7BF58D8D;4811.
  ) 
 Here is how much of TeX's memory you used:
  40430 strings out of 474222
- 910408 string characters out of 5748734
- 1957975 words of memory out of 5000000
- 61585 multiletter control sequences out of 15000+600000
- 631219 words of font info for 199 fonts, out of 8000000 for 9000
+ 910403 string characters out of 5748734
+ 1956975 words of memory out of 5000000
+ 61584 multiletter control sequences out of 15000+600000
+ 631208 words of font info for 199 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,12n,131p,1546b,2353s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,12n,131p,1413b,2353s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/ty
 pe1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></u
 sr/share/texmf/fonts/type1/public/lm/lmmi5.pfb></usr/share/texmf/fonts/type1/pu
@@ -1397,10 +1404,10 @@ nts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10
 .pfb></usr/share/texmf/fonts/type1/public/lm/lmsy5.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmsy7.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></
 usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on paper.pdf (20 pages, 2292075 bytes).
+Output written on paper.pdf (20 pages, 2292323 bytes).
 PDF statistics:
  680 PDF objects out of 1000 (max. 8388607)
  588 compressed objects within 6 object streams
- 149 named destinations out of 1000 (max. 500000)
+ 150 named destinations out of 1000 (max. 500000)
  42843 words of extra memory for PDF output out of 42996 (max. 10000000)
 

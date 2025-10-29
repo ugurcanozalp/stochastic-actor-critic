@@ -6,7 +6,7 @@ target_entropies=(-8 -6 -3 -17 -1 -6 -4 -4 -2)
 env_kw_params=('{}' '{}' '{}' '{}' '{}' '{}' '{}' '{}' '{"continuous":true,"enable_wind":true,"wind_power":20.0,"turbulence_power":2.0}')
 
 
-# DSACT
+# ESTAC
 for env_idx in {0..8}
 do
 	env=${envs[env_idx]}
@@ -17,7 +17,7 @@ do
 	for seed in {1..5}
 	do 
 		echo "Seed: ${seed}"
-		python -m scripts.dsact \
+		python -m scripts.estac \
 		--env_name=$env \
 		--autotune \
 		--target_entropy=$target_ent \
@@ -29,7 +29,7 @@ do
 done
 
 
-# TOPSAC 
+# DSACT 
 for env_idx in {0..8}
 do
 	env=${envs[env_idx]}
@@ -40,7 +40,7 @@ do
 	for seed in {1..5}
 	do 
 		echo "Seed: ${seed}"
-		python -m scripts.topsac \
+		python -m scripts.dsact \
 		--env_name=$env \
 		--autotune \
 		--target_entropy=$target_ent \
