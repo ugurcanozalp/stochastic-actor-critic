@@ -261,34 +261,32 @@ where $a_t \sim \pi(\cdot|s_t)$, $s_{t+1} \sim \tau(\cdot|s_t, a_t)$. Correspond
 	\label{eqn:z_eval}
 	\mathcal{T}^{\pi} Z(s,a) \disteq R(s,a) + \gamma \big( Z(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
 \end{equation}
-where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. 
+where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback- divergence from distributional Bellman backup,
 
-\paragraph{One-step Distributional Uncertainty} Unlike distributional modeling, we propose to use expected return (value function) instead of random return for bootstrapping in Bellman backup. This way, uncertainty due to environment stochasticity is modeled for only one step. This distribution is denoted as $\mathcal{Q}$, with mean $\mu$ and variance $\sigma^2$. Therefore, $Q\sim\mathcal{Q}$ is a random variable. Bellman backup is redefined as
+\begin{equation}
+	\label{eqn:z_update}
+	\mathcal{Z}^{k+1} = \arg\min_{\mathcal{Z}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Z}^k(s, a) || \mathcal{Z}(s, a) \big) \Big]. 
+\end{equation}	
+
+\paragraph{One-step Distributional Uncertainty} Unlike distributional modeling, we propose to use expected return (value function) instead of random return for bootstrapping in Bellman backup. This way, uncertainty due to environment stochasticity is modeled for only one step. This distribution is denoted as $\mathcal{Q}$ instead of $\mathcal{Z}$. Bellman backup is defined same as in Equation \ref{eqn:z_eval}, 
 
 \begin{equation}
 	\label{eqn:q_evs_eval}
 	\mathcal{T}^{\pi} Q(s,a) \disteq R(s,a) + \gamma \big( Q(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'). 
 \end{equation}
 
-To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Q}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Q(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Q}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback- divergence from distributional Bellman backup,
+The difference arises on the optimization process. At each step $k$, the state-action value distribution is updated by minimizing negative log-likelihood of average distributional Bellman backup,
 
 \begin{equation}
 	\label{eqn:q_update}
-	\mathcal{Q}^{k+1} = \arg\min_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Q}^k(s, a) || \mathcal{Q}(s, a) \big) \Big]. 
+	\mathcal{Q}^{k+1} = \arg\min_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ -\log \mathcal{Q} \big( \mathbb{E}_{\mathcal{Q}^k} [ \mathcal{T}^{\pi} Q(s, a) ] | s, a \big) \Big]. 
 \end{equation}	
-
-Policy update follows same rule shown in Equation \ref{eqn:pi_update} using average return (state-action value function). Policy update exploits return estimations, the Bellman optimality opertor for return distribution (similar to Equation \ref{eqn:q_optimal} ) is as follows, 
-
-\begin{equation}
-	\label{eqn:z_optimal}
-	\mathcal{T}^{*} Q(s,a) \disteq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Q}(s',a')) da' \Big), \quad s'\sim\tau(\cdot \mid s,a)
-\end{equation}
 
 \subsection{Quantifying Overestimation for Sub-Gaussian Critic Distributions}
 
-Equation \ref{eqn:q_optimal} and \ref{eqn:z_optimal} has a fundamental difference. Although $\mu(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ Q(s,a) ]$, the Bellman optimality backups are not equal, $\mathcal{T}^{*} \mu(s,a) \neq \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$. In fact, it is difficult to calculate $\mathcal{T}^{*}\mu(s,a)$ accurately even in non-distributional actor-critic since $\mu$ is just deterministic guess of value function, which is usually not true. 
+Let $\mu(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ Q(s,a) ]$, the Bellman optimality backup of mean is not equal to mean of the backup, $\mathcal{T}^{*} \mu(s,a) \neq \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ due to policy improvement, and the difference is the overestimation bias. 
 
-Now, we analyze overestimation bias, similar to the work of \citet{chen2021randomized} and \citet{lan2020maxmin} but in the soft learning framework instead of discrete actions. We define overestimation error as difference between $\mathbb{E}_{\mathcal{Z}, \tau} [ \mathcal{T}^{*} Z(s,a) ]$ and average $\mathcal{T}^{*} \mu(s,a)$ as $\epsilon$, 
+In this section, we analyze the overestimation bias similar to \citet{chen2021randomized} and \citet{lan2020maxmin} but in the soft learning framework instead of discrete actions. We define overestimation error as difference between $\mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ and average $\mathcal{T}^{*} \mu(s,a)$ as $\epsilon$, 
 \begin{equation}
 	\epsilon(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} \mu(s,a). 
 \end{equation}
@@ -766,54 +764,6 @@ This research has received no external funding.
 		\label{fig:drop_sens_error}
 	\end{figure}	
 	
-	
-	\section{Hyper-parameters and Experiment Details}
-	\label{app:hyperparam_exp}
-	
-	%Hyper-parameter values used in the experiments per method are listed in Table \ref{tab:parameters_algos}. 
-	
-	\begin{table}[h]
-		\centering
-		\caption{Experimental Parameters per Algorithm}
-		\label{tab:parameters_algos}
-		
-		\begin{tabular}{@{}lll@{}}
-			\toprule
-			\textbf{Algorithm}             & \textbf{Parameter}      & \textbf{Value}          \\ \midrule
-			\multirow{11}{*}{SAC, ESTAC, STAC}    & Optimizer               & Adam (\citep{kingma2014adam}) \\
-			& Critic Learning Rate    & $3 \times 10^{-4}$      \\
-			& Actor Learning Rate     & $3 \times 10^{-4}$      \\
-			& Discount Rate ($\gamma$)& 0.99                    \\
-			& Target-Smoothing Coefficient ($\rho$) & 0.995       \\
-			& Target Entropy ($\bar{H}$) & $-|\mathcal{A}|$       \\			
-			& Replay Buffer Size      & $1 \times 10^{6}$       \\
-			& Mini-Batch Size         & 256                     \\
-			& Random Starting Data    & 10000                   \\
-			& UTD Ratio ($G$)         & 1                        \\                  		
-			\bottomrule
-		\end{tabular}
-	\end{table}
-	
-	\begin{table}[h]
-		\centering
-		\caption{Target policy entropy ($\bar{H}$), pessimism $\beta$ and dropout rates per environment, yielding best results. All algorithms share same policy entropy. }
-		\label{tab:target_ent_pessimism_algos}
-		\begin{tabular}{@{}lllll@{}}
-			\toprule
-			\textbf{Environment}   & \textbf{Entropy ($\bar{H}$)} & \textbf{Pessimism ($\beta$)} & \textbf{Policy Dropout} & \textbf{Critic Dropout} \\ \midrule
-			\verb~Ant-v4~                      & -4        & 0.25      & 0.01      &  0.01     \\
-			\verb~BipedalWalker-v3~            & -2        & 0.375     & 0.01      &  0.01     \\
-			\verb~BipedalWalkerHardcore-v3~    & -2        & 0.125     & 0.01      &  0    \\						
-			\verb~HalfCheetah-v4~              & -3        & 0.0       & 0.01      &  0.01     \\			
-			\verb~Hopper-v4~                   & -1        & 0.5       & 0.01      &  0.01     \\
-			\verb~Humanoid-v4~                 & -8        & 0.25      & 0.01      &  0    \\
-			\verb~LunarLander-v3~   		   & -2        & 0.0       & 0.01      &  0.01     \\ 
-			\verb~Swimmer-v4~                  & -1        & 0.0       & 0.01      &  0     \\	
-			\verb~Walker2d-v4~                 & -3        & 0.125     & 0.01      &  0     \\								
-			\bottomrule
-		\end{tabular}
-	\end{table}	
-	
 	\section{Network Architectures of STAC}
 	\label{app:network_archs}
 	
@@ -910,7 +860,54 @@ This research has received no external funding.
 			\label{fig:policy_visual}
 		\end{minipage}
 	\end{figure}
-	%%	
+%%	
+	
+	\section{Hyper-parameters and Experiment Details}
+	\label{app:hyperparam_exp}
+	
+	%Hyper-parameter values used in the experiments per method are listed in Table \ref{tab:parameters_algos}. 
+	
+	\begin{table}[H]
+		\centering
+		\caption{Experimental Parameters per Algorithm}
+		\label{tab:parameters_algos}
+		
+		\begin{tabular}{@{}lll@{}}
+			\toprule
+			\textbf{Algorithm}             & \textbf{Parameter}      & \textbf{Value}          \\ \midrule
+			\multirow{11}{*}{SAC, ESTAC, STAC}    & Optimizer               & Adam (\citep{kingma2014adam}) \\
+			& Critic Learning Rate    & $3 \times 10^{-4}$      \\
+			& Actor Learning Rate     & $3 \times 10^{-4}$      \\
+			& Discount Rate ($\gamma$)& 0.99                    \\
+			& Target-Smoothing Coefficient ($\rho$) & 0.995       \\
+			& Target Entropy ($\bar{H}$) & $-|\mathcal{A}|$       \\			
+			& Replay Buffer Size      & $1 \times 10^{6}$       \\
+			& Mini-Batch Size         & 256                     \\
+			& Random Starting Data    & 10000                   \\
+			& UTD Ratio ($G$)         & 1                        \\                  		
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\begin{table}[H]
+		\centering
+		\caption{Target policy entropy ($\bar{H}$), pessimism $\beta$ and dropout rates per environment, yielding best results. All algorithms share same policy entropy. }
+		\label{tab:target_ent_pessimism_algos}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			\textbf{Environment}   & \textbf{Entropy ($\bar{H}$)} & \textbf{Pessimism ($\beta$)} & \textbf{Policy Dropout} & \textbf{Critic Dropout} \\ \midrule
+			\verb~Ant-v4~                      & -4        & 0.25      & 0.01      &  0.01     \\
+			\verb~BipedalWalker-v3~            & -2        & 0.375     & 0.01      &  0.01     \\
+			\verb~BipedalWalkerHardcore-v3~    & -2        & 0.125     & 0.01      &  0    \\						
+			\verb~HalfCheetah-v4~              & -3        & 0.0       & 0.01      &  0.01     \\			
+			\verb~Hopper-v4~                   & -1        & 0.5       & 0.01      &  0.01     \\
+			\verb~Humanoid-v4~                 & -8        & 0.25      & 0.01      &  0    \\
+			\verb~LunarLander-v3~   		   & -2        & 0.0       & 0.01      &  0.01     \\ 
+			\verb~Swimmer-v4~                  & -1        & 0.0       & 0.01      &  0     \\	
+			\verb~Walker2d-v4~                 & -3        & 0.125     & 0.01      &  0     \\								
+			\bottomrule
+		\end{tabular}
+	\end{table}	
 	
 	\section{Source Code}
 	\label{app:code}

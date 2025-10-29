@@ -38,16 +38,17 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Distributional Maximum Entropy Actor-Critic}{4}{subsection.3.1}\protected@file@percent }
 \newlabel{eqn:maxent_zreturn_defn}{{8}{4}{Distributional Maximum Entropy Actor-Critic}{equation.3.8}{}}
 \newlabel{eqn:z_eval}{{9}{4}{Distributional Maximum Entropy Actor-Critic}{equation.3.9}{}}
+\newlabel{eqn:z_update}{{10}{4}{Distributional Maximum Entropy Actor-Critic}{equation.3.10}{}}
 \@writefile{toc}{\contentsline {paragraph}{One-step Distributional Uncertainty}{4}{section*.5}\protected@file@percent }
-\newlabel{eqn:q_evs_eval}{{10}{4}{One-step Distributional Uncertainty}{equation.3.10}{}}
-\newlabel{eqn:q_update}{{11}{4}{One-step Distributional Uncertainty}{equation.3.11}{}}
-\newlabel{eqn:z_optimal}{{12}{4}{One-step Distributional Uncertainty}{equation.3.12}{}}
+\newlabel{eqn:q_evs_eval}{{11}{4}{One-step Distributional Uncertainty}{equation.3.11}{}}
+\newlabel{eqn:q_update}{{12}{4}{One-step Distributional Uncertainty}{equation.3.12}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Quantifying Overestimation for Sub-Gaussian Critic Distributions}{4}{subsection.3.2}\protected@file@percent }
+\newlabel{defn:subgauss}{{3.1}{4}{}{definition.3.1}{}}
 \citation{moskovitz2021tactical,kuznetsov2020controlling,chen2021randomized}
 \citation{moskovitz2021tactical}
 \citation{cetin2023learning}
 \citation{bellemare2017distributional}
-\newlabel{defn:subgauss}{{3.1}{5}{}{definition.3.1}{}}
+\citation{nauman2024overestimation}
 \newlabel{thm:overestimation}{{3.1}{5}{Overestimation quantification for sub-Gaussian critics}{theorem.3.1}{}}
 \newlabel{cor:pessimism}{{3.1.1}{5}{Pessimistic critic target}{corollary.3.1.1}{}}
 \newlabel{eqn:q_evs_eval_pessimistic}{{16}{5}{Pessimistic critic target}{equation.3.16}{}}
@@ -55,7 +56,6 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Optimal Pessimism Rate}{5}{subsection.3.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {4}Stochastic Actor-Critic}{5}{section.4}\protected@file@percent }
 \newlabel{sec:stac}{{4}{5}{Stochastic Actor-Critic}{section.4}{}}
-\citation{nauman2024overestimation}
 \citation{moskovitz2021tactical}
 \citation{cetin2023learning}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Evolution of Pessimistic Distributional Bellman Backup. While $\mathcal  {T}^{\pi }_{D}\mathcal  {Q}(s, a)$ is overestimated, a corrected backup $\mathcal  {T}^{\pi }_{\beta , D}\mathcal  {Q}(s, a)$ is closer to $\mathcal  {Q}(s, a)$. }}{6}{figure.caption.6}\protected@file@percent }
@@ -187,25 +187,25 @@
 \newlabel{fig:pess_sens_pol_cri_dropout}{{4}{17}{Episodic score curves of STAC with varying pessimism ($\beta $) parameter, with policy and critic dropout equal to $0.01$}{figure.caption.29}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Average episodic value estimation error curves of STAC with varying pessimism ($\beta $) parameter, with policy and critic dropout equal to $0.01$. }}{17}{figure.caption.30}\protected@file@percent }
 \newlabel{fig:pess_sens_error_pol_cri_dropout}{{5}{17}{Average episodic value estimation error curves of STAC with varying pessimism ($\beta $) parameter, with policy and critic dropout equal to $0.01$}{figure.caption.30}{}}
-\citation{kingma2014adam}
 \@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Dropout Configuration Ablation}{18}{subsection.1.B.2}\protected@file@percent }
 \newlabel{app:dropout_ablation}{{B.2}{18}{Dropout Configuration Ablation}{subsection.1.B.2}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Episodic score curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos}). }}{18}{figure.caption.31}\protected@file@percent }
 \newlabel{fig:drop_sens}{{6}{18}{Episodic score curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos})}{figure.caption.31}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Average episodic value estimation error curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos}). }}{18}{figure.caption.32}\protected@file@percent }
 \newlabel{fig:drop_sens_error}{{7}{18}{Average episodic value estimation error curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos})}{figure.caption.32}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Hyper-parameters and Experiment Details}{19}{appendix.1.C}\protected@file@percent }
-\newlabel{app:hyperparam_exp}{{C}{19}{Hyper-parameters and Experiment Details}{appendix.1.C}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Experimental Parameters per Algorithm}}{19}{table.caption.33}\protected@file@percent }
-\newlabel{tab:parameters_algos}{{4}{19}{Experimental Parameters per Algorithm}{table.caption.33}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Target policy entropy ($\bar  {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy. }}{19}{table.caption.34}\protected@file@percent }
-\newlabel{tab:target_ent_pessimism_algos}{{5}{19}{Target policy entropy ($\bar {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy}{table.caption.34}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}Network Architectures of STAC}{20}{appendix.1.D}\protected@file@percent }
-\newlabel{app:network_archs}{{D}{20}{Network Architectures of STAC}{appendix.1.D}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Critic network architecture}}{20}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:critic_visual}{{8}{20}{Critic network architecture}{figure.caption.35}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Policy network architecture}}{20}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:policy_visual}{{9}{20}{Policy network architecture}{figure.caption.35}{}}
+\citation{kingma2014adam}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Network Architectures of STAC}{19}{appendix.1.C}\protected@file@percent }
+\newlabel{app:network_archs}{{C}{19}{Network Architectures of STAC}{appendix.1.C}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Critic network architecture}}{19}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:critic_visual}{{8}{19}{Critic network architecture}{figure.caption.33}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Policy network architecture}}{19}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:policy_visual}{{9}{19}{Policy network architecture}{figure.caption.33}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Hyper-parameters and Experiment Details}{19}{appendix.1.D}\protected@file@percent }
+\newlabel{app:hyperparam_exp}{{D}{19}{Hyper-parameters and Experiment Details}{appendix.1.D}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Experimental Parameters per Algorithm}}{19}{table.caption.34}\protected@file@percent }
+\newlabel{tab:parameters_algos}{{4}{19}{Experimental Parameters per Algorithm}{table.caption.34}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Target policy entropy ($\bar  {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy. }}{20}{table.caption.35}\protected@file@percent }
+\newlabel{tab:target_ent_pessimism_algos}{{5}{20}{Target policy entropy ($\bar {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy}{table.caption.35}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {E}Source Code}{20}{appendix.1.E}\protected@file@percent }
 \newlabel{app:code}{{E}{20}{Source Code}{appendix.1.E}{}}
 \gdef \@abspage@last{20}
