@@ -1,10 +1,10 @@
 
 \documentclass[10pt]{article} % For LaTeX2e
-\usepackage{tmlr}
+%\usepackage{tmlr}
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{tmlr}
 % To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
-%\usepackage[preprint]{tmlr}
+\usepackage[preprint]{tmlr}
 
 %% TODO when published:
 % - change \usepackage{tmlr} usage
@@ -261,18 +261,18 @@ where $a_t \sim \pi(\cdot|s_t)$, $s_{t+1} \sim \tau(\cdot|s_t, a_t)$. Correspond
 	\label{eqn:z_eval}
 	\mathcal{T}^{\pi} Z(s,a) \disteq R(s,a) + \gamma \big( Z(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
 \end{equation}
-where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback- divergence from distributional Bellman backup,
+where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback-Leibler divergence from distributional Bellman backup,
 
 \begin{equation}
 	\label{eqn:z_update}
 	\mathcal{Z}^{k+1} = \arg\min_{\mathcal{Z}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Z}^k(s, a) || \mathcal{Z}(s, a) \big) \Big]. 
 \end{equation}	
 
-\paragraph{One-step Distributional Uncertainty} Unlike distributional modeling, we propose to use expected return (value function) instead of random return for bootstrapping in Bellman backup. This way, uncertainty due to environment stochasticity is modeled for only one step. This distribution is denoted as $\mathcal{Q}$ instead of $\mathcal{Z}$. Bellman backup is defined same as in Equation \ref{eqn:z_eval}, 
+\paragraph{One-step Distributional Uncertainty} Unlike distributional modeling, it is also possible expected return (value function) instead of random return for bootstrapping in Bellman backup as proposed by \citet{achab2020ranking, achab2023one}. This way, uncertainty due to environment stochasticity is modeled for only one step. This distribution is denoted as $\mathcal{Q}$ instead of $\mathcal{Z}$. Bellman backup is defined similar as in Equation \ref{eqn:z_eval} but expectation of next-state value is used, 
 
 \begin{equation}
 	\label{eqn:q_evs_eval}
-	\mathcal{T}^{\pi} Q(s,a) \disteq R(s,a) + \gamma \big( Q(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'). 
+	\mathcal{T}^{\pi} Q(s,a) \disteq R(s,a) + \gamma \big( \mathbb{E}_{Q\sim\mathcal{Q}}[Q(s',a')] - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'). 
 \end{equation}
 
 The difference arises on the optimization process. At each step $k$, the state-action value distribution is updated by minimizing negative log-likelihood of average distributional Bellman backup,
@@ -281,6 +281,15 @@ The difference arises on the optimization process. At each step $k$, the state-a
 	\label{eqn:q_update}
 	\mathcal{Q}^{k+1} = \arg\min_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ -\log \mathcal{Q} \big( \mathbb{E}_{\mathcal{Q}^k} [ \mathcal{T}^{\pi} Q(s, a) ] | s, a \big) \Big]. 
 \end{equation}	
+
+Corresponding Bellman optimality operator is
+
+\begin{equation}
+	\label{eqn:q_optimal}
+	\mathcal{T}^{*} Q(s,a) \disteq R(s,a) + \gamma \mathbb{E}_{Q\sim\mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Q}(s',a')) da' \Big) \Big], \quad s'\sim\tau(\cdot \mid s,a), 
+\end{equation}
+
+and this operator is proved to be a contraction in q-learning setting \citet{achab2020ranking}, but not considered overestimation effects and soft-learning. In the next section, we will discuss overestimation bounds of one-step Bellman optimality operator, and propose a method to mitigate it. 
 
 \subsection{Quantifying Overestimation for Sub-Gaussian Critic Distributions}
 
@@ -305,9 +314,9 @@ Under sub-Gaussian assumption, if there exist an upper bound for overestimation,
 
 \begin{theorem}[Overestimation quantification for sub-Gaussian critics]
 	\label{thm:overestimation}
-	Let given state-action value distribution $\mathcal{Q}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ be sub-Gaussian with mean $\mu(s,a)$ and variance proxy $\sigma^2(s,a)$ for all state-action pairs, with bounded support. Then,  
+	Let given state-action value distribution $\mathcal{Q}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ be sub-Gaussian with mean $\mu(s,a)$ and variance proxy $\sigma^2(s,a)$ for all state-action pairs, with bounded support. For each sample, $Q\sim\mathcal{Q}$,  
 	\begin{equation}
-		\mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ] \leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big) \Big]. \\
+		\mathcal{T}^{*} Q(s,a) \leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big). \\
 	\end{equation}
 \end{theorem}
 
@@ -316,16 +325,16 @@ Under sub-Gaussian assumption, if there exist an upper bound for overestimation,
 	For policy evaluation, using pessimistic Bellman backup, 
 	\begin{equation}
 		\label{eqn:q_evs_eval_pessimistic}
-		\mathcal{T}_{\beta}^{\pi} Q(s,a) \disteq R(s,a) + \gamma \big( Q(s',a') - \beta \sigma(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
+		\mathcal{T}_{\beta}^{\pi} Q(s,a) \disteq R(s,a) + \gamma \big( \mu(s',a') - \beta \sigma(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
 	\end{equation}
-	in which shifted value estimation $\Tilde{\mu} = \mu - \beta \sigma$ is used instead of $Q$, prevents overestimation as long as $\beta \geq \max\limits_{(s, a)} \frac{1}{2}{\Tilde{\alpha}}^{-1} \sigma(s, a)$. 
+	in which mean is shifted by $- \beta \sigma$,  $\Tilde{\mu} = \mu - \beta \sigma$, prevents overestimation as long as $\beta \geq \max\limits_{(s, a)} \frac{1}{2}{\Tilde{\alpha}}^{-1} \sigma(s, a)$. 
 \end{corollary}
 
 \begin{theorem}[Overestimation bound]
 	\label{thm:overestimation_bound}
 	Overestimation due to uncertainty of distribution $\mathcal{Q}$, denoted as $\epsilon$, is upper bounded for Bellman updates, 
 	\begin{align}
-		\epsilon(s,a) \leq \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \max_{a'} \sigma^2(s',a') \Big]. 
+		\epsilon(s,a) \leq \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau} \Big[ \max_{a'} \sigma^2(s',a') \Big]. 
 	\end{align} 
 \end{theorem}
 
@@ -683,48 +692,50 @@ This research has received no external funding.
 	
 	\section{Proofs}
 	\label{app:proofs}
-	
-	\begin{proof}[Proof of Theorem \ref{thm:overestimation}]
-		%\label{proof:overest2}
-		% R(s,a) + \gamma \mathbb{E}_{\substack{ q\sim \mathcal{Q} \\ s'\sim\tau(\cdot \mid s,a) }} \Big[ \alpha \log \int_{\mathcal{A}} \exp({\alpha}^{-1} q(s',a')) da' \Big] \\
-		Analyzing expected Bellman update $\mathbb{E}_{\tau,\mathcal{Q}} [ \mathcal{T}^{*} Q(s,a) ]$, 
-		\begin{align*}
-			\mathbb{E}_{\tau,\mathcal{Q}} [ \mathcal{T}^{*} Q(s,a) ] &= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp({\alpha}^{-1} Q(s',a')) da' \Big) \Big] \Big] \\
-			&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \int\limits_{\mathcal{A}} \exp({\alpha}^{-1} Q(s',a')) da'  \Big] \Big) \Big] \\
-			&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \exp({\alpha}^{-1} Q(s',a')) \Big] da' \Big) \Big] \\
-			&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} \mu(s',a') + \frac{1}{2} {\alpha}^{-2} \sigma^2(s',a') ) da' \Big) \Big] \\
-		\end{align*}
-		First inequality comes from Jensen's inequality (using concave property of $\log$ function) while the following equality is a result of Tonelli's theorem. The second inequality results from the property of sub-Gaussian distribution \ref{defn:subgauss}. 
-	\end{proof} 
-	
-	% \mathbb{R}^{\mathcal{S}\times\mathcal{A}}
-	\begin{proof}[Proof of Corollary \ref{cor:pessimism}]
-		From the Theorem \ref{thm:overestimation}, we can show that 
-		\begin{align*}
-			\mathbb{E}_{Q\sim \mathcal{Q} } [ \mathcal{T}^{*} Q(s,a) ] &\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} (\mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\alpha}^{-1} \sigma^2(s',a')) ) da' \Big) \Big] \\
-			&=  R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} \mu^{\dagger}(s',a')) da' \Big) \Big] = \mathcal{T}^{*} \mu^{\dagger}(s,a). 
-		\end{align*}
-		where we have defined $\mu^{\dagger}(s',a') = \mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\alpha}^{-1} \sigma^2(s',a')) $. If $\beta \geq \max\limits_{(s', a')} \frac{1}{2}{\alpha}^{-1} \sigma(s', a')$, then $\mu^{\dagger}(s',a') < \mu(s',a')$. So we can show that
-		\begin{equation}
-			\mathbb{E}_{Q\sim \mathcal{Q} } [ \mathcal{T}^{*} Q(s,a) ] \leq \mathcal{T}^{*} \mu^{\dagger}(s,a) \leq \mathcal{T}^{*} \mu(s,a).  
-		\end{equation}
-	\end{proof}
-	
-	\begin{proof}[Proof of Theorem \ref{thm:overestimation_bound}]
-		From the Theorem \ref{thm:overestimation}, we can show that
-		\begin{align*}
-		\mathbb{E}_{\tau,\mathcal{Q}} [ \mathcal{T}^{*} Q(s,a) ] &\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} \mu(s',a') + \frac{1}{2} {\alpha}^{-2} \sigma^2(s',a') ) da' \Big) \Big] \\
-		&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} \mu(s',a') ) da' \big) \cdot \big( \max_{a'} \exp( \frac{1}{2} {\alpha}^{-2} \sigma^2(s',a') \big) \Big) \Big] \\  
-		&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} \mu(s',a') ) da' \Big) + \frac{1}{2\alpha} \max_{a'} \sigma^2(s',a') \Big] \\ 
-		&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \alpha \log \Big( \int\limits_{\mathcal{A}} \exp( {\alpha}^{-1} \mu(s',a') ) da' \Big) \Big] + \frac{\gamma}{2\alpha} \mathbb{E}_{s'\sim\tau(\cdot \mid s,a) } \Big[ \max_{a'} \sigma^2(s',a') \Big]. \\ 
+
+\begin{proof}[Proof of Theorem \ref{thm:overestimation}]
+	%\label{proof:overest2}
+	% R(s,a) + \gamma \mathbb{E}_{\substack{ q\sim \mathcal{Q} \\ s'\sim\tau(\cdot \mid s,a) }} \Big[ \Tilde{\alpha} \log \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} q(s',a')) da' \Big] \\
+	Analyzing Bellman update $\mathcal{T}^{*} Q(s,a)$, 
+	\begin{align*}
+		\mathcal{T}^{*} Q(s,a) &= R(s,a) + \gamma \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a')) da' \Big) \Big] \\
+		&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a')) da'  \Big] \Big) \\
+		&= R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \exp({\Tilde{\alpha}}^{-1} Q(s',a')) \Big] da' \Big) \\
+		&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big) \\
+	\end{align*}
+	First inequality is by Jensen's inequality (using concave property of $\log$ function) while the following equality is a result of Tonelli's theorem. The second inequality results from the sub-Gaussian assumption \ref{defn:subgauss}. 
+\end{proof} 
+
+% \mathbb{R}^{\mathcal{S}\times\mathcal{A}}
+\begin{proof}[Proof of Corollary \ref{cor:pessimism}]
+	From the Theorem \ref{thm:overestimation}, we can show that 
+	\begin{align*}
+		\mathcal{T}_{\beta}^{*} Q(s,a) 
+		&= R(s,a) + \gamma \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a') - \beta\sigma(s',a')) da' \Big) \Big] \\
+		&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} (\mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-1} \sigma^2(s',a')) ) da' \Big) \\
+		&=  R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu^{\dagger}(s',a')) da' \Big) = \mathcal{T}^{*} \mu^{\dagger}(s,a). 
+	\end{align*}
+	where we have defined $\mu^{\dagger}(s',a') = \mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-1} \sigma^2(s',a')) $. If $\beta \geq \max\limits_{(s', a')} \frac{1}{2}{\Tilde{\alpha}}^{-1} \sigma(s', a')$, then $\mu^{\dagger}(s',a') < \mu(s',a')$. So we can show that
+	\begin{equation}
+		\mathcal{T}_{\beta}^{*} Q(s,a) \leq \mathcal{T}^{*} \mu^{\dagger}(s,a) \leq \mathcal{T}^{*} \mu(s,a).  
+	\end{equation}
+\end{proof}
+
+\begin{proof}[Proof of Theorem \ref{thm:overestimation_bound}]
+	From the Theorem \ref{thm:overestimation}, we can show that
+	\begin{align*}
+		\mathbb{E}_{s'\sim\tau} [ \mathcal{T}^{*} Q(s,a) ] &\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big) \Big] \\
+		&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \big) \cdot \big( \max_{a'} \exp( \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') \big) \Big) \Big] \\  
+		% &= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \Big) + \frac{1}{2\Tilde{\alpha}} \max_{a'} \sigma^2(s',a') \Big] \\ 
+		&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \Big) \Big] + \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau } \Big[ \max_{a'} \sigma^2(s',a') \Big]. \\ 
 	\end{align*}
 	
-	The following inequality is a result of the mean value theorem for integrals. In the last equality, the first two terms are equal to $\mathcal{T}^{*} \mu(s,a)$. Therefore, 
-		\begin{align*}
-			\epsilon(s, a) = \mathbb{E}_{Q\sim \mathcal{Q} } [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} \mu(s,a) \leq \frac{\gamma}{2\alpha} \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \max_{a'} \sigma^2(s', a') \Big]. 
-		\end{align*} 
-	\end{proof}
-		
+	The second inequality is a result of the mean value theorem for integrals. In the last equality, the first two terms are equal to $\mathcal{T}^{*} \mu(s,a)$. Therefore, 
+	\begin{align*}
+		\epsilon(s, a) = \mathbb{E}_{s'\sim\tau} [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} \mu(s,a) \leq \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau} \Big[ \max_{a'} \sigma^2(s', a') \Big]. 
+	\end{align*} 
+\end{proof}
+			
 	\newpage
 
 	\section{Results of Ablation Studies}
@@ -764,104 +775,7 @@ This research has received no external funding.
 		\label{fig:drop_sens_error}
 	\end{figure}	
 	
-	\section{Network Architectures of STAC}
-	\label{app:network_archs}
-	
-	%% Network illustrations
-	\begin{figure}[H]
-		\centering
-		\begin{minipage}{.5\textwidth}
-			\centering
-			
-			\begin{tikzpicture}[node distance=0.2cm, baseline]
-				
-				% Input Layer
-				\node[inplayer] (input) {Input ($d_s + d_a$): $(s,a)$};
-				
-				% First Layer
-				\node[layer,below=of input] (fc1) {Linear (256)};
-				\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
-				\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
-				\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
-				
-				% Second Layer
-				\node[layer,below=of relu1] (fc2) {Linear (256)};
-				\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
-				\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
-				\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
-				
-				% Output Layer
-				\node[layer,below=of relu2] (output) {Linear (2)};
-				\node[output,below=0.2cm of output] (gaussian) {$\mathcal{N} (\mu(1), \sigma^2(1))$};
-				
-				
-				% Draw connections
-				\draw[->] (input) -- (fc1);
-				\draw[->] (fc1) -- (dropout1);
-				\draw[->] (dropout1) -- (norm1);
-				\draw[->] (norm1) -- (relu1);
-				\draw[->] (relu1) -- (fc2);
-				\draw[->] (fc2) -- (dropout2);
-				\draw[->] (dropout2) -- (norm2);
-				\draw[->] (norm2) -- (relu2);
-				\draw[->] (relu2) -- (output);
-				\draw[->] (output) -- (gaussian);
-				
-				%% Label for Critic
-				%\node[above=0.5cm of input] {Critic Network};
-				
-			\end{tikzpicture}
-			
-			\captionof{figure}{Critic network architecture}
-			\label{fig:critic_visual}
-		\end{minipage}%
-		\begin{minipage}{.5\textwidth}
-			\centering
-			
-			% Policy Network
-			\begin{tikzpicture}[node distance=0.2cm]
-				
-				% Input Layer
-				\node[inplayer] (input) {Input ($d_s$): $s$};
-				
-				% First Layer
-				\node[layer,below=of input] (fc1) {Linear (256)};
-				\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
-				\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
-				\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
-				
-				% Second Layer
-				\node[layer,below=of relu1] (fc2) {Linear (256)};
-				\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
-				\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
-				\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
-				
-				% Output Layer
-				\node[layer,below=of relu2] (output) {Linear (2$d_a$)};
-				\node[output,below=0.2cm of output] (squashed) {$\tanh_{\#}\mathcal{N} ( \mu(d_a), \sigma^2(d_a) )$};
-				
-				% Draw connections
-				\draw[->] (input) -- (fc1);
-				\draw[->] (fc1) -- (dropout1);
-				\draw[->] (dropout1) -- (norm1);
-				\draw[->] (norm1) -- (relu1);
-				\draw[->] (relu1) -- (fc2);
-				\draw[->] (fc2) -- (dropout2);
-				\draw[->] (dropout2) -- (norm2);
-				\draw[->] (norm2) -- (relu2);
-				\draw[->] (relu2) -- (output);
-				\draw[->] (output) -- (squashed);
-				
-				%% Label for Policy
-				%\node[above=0.5cm of input] {Policy Network};
-			\end{tikzpicture}
-			
-			\captionof{figure}{Policy network architecture}
-			\label{fig:policy_visual}
-		\end{minipage}
-	\end{figure}
-%%	
-	
+
 	\section{Hyper-parameters and Experiment Details}
 	\label{app:hyperparam_exp}
 	
@@ -908,6 +822,104 @@ This research has received no external funding.
 			\bottomrule
 		\end{tabular}
 	\end{table}	
+	
+\section{Network Architectures of STAC}
+\label{app:network_archs}
+
+%% Network illustrations
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{.5\textwidth}
+		\centering
+		
+		\begin{tikzpicture}[node distance=0.2cm, baseline]
+			
+			% Input Layer
+			\node[inplayer] (input) {Input ($d_s + d_a$): $(s,a)$};
+			
+			% First Layer
+			\node[layer,below=of input] (fc1) {Linear (256)};
+			\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
+			\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
+			\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
+			
+			% Second Layer
+			\node[layer,below=of relu1] (fc2) {Linear (256)};
+			\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
+			\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
+			\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
+			
+			% Output Layer
+			\node[layer,below=of relu2] (output) {Linear (2)};
+			\node[output,below=0.2cm of output] (gaussian) {$\mathcal{N} (\mu(1), \sigma^2(1))$};
+			
+			
+			% Draw connections
+			\draw[->] (input) -- (fc1);
+			\draw[->] (fc1) -- (dropout1);
+			\draw[->] (dropout1) -- (norm1);
+			\draw[->] (norm1) -- (relu1);
+			\draw[->] (relu1) -- (fc2);
+			\draw[->] (fc2) -- (dropout2);
+			\draw[->] (dropout2) -- (norm2);
+			\draw[->] (norm2) -- (relu2);
+			\draw[->] (relu2) -- (output);
+			\draw[->] (output) -- (gaussian);
+			
+			%% Label for Critic
+			%\node[above=0.5cm of input] {Critic Network};
+			
+		\end{tikzpicture}
+		
+		\captionof{figure}{Critic network architecture}
+		\label{fig:critic_visual}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+		\centering
+		
+		% Policy Network
+		\begin{tikzpicture}[node distance=0.2cm]
+			
+			% Input Layer
+			\node[inplayer] (input) {Input ($d_s$): $s$};
+			
+			% First Layer
+			\node[layer,below=of input] (fc1) {Linear (256)};
+			\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
+			\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
+			\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
+			
+			% Second Layer
+			\node[layer,below=of relu1] (fc2) {Linear (256)};
+			\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
+			\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
+			\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
+			
+			% Output Layer
+			\node[layer,below=of relu2] (output) {Linear (2$d_a$)};
+			\node[output,below=0.2cm of output] (squashed) {$\tanh_{\#}\mathcal{N} ( \mu(d_a), \sigma^2(d_a) )$};
+			
+			% Draw connections
+			\draw[->] (input) -- (fc1);
+			\draw[->] (fc1) -- (dropout1);
+			\draw[->] (dropout1) -- (norm1);
+			\draw[->] (norm1) -- (relu1);
+			\draw[->] (relu1) -- (fc2);
+			\draw[->] (fc2) -- (dropout2);
+			\draw[->] (dropout2) -- (norm2);
+			\draw[->] (norm2) -- (relu2);
+			\draw[->] (relu2) -- (output);
+			\draw[->] (output) -- (squashed);
+			
+			%% Label for Policy
+			%\node[above=0.5cm of input] {Policy Network};
+		\end{tikzpicture}
+		
+		\captionof{figure}{Policy network architecture}
+		\label{fig:policy_visual}
+	\end{minipage}
+\end{figure}
+%%	
 	
 	\section{Source Code}
 	\label{app:code}

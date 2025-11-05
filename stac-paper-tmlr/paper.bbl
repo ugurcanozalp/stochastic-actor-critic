@@ -1,9 +1,21 @@
-\begin{thebibliography}{42}
+\begin{thebibliography}{44}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Achab(2020)]{achab2020ranking}
+Mastane Achab.
+\newblock \emph{Ranking and risk-aware reinforcement learning}.
+\newblock PhD thesis, Institut polytechnique de Paris, 2020.
+
+\bibitem[Achab et~al.(2023)Achab, Alami, Djilali, Fedyanin, and
+  Moulines]{achab2023one}
+Mastane Achab, Reda Alami, Yasser Abdelaziz~Dahou Djilali, Kirill Fedyanin, and
+  Eric Moulines.
+\newblock One-step distributional reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:2304.14421}, 2023.
 
 \bibitem[Ba et~al.(2016)Ba, Kiros, and Hinton]{ba2016layer}
 Jimmy~Lei Ba, Jamie~Ryan Kiros, and Geoffrey~E Hinton.
