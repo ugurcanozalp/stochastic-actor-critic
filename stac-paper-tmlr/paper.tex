@@ -172,7 +172,7 @@ Our method differs from other methods using aleatoric uncertainty for safety \ci
 
 Recent work of \citet{nauman2024overestimation} has also shown that network regularization has positive impact on overestimation by reducing over-fitting. Ensemble based methods inherently regularized by using multiple critic networks. Since STAC employs single critic network, it is sensitive to learning errors and over-fitting. For this purpose, dropout mechanism \citep{srivastava2014dropout} and layer normalization \citep{ba2016layer} is employed in both actor and critic networks. In the experiments, we present controlled ablation study to isolate dropout’s role: while distributional pessimism eliminates overestimation bias, dropout primarily increases training stability and performance. 
 
-The implementation is very simple and can be obtained by introducing dropout to networks and defining and pessimistic learning objective upon Distributional Soft Actor-Critic algorithm \citep{duan2021distributional}. We conduct experiments on standard RL benchmarks to evaluate the performance of STAC compared to existing methods. Our results demonstrate the effectiveness of STAC in achieving competitive performance to SOTA methods while requiring fewer computational resources and fewer samples, making it a promising approach for real-world RL applications. 
+The implementation is very simple and can be obtained by introducing dropout to networks, modeling a distributional critic and defining and pessimistic learning objective upon Soft Actor-Critic algorithm \citep{haarnoja2018soft}. We conduct experiments on standard RL benchmarks to evaluate the performance of STAC compared to existing methods. Our results demonstrate the effectiveness of STAC in achieving competitive performance to SOTA methods while requiring fewer computational resources and fewer samples, making it a promising approach for real-world RL applications. 
 
 \section{Preliminaries}
 
@@ -234,7 +234,7 @@ The optimal policy gives the maximum value, i.e., $\pi^*(\cdot|s) = \arg\max_{\p
 \begin{equation}
 	\label{eqn:pi_update}
 	\pi^{k+1}(\cdot \mid s) 
-	= \mathbb{E}_{\substack{s\sim\rho_{\pi_B}}} \Big[ \arg\min_{\pi} \text{KL} \Big( \pi(\cdot \mid s) \Big|\Big| \frac{\exp({\alpha}^{-1} Q^{k}(s,\cdot))}{ \int_{\mathcal{A}} \exp( {\alpha}^{-1} Q^{k}(s,a)) da} \Big) \Big]
+	= \arg\min_{\pi} \mathbb{E}_{\substack{s\sim\rho_{\pi_B}}} \Big[ \text{KL} \Big( \pi(\cdot \mid s) \Big|\Big| \frac{\exp({\alpha}^{-1} Q^{k}(s,\cdot))}{ \int_{\mathcal{A}} \exp( {\alpha}^{-1} Q^{k}(s,a)) da} \Big) \Big]
 	= \arg\max_{\pi} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi }} \Big[ Q^{k}(s,a) - \alpha \log \pi(a|s) \Big],
 \end{equation}
 
@@ -245,7 +245,7 @@ After sufficient iteration, both policy and critic converge to optimality in the
 	\mathcal{T}^{*} Q(s,a) = R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Q}(s',a')) da' \Big) \Big]. 
 \end{equation}
 
-and the optimal critic function satisfies the Bellman optimality condition, $Q^{*}(s,a) = \mathcal{T}^{*} Q^{*}(s,a)$. $\Tilde{\alpha} \in [ \alpha, \infty ) $ is defined to demonstrate the continuum of policy improvement, i.e., the fact that policy is updated by partially exploiting state-action value function at each iteration. As $\Tilde{\alpha} \rightarrow \infty$, $\mathcal{T}^{*}Q$ boils down to $\mathcal{T}^{\mathcal{U}}Q$, which represents state-action value for uniform policy. On the other hand, $\Tilde{\alpha} = \alpha$ represents updated state-action value after complete exploitation. 
+and the optimal critic function satisfies the Bellman optimality condition, $Q^{*}(s,a) = \mathcal{T}^{*} Q^{*}(s,a)$. $\Tilde{\alpha} \in [ \alpha, \infty ) $ is defined to demonstrate the continuum of policy improvement, i.e., the fact that policy is updated by partially exploiting state-action value function at each iteration of Equation \ref{eqn:pi_update}. As $\Tilde{\alpha} \rightarrow \infty$, $\mathcal{T}^{*}Q$ boils down to $\mathcal{T}^{\mathcal{U}}Q$, which represents state-action value for uniform policy. On the other hand, $\Tilde{\alpha} = \alpha$ represents updated state-action value after complete exploitation. Consequently, in deep learning setting, a higher learning rate of policy network results in lower $\Tilde{\alpha}$, closer to $\alpha$. 
 
 \section{Distributional Reinforcement Learning and Overestimation}
 
@@ -261,41 +261,45 @@ where $a_t \sim \pi(\cdot|s_t)$, $s_{t+1} \sim \tau(\cdot|s_t, a_t)$. Correspond
 	\label{eqn:z_eval}
 	\mathcal{T}^{\pi} Z(s,a) \disteq R(s,a) + \gamma \big( Z(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
 \end{equation}
-where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback-Leibler divergence from distributional Bellman backup,
+where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback-Leibler divergence from distributional Bellman backup with a single iteration,
 
 \begin{equation}
 	\label{eqn:z_update}
 	\mathcal{Z}^{k+1} = \arg\min_{\mathcal{Z}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Z}^k(s, a) || \mathcal{Z}(s, a) \big) \Big]. 
 \end{equation}	
 
-\paragraph{One-step Distributional Uncertainty} Unlike distributional modeling, it is also possible expected return (value function) instead of random return for bootstrapping in Bellman backup as proposed by \citet{achab2020ranking, achab2023one}. This way, uncertainty due to environment stochasticity is modeled for only one step. This distribution is denoted as $\mathcal{Q}$ instead of $\mathcal{Z}$. Bellman backup is defined similar as in Equation \ref{eqn:z_eval} but expectation of next-state value is used, 
+\paragraph{One-step Distributional Uncertainty} Unlike distributional modeling, it is also possible expected return (value function) instead of random return for bootstrapping in Bellman backup as proposed by \citet{achab2020ranking, achab2023one}. This way, uncertainty due to environment stochasticity and policy induced uncertainty (due to policy improvement) are modeled for only one step. This distribution is denoted as $\mathcal{Q}$ instead of $\mathcal{Z}$. Therefore, $Q\sim\mathcal{Q}$ is a random variable anymore. Bellman backup is defined similar as in Equation \ref{eqn:z_eval} but expectation of next-state value is used, 
 
 \begin{equation}
 	\label{eqn:q_evs_eval}
 	\mathcal{T}^{\pi} Q(s,a) \disteq R(s,a) + \gamma \big( \mathbb{E}_{Q\sim\mathcal{Q}}[Q(s',a')] - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'). 
 \end{equation}
 
-The difference arises on the optimization process. At each step $k$, the state-action value distribution is updated by minimizing negative log-likelihood of average distributional Bellman backup,
+%The difference arises on the optimization process. 
+At each step $k$, the state-action value distribution is updated by minimizing negative log-likelihood of average distributional Bellman backup,
 
 \begin{equation}
 	\label{eqn:q_update}
-	\mathcal{Q}^{k+1} = \arg\min_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ -\log \mathcal{Q} \big( \mathbb{E}_{\mathcal{Q}^k} [ \mathcal{T}^{\pi} Q(s, a) ] | s, a \big) \Big]. 
+	\mathcal{Q}^{k+1} = \arg\min_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Q}^k(s, a) || \mathcal{Q}(s, a) \big) \Big]. 
 \end{equation}	
+
+%\begin{equation}
+%	\label{eqn:q_update}
+%	\mathcal{Q}^{k+1} = \arg\min_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ -\log \mathcal{Q} \big( \mathbb{E}_{Q\sim\mathcal{Q}^k} [ \mathcal{T}^{\pi} Q(s, a) ] | s, a \big) \Big]. 
+%\end{equation}	
 
 Corresponding Bellman optimality operator is
 
 \begin{equation}
 	\label{eqn:q_optimal}
-	\mathcal{T}^{*} Q(s,a) \disteq R(s,a) + \gamma \mathbb{E}_{Q\sim\mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Q}(s',a')) da' \Big) \Big], \quad s'\sim\tau(\cdot \mid s,a), 
+	\mathcal{T}^{*} Q(s,a) \disteq R(s,a) + \gamma \mathbb{E}_{Q\sim\mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Q}(s',a')) da' \Big) \Big], \quad s'\sim\tau(\cdot \mid s,a). 
 \end{equation}
 
-and this operator is proved to be a contraction in q-learning setting \citet{achab2020ranking}, but not considered overestimation effects and soft-learning. In the next section, we will discuss overestimation bounds of one-step Bellman optimality operator, and propose a method to mitigate it. 
+This operator is proved to be a contraction in Q-learning by \citet{achab2020ranking}, using $\max$ instead of $\text{logsumexp}$ operator. This guarantees learning convergence in tabular setting. However, in function approximation, there are other phenomena like overestimation and over-fitting. As a main focus of this work, we will discuss overestimation bounds of one-step Bellman optimality operator, and propose a method to mitigate it in the next section. 
 
 \subsection{Quantifying Overestimation for Sub-Gaussian Critic Distributions}
 
-Let $\mu(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ Q(s,a) ]$, the Bellman optimality backup of mean is not equal to mean of the backup, $\mathcal{T}^{*} \mu(s,a) \neq \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ due to policy improvement, and the difference is the overestimation bias. 
-
-In this section, we analyze the overestimation bias similar to \citet{chen2021randomized} and \citet{lan2020maxmin} but in the soft learning framework instead of discrete actions. We define overestimation error as difference between $\mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ and average $\mathcal{T}^{*} \mu(s,a)$ as $\epsilon$, 
+Let $\mu(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ Q(s,a) ]$, the Bellman optimality backup of mean is not equal to mean of the backup, $\mathcal{T}^{*} \mu(s,a) \neq \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ due to policy improvement, and the difference is the overestimation bias. In this section, we analyze the overestimation bias similar to \citet{chen2021randomized} and \citet{lan2020maxmin} but in the soft learning framework instead of discrete actions. We define overestimation error as difference between $\mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ and average $\mathcal{T}^{*} \mu(s,a)$ as $\epsilon$, 
 \begin{equation}
 	\epsilon(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} \mu(s,a). 
 \end{equation}
@@ -310,7 +314,7 @@ In the ideal case, $\epsilon(s,a)$ should be zero if there is no overestimation,
 	\end{equation}
 \end{definition}
 
-Under sub-Gaussian assumption, if there exist an upper bound for overestimation, this bound can be used to devise a conservative Bellman backup operator. For this, we present Theorem \ref{thm:overestimation}. The proof is available in Appendix \ref{app:proofs}. 
+Under sub-Gaussian assumption, if there exist an upper bound for overestimation, this bound can be used to devise a pessimistic Bellman backup operator. For this, we present Theorem \ref{thm:overestimation}. The proof is available in Appendix \ref{app:proofs}. 
 
 \begin{theorem}[Overestimation quantification for sub-Gaussian critics]
 	\label{thm:overestimation}
@@ -445,7 +449,7 @@ Learning objective is cross-entropy loss (log loss),
 
 \subsection{Policy Improvement}
 
-According to Corollary \ref{cor:pessimism}, pessimistic TD targets should be used to train critic network. However, this analysis do not account for policy learning since policy is assumed as softmax over action values. In actor-crtic framework, same pessimistic objective should be used for policy improvement, since policy evaluation objective and policy improvement objective should be the same. In other words, at learning step $k$, Bellman backup must be equal to Bellman policy evaluation with the new policy, $\mathcal{T}^* Q^k \disteq \mathcal{T}^{\pi^{k+1}} Q^k$. It is only possible by using same pessimistic critic value for policy improvement. 
+According to Corollary \ref{cor:pessimism}, pessimistic TD targets should be used to train critic network. However, this analysis do not account for policy learning since policy is assumed as $\text{softmax}$ over action values. In actor-crtic framework, same pessimistic objective should be used for policy improvement, since policy evaluation objective and policy improvement objective should be the same. In other words, at learning step $k$, Bellman backup must be equal to Bellman policy evaluation with the new policy, $\mathcal{T}^* Q^k \disteq \mathcal{T}^{\pi^{k+1}} Q^k$. It is only possible by using same pessimistic critic value for policy improvement. 
 
 \subsection{Pessimistic Objective}
 
@@ -455,7 +459,7 @@ In STAC, pessimism is modeled as a fixed parameter, unlike the work of \citep{mo
 
 STAC employs dropout to prevent over-fitting, and overestimation indirectly \citet{nauman2024overestimation}. While dropout may also promote exploration by injecting stochasticity into the policy and value estimates, we do not attempt to isolate or prove this effect here. 
 
-Dropout also allows to capture the probabilistic nature of a network, representing Bayesian neural networks \citep{Gal2016Dropout}. Previous methods also use dropout or ensembles to approximate Bayesian posterior of critic network, for overestimation correction \citep{hiraoka2021dropout, chen2021randomized}. However, both dropout and ensemble methods regularize learning process, and STAC employs it both critic and policy networks for this purpose. 
+Dropout also allows to capture the probabilistic nature of a network, representing Bayesian neural networks \citep{Gal2016Dropout}. Previous methods also use dropout or ensembles to approximate Bayesian posterior of critic network, for overestimation correction \citep{hiraoka2021dropout, chen2021randomized}. However, both dropout and ensemble methods also regularize learning process, and STAC employs dropout on both critic and policy networks only for regularization purposes. 
 
 \subsection{Other Details and Algorithm Summary}
 
@@ -517,7 +521,7 @@ For evaluation, after each 1000 time steps, we execute a single test episode usi
 
 \subsection{Comparison to Other Algorithms}
 
-Our experiments aim to investigate whether enhancing off-policy actor-critic methodology with STAC can improve their sample and computation efficiency on difficult continuous-control benchmarks. For this purpose, STAC is compared to similar competitive algorithms; Distributional Soft-Actor Critic with three refinements (DSACT) \citep{duan2025distributional}, and Soft Actor-Critic (SAC) \citep{haarnoja2018soft}. All algorithm results are obtained using in-house code with the same network architectures (including layer normalization but not dropout) to make a fair comparison. 
+Our experiments aim to investigate whether enhancing off-policy actor-critic methodology with STAC can improve their sample and computation efficiency on continuous-control benchmarks. For this purpose, STAC is compared to similar competitive algorithms; Distributional Soft-Actor Critic with three refinements (DSACT) \citep{duan2025distributional}, and Soft Actor-Critic (SAC) \citep{haarnoja2018soft}. All algorithm results are obtained using in-house code with the same network architectures (including layer normalization but not dropout) to make a fair comparison. 
 
 We also add another algorithm called Epistemic Stochastic Actor-Critic (ESTAC) double distributional critic with one-step uncertainty similar to STAC. For overestimation, minimum of two critic is used for learning similar to SAC, instead of pessimism on temporal aleatoric uncertainty. The purpose here is to discover source of improvements of STAC over other methods. 
 
@@ -590,7 +594,7 @@ The pessimism rate and dropout configuration used for comparison is resulted fro
 \end{figure}
 %%
 
-\paragraph{Sample efficiency} As seen from Figure \ref{fig:main_comparison} and Table \ref{tab:env_auc_results}, STAC only outperforms other algorithms on many environments in terms of sample efficiency (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|Hopper-v4|, \verb|Swimmer-v4| \verb|Walker-v4|). Although ESTAC and SAC performs better on some environments, STAC still has a competitive performance, no convergence issue, and achieves this by using single critic while others use double. STAC has different components compared to other algorithms: pessimism is a must for convergence, while policy dropout is optional for performance improvement. However, critic dropout is necessary for some environments. Details will be discussed in the next section. 
+\paragraph{Sample efficiency} As seen from Figure \ref{fig:main_comparison} and Table \ref{tab:env_auc_results}, STAC outperforms other algorithms on many environments in terms of sample efficiency (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|Hopper-v4|, \verb|Swimmer-v4| \verb|Walker-v4|). Although ESTAC and SAC performs better on some environments, STAC still has a competitive performance, no convergence issue, and achieves this by using single critic while others use double. STAC has different components compared to other algorithms: pessimism is a must for convergence, while policy dropout is optional for performance improvement. However, critic dropout is necessary for some environments. Details will be discussed in the next section. 
 
 % significance test? unpaired t-test ? ...
 
@@ -641,9 +645,9 @@ STAC is experimented by varying levels of pessimism $\beta$ and dropout rates to
 \end{table}
 
 \paragraph{Learning curves} 
-Both learning curves are available in Appendix \ref{app:results_of_ablations}. Episodic scores and related episodic value estimation errors for varying level of pessimism under joint policy/critic dropout are summarized in Figure \ref{fig:pess_sens_pol_cri_dropout} and Figure \ref{fig:pess_sens_error_pol_cri_dropout}. Tabular results regarding average and final performance for different pessimism levels are summarized in Table \ref{tab:stac_ablation}. In addition, same curves for different dropout configurations under same level of pessimism are summarized in Figure \ref{fig:drop_sens} and Figure \ref{fig:drop_sens_error}, where $\beta$ values are explained in Table \ref{tab:target_ent_pessimism_algos}. The shaded area represents quartile limits, while the solid line represents interquartile mean across different seeds and \%1 of evaluation episodes through environment steps (for smoothing). 
+Both learning curves are available in Appendix \ref{app:results_of_ablations}. Episodic scores and related value estimation errors for varying level of pessimism under joint policy/critic dropout are summarized in Figure \ref{fig:pess_sens_pol_cri_dropout} and Figure \ref{fig:pess_sens_error_pol_cri_dropout}. Tabular results regarding average and final performance for different pessimism levels are summarized in Table \ref{tab:stac_ablation}. In addition, same curves for different dropout configurations under same level of pessimism are summarized in Figure \ref{fig:drop_sens} and Figure \ref{fig:drop_sens_error}, where $\beta$ values are explained in Table \ref{tab:target_ent_pessimism_algos}. The shaded area represents quartile limits, while the solid line represents interquartile mean across different seeds and \%1 of evaluation episodes through environment steps (for smoothing). 
 
-\paragraph{Pessimism} Results indicate that $\beta$ is a sensitive parameter, the higher $\beta$ yields a negative error (see Figure \ref{fig:pess_sens_error_pol_cri_dropout}), consistent with our assumptions. In addition, score curves are worse if value estimations tend to be positive, meaning that critic overestimation is not mitigated enough (see \verb|Ant-v4|, \verb|BipedalWalker-v3|, \verb|Hopper-v4|, \verb|Humanoid-v4|, \verb|Walker-v4|). On the other hand, score curves are again worse when error curves are negative than it should be, meaning that the learner is stuck on critic underestimation caused by high pessimism (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|LunarLander-v3|, \verb|Swimmer-v4|). In the end, pessimism sensitivity varies for different environments, possibly because of varying task difficulties. For easier tasks, less pessimism is enough but difficult tasks require it significantly. This parameter stands as the major bottleneck of STAC and can only be determined by this heuristic for now. 
+\paragraph{Pessimism} Results indicate that $\beta$ is a sensitive parameter, the higher $\beta$ yields a negative error (see Figure \ref{fig:pess_sens_error_pol_cri_dropout}), consistent with our assumptions. In addition, score curves are worse if value estimations tend to be positive, meaning that critic overestimation is not mitigated enough (see \verb|Ant-v4|, \verb|BipedalWalker-v3|, \verb|Hopper-v4|, \verb|Humanoid-v4|, \verb|Walker-v4|). On the other hand, score curves are again worse when error curves are negative than it should be, meaning that the learner is stuck on critic underestimation caused by high pessimism (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|LunarLander-v3|, \verb|Swimmer-v4|). In the end, pessimism sensitivity varies for different environments, possibly because of varying task difficulties. For easier tasks, less pessimism is enough but difficult tasks require it significantly. This parameter stands as the major bottleneck of STAC and can only be determined by this heuristic for now. Lastly, as seen in Table \ref{tab:stac_ablation}, lower pessimism rates usually results in better final performance, while higher rates are better in average. % (\verb|Ant-v4|, \verb|Humanoid-v4|, \verb|Walker2d-v4|). \verb|Hopper-v4| is the exception, but scores are very close. 
 
 \paragraph{Dropout}
 Dropout is a regularization method, and expected to fix overestimation caused by over-fitting \citep{nauman2024overestimation}. Dropout’s primary role in STAC is as a regularization tool to improve optimization stability and robustness to noisy data. In Figure \ref{fig:drop_sens}, independent of critic dropout, policy dropout increases performance in all experiments, enhancing training stability. According to Figure \ref{fig:drop_sens_error}, the overestimation trends observed with and without dropout are qualitatively similar, confirming that our core contribution—mitigating overestimation via aleatoric uncertainty—remains effective independent of dropout, except \verb|Hopper-v4|. However, in this environment, learning does not converge without critic dropout. Therefore, critic dropout is necessary in some environments for training stability rather than overestimation mitigation. Double/ensemble critic approaches mitigate training instability naturally, whereas STAC requires a convenient dropout in some cases. 
@@ -654,8 +658,8 @@ Dropout is a regularization method, and expected to fix overestimation caused by
 
 \paragraph{Overestimation reduction by epistemic uncertainty} In the literature, overestimation problem is solved by pessimistic learning based on \textit{epistemic uncertainty} of critic \citep{chen2021randomized, hiraoka2021dropout}. The same approach is also used in model-based RL methods \citep{janner2019trust, chua2018deep, depeweg2016learning}. Recently, for off-policy model-free actor-critic algorithms, epistemic uncertainty is estimated by using double network \citep{fujimoto2018addressing, haarnoja2018soft} or ensemble networks \citep{chen2021randomized, moskovitz2021tactical}. Ensemble of critics are computationally expensive as there are multiple of parameters to be optimized. Using dropout is a kind of Bayesian approximation, so another way to assess epistemic uncertainty \citep{Gal2016Dropout}. It has applications on model-based \citep{Gal2016ImprovingPILCO, gal2017concrete, kahn2017uncertainty} and model-free \citep{moerland2017efficient, jaques2019way, he2021mepg} reinforcement learning. For actor-critic, \citet{hiraoka2021dropout} found out that using Bayesian dropout also reduces the necessary critic ensemble size. The mentioned methods use a constant level of pessimism for policy evaluation and improvement, while \citet{moskovitz2021tactical} focused on updating pessimism \textit{on the fly} as a bandit problem rather than fixing it. 
 
-\paragraph{Distributional/Safe reinforcement learning}  
-Aleatoric uncertainty representation for the value function carries fundamental importance, especially in the presence of approximation \citep{bellemare2017distributional}. This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional}, or a normal distribution \citep{tang2019worst, yang2021wcsac} to model cumulative return behavior. For safety-critical RL applications to avoid catastrophic situations, pessimistic policy updates upon aleatoric uncertainty of return are used by \citet{tang2019worst} and \citet{yang2021wcsac}. These methods use pessimism only on actor update for safety, not for overestimation reduction. 
+\paragraph{Distributional/safe reinforcement learning}  
+Aleatoric uncertainty representation for the value function carries fundamental importance, especially in the presence of approximation \citep{bellemare2017distributional}. This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional}, or a normal distribution \citep{tang2019worst, yang2021wcsac} to model cumulative return behavior. For safety-critical RL applications to avoid catastrophic situations, pessimistic policy updates upon aleatoric uncertainty of return are used by \citet{tang2019worst} and \citet{yang2021wcsac}. These methods use pessimism only on actor update for safety, not for overestimation reduction, and models cumulative return uncertainty. 
 
 \paragraph{Overestimation reduction by aleatoric uncertainty}  
 \citet{kuznetsov2020controlling} claims \textit{aleatoric uncertainty} is also responsible for overestimation since any randomness is exploited when the Bellman optimality operator ($\mathcal{T}^*$) is employed. For this purpose, they use ensemble networks for epistemic uncertainty, in which each network is a distributional network (as quantiles) for aleatoric uncertainty assessment, and used both types of uncertainties for overestimation correction. Similarly, STAC uses distributional critic, but only models temporal (one-step) aleatoric uncertainty rather than full return distribution as this is the main source of overestimation. It is also not epistemic uncertainty since it is not related about weights of the critic network.
