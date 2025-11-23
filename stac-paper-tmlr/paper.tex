@@ -318,7 +318,7 @@ Under sub-Gaussian assumption, if there exist an upper bound for overestimation,
 
 \begin{theorem}[Overestimation quantification for sub-Gaussian critics]
 	\label{thm:overestimation}
-	Let given state-action value distribution $\mathcal{Q}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ be sub-Gaussian with mean $\mu(s,a)$ and variance proxy $\sigma^2(s,a)$ for all state-action pairs, with bounded support. For each sample, $Q\sim\mathcal{Q}$,  
+	Let given state-action value distribution $\mathcal{Q}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ be sub-Gaussian with mean $\mu(s,a)$ and variance proxy $\sigma^2(s,a)$ for all state-action pairs, with bounded support. For each sample $Q\sim\mathcal{Q}$,  
 	\begin{equation}
 		\mathcal{T}^{*} Q(s,a) \leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big). \\
 	\end{equation}
