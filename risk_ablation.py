@@ -31,7 +31,7 @@ def visualize_masspoint_behavior(agents: List[Agent]):
 
     obs_memory_list = []
     for i, agent in enumerate(agents):
-        for _ in range(100):  # 100 episodes
+        for _ in range(200):  # 100 episodes
             agent.eval(record=True, exploit=False)
             obs_memory_list.append(agent._obs_history)
         obs_memory = np.concatenate(obs_memory_list, axis=0)
@@ -49,7 +49,7 @@ def visualize_masspoint_behavior(agents: List[Agent]):
         ax_xy[i].set_xlabel("$x$")
         if i == 0:
             ax_xy[i].set_ylabel(f"$y$")
-        countorf_xy = ax_xy[i].contourf(x_grid, y_grid, f_x_y, cmap="turbo", vmin=0, vmax=3, levels=np.linspace(0, 3, 200), extend='both')
+        countorf_xy = ax_xy[i].contourf(x_grid, y_grid, f_x_y, cmap="turbo", vmin=0, vmax=2.5, levels=np.linspace(0, 2.5, 200), extend='both')
         if i == ncol - 1:
             cbar_xy = fig_xy.colorbar(countorf_xy, use_gridspec=False)
             cbar_xy.locator = MaxNLocator(nbins=5)
@@ -57,7 +57,7 @@ def visualize_masspoint_behavior(agents: List[Agent]):
         circ=plt.Circle((0.5, 0.5), 0.3, color='w', fill=False)                
         ax_xy[i].add_patch(circ)
 
-    fig_xy.suptitle(f"Position heatmap for $\\beta$: RiskyPointMass-v0", fontsize=16)
+    fig_xy.suptitle(f"Position occurence density heatmap: RiskyPointMass-v0", fontsize=16)
     fig_xy.savefig(os.path.join("results/risk-sensitive", "x_vs_y_riskymasspoint.png"))
 
 

@@ -1,4 +1,4 @@
-\begin{thebibliography}{44}
+\begin{thebibliography}{46}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -47,12 +47,19 @@ Kurtland Chua, Roberto Calandra, Rowan McAllister, and Sergey Levine.
   probabilistic dynamics models.
 \newblock \emph{Advances in neural information processing systems}, 31, 2018.
 
-\bibitem[Dabney et~al.(2018)Dabney, Rowland, Bellemare, and
+\bibitem[Dabney et~al.(2018{\natexlab{a}})Dabney, Ostrovski, Silver, and
+  Munos]{dabney2018implicit}
+Will Dabney, Georg Ostrovski, David Silver, and R{\'e}mi Munos.
+\newblock Implicit quantile networks for distributional reinforcement learning.
+\newblock In \emph{International conference on machine learning}, pp.\
+  1096--1105. PMLR, 2018{\natexlab{a}}.
+
+\bibitem[Dabney et~al.(2018{\natexlab{b}})Dabney, Rowland, Bellemare, and
   Munos]{dabney2018distributional}
 Will Dabney, Mark Rowland, Marc Bellemare, and R{\'e}mi Munos.
 \newblock Distributional reinforcement learning with quantile regression.
 \newblock In \emph{Proceedings of the AAAI conference on artificial
-  intelligence}, volume~32, 2018.
+  intelligence}, volume~32, 2018{\natexlab{b}}.
 
 \bibitem[Depeweg et~al.(2016)Depeweg, Hern{\'a}ndez-Lobato, Doshi-Velez, and
   Udluft]{depeweg2016learning}
@@ -211,6 +218,12 @@ Timothy~P Lillicrap, Jonathan~J Hunt, Alexander Pritzel, Nicolas Heess, Tom
   Erez, Yuval Tassa, David Silver, and Daan Wierstra.
 \newblock Continuous control with deep reinforcement learning.
 \newblock \emph{arXiv preprint arXiv:1509.02971}, 2015.
+
+\bibitem[Ma et~al.(2025)Ma, Chen, Xia, Yang, Zhao, and Zhou]{ma2025dsac}
+Xiaoteng Ma, Junyao Chen, Li~Xia, Jun Yang, Qianchuan Zhao, and Zhengyuan Zhou.
+\newblock Dsac: Distributional soft actor-critic for risk-sensitive
+  reinforcement learning.
+\newblock \emph{Journal of Artificial Intelligence Research}, 83, 2025.
 
 \bibitem[Mnih et~al.(2013)Mnih, Kavukcuoglu, Silver, Graves, Antonoglou,
   Wierstra, and Riedmiller]{mnih2013playing}
