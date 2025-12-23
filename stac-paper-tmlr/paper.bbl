@@ -83,14 +83,6 @@ Jingliang Duan, Yang Guan, Shengbo~Eben Li, Yangang Ren, Qi~Sun, and Bo~Cheng.
 \newblock \emph{IEEE transactions on neural networks and learning systems},
   33\penalty0 (11):\penalty0 6584--6598, 2021.
 
-\bibitem[Duan et~al.(2025)Duan, Wang, Xiao, Gao, Li, Liu, Zhang, Cheng, and
-  Li]{duan2025distributional}
-Jingliang Duan, Wenxuan Wang, Liming Xiao, Jiaxin Gao, Shengbo~Eben Li, Chang
-  Liu, Ya-Qin Zhang, Bo~Cheng, and Keqiang Li.
-\newblock Distributional soft actor-critic with three refinements.
-\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
-  Intelligence}, 2025.
-
 \bibitem[Fujimoto et~al.(2018)Fujimoto, Hoof, and
   Meger]{fujimoto2018addressing}
 Scott Fujimoto, Herke Hoof, and David Meger.
@@ -224,6 +216,12 @@ Xiaoteng Ma, Junyao Chen, Li~Xia, Jun Yang, Qianchuan Zhao, and Zhengyuan Zhou.
 \newblock Dsac: Distributional soft actor-critic for risk-sensitive
   reinforcement learning.
 \newblock \emph{Journal of Artificial Intelligence Research}, 83, 2025.
+
+\bibitem[Ma et~al.(2021)Ma, Jayaraman, and Bastani]{ma2021conservative}
+Yecheng Ma, Dinesh Jayaraman, and Osbert Bastani.
+\newblock Conservative offline distributional reinforcement learning.
+\newblock \emph{Advances in neural information processing systems},
+  34:\penalty0 19235--19247, 2021.
 
 \bibitem[Mnih et~al.(2013)Mnih, Kavukcuoglu, Silver, Graves, Antonoglou,
   Wierstra, and Riedmiller]{mnih2013playing}

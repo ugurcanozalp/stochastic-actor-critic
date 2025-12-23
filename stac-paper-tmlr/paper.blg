@@ -9,43 +9,43 @@ Warning--empty journal in gal2016uncertainty
 Warning--can't use both volume and number fields in yang2021wcsac
 You've used 46 entries,
             2773 wiz_defined-function locations,
-            820 strings with 14096 characters,
-and the built_in function-call counts, 25430 in all, are:
-= -- 2128
-> -- 2032
+            820 strings with 13948 characters,
+and the built_in function-call counts, 25254 in all, are:
+= -- 2126
+> -- 1978
 < -- 21
-+ -- 681
-- -- 633
-* -- 2197
-:= -- 3990
++ -- 663
+- -- 615
+* -- 2176
+:= -- 3950
 add.period$ -- 144
 call.type$ -- 46
-change.case$ -- 344
+change.case$ -- 338
 chr.to.int$ -- 44
 cite$ -- 96
-duplicate$ -- 1040
-empty$ -- 1716
-format.name$ -- 696
-if$ -- 5248
+duplicate$ -- 1041
+empty$ -- 1729
+format.name$ -- 678
+if$ -- 5221
 int.to.chr$ -- 3
 int.to.str$ -- 1
 missing$ -- 45
 newline$ -- 238
 num.names$ -- 184
-pop$ -- 695
+pop$ -- 681
 preamble$ -- 1
-purify$ -- 300
+purify$ -- 294
 quote$ -- 0
-skip$ -- 895
+skip$ -- 889
 stack$ -- 0
-substring$ -- 580
+substring$ -- 617
 swap$ -- 154
 text.length$ -- 11
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 501
 warning$ -- 4
-while$ -- 173
+while$ -- 175
 width$ -- 0
-write$ -- 589
+write$ -- 590
 (There were 4 warnings)

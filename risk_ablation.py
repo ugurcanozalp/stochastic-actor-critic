@@ -54,11 +54,13 @@ def visualize_masspoint_behavior(agents: List[Agent]):
             cbar_xy = fig_xy.colorbar(countorf_xy, use_gridspec=False)
             cbar_xy.locator = MaxNLocator(nbins=5)
             cbar_xy.update_ticks()      
-        circ=plt.Circle((0.5, 0.5), 0.3, color='w', fill=False)                
-        ax_xy[i].add_patch(circ)
+        danger_circ=plt.Circle((0.5, 0.5), 0.3, color='w', fill=False)
+        target_circ=plt.Circle((0.0, 0.0), 0.05, color='w', fill=True)       
+        ax_xy[i].add_patch(danger_circ)
+        ax_xy[i].add_patch(target_circ)
 
-    fig_xy.suptitle(f"Position occurence density heatmap: RiskyPointMass-v0", fontsize=16)
-    fig_xy.savefig(os.path.join("results/risk-sensitive", "x_vs_y_riskymasspoint.png"))
+    #fig_xy.suptitle(f"Position occurence density heatmap: RiskyPointMass-v0", fontsize=16)
+    fig_xy.savefig(os.path.join("results/risk-sensitive", "heatmap_riskypointmass.png"))
 
 
 

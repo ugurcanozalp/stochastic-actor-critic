@@ -101,8 +101,8 @@
 \@writefile{toc}{\contentsline {paragraph}{Learning curves}{9}{section*.10}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Average episodic return through learning procedure and over five training runs on MuJoCo and Box2D tasks. ± sign represents mean and standard deviation of overall score. }}{9}{table.caption.11}\protected@file@percent }
 \newlabel{tab:env_auc_results}{{1}{9}{Average episodic return through learning procedure and over five training runs on MuJoCo and Box2D tasks. ± sign represents mean and standard deviation of overall score}{table.caption.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Interquartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance. }}{9}{table.caption.12}\protected@file@percent }
-\newlabel{tab:env_pess_results}{{2}{9}{Interquartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance}{table.caption.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Inter-quartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance. }}{9}{table.caption.12}\protected@file@percent }
+\newlabel{tab:env_pess_results}{{2}{9}{Inter-quartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance}{table.caption.12}{}}
 \@writefile{toc}{\contentsline {paragraph}{Sample efficiency}{9}{section*.15}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Episodic score curves of STAC and other algorithms. }}{10}{figure.caption.13}\protected@file@percent }
 \newlabel{fig:main_comparison}{{2}{10}{Episodic score curves of STAC and other algorithms}{figure.caption.13}{}}
@@ -110,11 +110,12 @@
 \newlabel{fig:error_comparison}{{3}{10}{Average episodic value estimation error of STAC and other algorithms}{figure.caption.14}{}}
 \citation{nauman2024overestimation}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Sweeping Pessimism and Dropout}{11}{subsection.5.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Average episodic scores through learning procedure (first lines), and interquartile mean scores of last \%1 of evaluation episodes (second lines), for varying $\beta $. Dropout rate is 0.01 for critic and policy. }}{11}{table.caption.16}\protected@file@percent }
-\newlabel{tab:stac_ablation}{{3}{11}{Average episodic scores through learning procedure (first lines), and interquartile mean scores of last \%1 of evaluation episodes (second lines), for varying $\beta $. Dropout rate is 0.01 for critic and policy}{table.caption.16}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Inter-quartile mean scores of last \%1 of evaluation episodes, for varying $\beta $. Dropout rate is 0.01 for critic and actor. }}{11}{table.caption.16}\protected@file@percent }
+\newlabel{tab:stac_ablation}{{3}{11}{Inter-quartile mean scores of last \%1 of evaluation episodes, for varying $\beta $. Dropout rate is 0.01 for critic and actor}{table.caption.16}{}}
 \@writefile{toc}{\contentsline {paragraph}{Learning curves}{11}{section*.17}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Pessimism}{11}{section*.18}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Dropout}{11}{section*.19}\protected@file@percent }
+\citation{ma2021conservative,ma2025dsac}
 \citation{chen2021randomized,hiraoka2021dropout}
 \citation{janner2019trust,chua2018deep,depeweg2016learning}
 \citation{fujimoto2018addressing,haarnoja2018soft}
@@ -126,21 +127,23 @@
 \citation{moskovitz2021tactical}
 \citation{bellemare2017distributional}
 \citation{bellemare2017distributional}
-\citation{dabney2018distributional}
+\citation{dabney2018distributional,ma2025dsac}
 \citation{tang2019worst,yang2021wcsac}
 \citation{tang2019worst}
 \citation{yang2021wcsac}
 \citation{kuznetsov2020controlling}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Risk Aversion by Pessimism}{12}{subsection.5.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Position occurence density heatmap of STAC on RiskyPointMass-v0 for different $\beta $ values. The white circle represents danger zone. }}{12}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:pointmass_heatmap}{{4}{12}{Position occurence density heatmap of STAC on RiskyPointMass-v0 for different $\beta $ values. The white circle represents danger zone}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Risk Sensitivity by Pessimism}{12}{subsection.5.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {6}Related Work}{12}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by epistemic uncertainty}{12}{section*.20}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Distributional/safe reinforcement learning}{12}{section*.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by aleatoric uncertainty}{12}{section*.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion \& Future Directions}{12}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Adaptive Pessimism}{13}{section*.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Pessimism under Stochastic Environments}{13}{section*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Exploration}{13}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Broader Impact}{13}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by epistemic uncertainty}{12}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Distributional/safe reinforcement learning}{12}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by aleatoric uncertainty}{13}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion \& Future Directions}{13}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Adaptive Pessimism}{13}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pessimism under Stochastic Environments}{13}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Exploration}{13}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Broader Impact}{13}{section*.27}\protected@file@percent }
 \bibdata{references}
 \bibcite{achab2020ranking}{{1}{2020}{{Achab}}{{}}}
 \bibcite{achab2023one}{{2}{2023}{{Achab et~al.}}{{Achab, Alami, Djilali, Fedyanin, and Moulines}}}
@@ -154,28 +157,28 @@
 \bibcite{depeweg2016learning}{{10}{2016}{{Depeweg et~al.}}{{Depeweg, Hern{\'a}ndez-Lobato, Doshi-Velez, and Udluft}}}
 \bibcite{der2009aleatory}{{11}{2009}{{Der~Kiureghian \& Ditlevsen}}{{Der~Kiureghian and Ditlevsen}}}
 \bibcite{duan2021distributional}{{12}{2021}{{Duan et~al.}}{{Duan, Guan, Li, Ren, Sun, and Cheng}}}
-\bibcite{duan2025distributional}{{13}{2025}{{Duan et~al.}}{{Duan, Wang, Xiao, Gao, Li, Liu, Zhang, Cheng, and Li}}}
-\bibcite{fujimoto2018addressing}{{14}{2018}{{Fujimoto et~al.}}{{Fujimoto, Hoof, and Meger}}}
-\bibcite{Gal2016Dropout}{{15}{2016}{{Gal \& Ghahramani}}{{Gal and Ghahramani}}}
-\bibcite{Gal2016ImprovingPILCO}{{16}{2016{a}}{{Gal et~al.}}{{Gal, McAllister, and Rasmussen}}}
-\bibcite{gal2017concrete}{{17}{2017}{{Gal et~al.}}{{Gal, Hron, and Kendall}}}
-\bibcite{gal2016uncertainty}{{18}{2016{b}}{{Gal et~al.}}{{}}}
-\bibcite{haarnoja2017reinforcement}{{19}{2017}{{Haarnoja et~al.}}{{Haarnoja, Tang, Abbeel, and Levine}}}
-\bibcite{haarnoja2018soft}{{20}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Hartikainen, Tucker, Ha, Tan, Kumar, Zhu, Gupta, Abbeel, et~al.}}}
-\bibcite{he2021mepg}{{21}{2021}{{He et~al.}}{{He, Su, Gong, and Hou}}}
-\bibcite{hiraoka2021dropout}{{22}{2021}{{Hiraoka et~al.}}{{Hiraoka, Imagawa, Hashimoto, Onishi, and Tsuruoka}}}
-\bibcite{janner2019trust}{{23}{2019}{{Janner et~al.}}{{Janner, Fu, Zhang, and Levine}}}
-\bibcite{jaques2019way}{{24}{2019}{{Jaques et~al.}}{{Jaques, Ghandeharioun, Shen, Ferguson, Lapedriza, Jones, Gu, and Picard}}}
-\bibcite{kahn2017uncertainty}{{25}{2017}{{Kahn et~al.}}{{Kahn, Villaflor, Pong, Abbeel, and Levine}}}
-\bibcite{kendall2017uncertainties}{{26}{2017}{{Kendall \& Gal}}{{Kendall and Gal}}}
-\bibcite{kim2022efficient}{{27}{2022}{{Kim \& Oh}}{{Kim and Oh}}}
-\bibcite{kingma2014adam}{{28}{2014}{{Kingma \& Ba}}{{Kingma and Ba}}}
-\bibcite{kuznetsov2020controlling}{{29}{2020}{{Kuznetsov et~al.}}{{Kuznetsov, Shvechikov, Grishin, and Vetrov}}}
-\bibcite{lakshminarayanan2017simple}{{30}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
-\bibcite{lan2020maxmin}{{31}{2020}{{Lan et~al.}}{{Lan, Pan, Fyshe, and White}}}
-\bibcite{li2023realistic}{{32}{2023}{{Li et~al.}}{{Li, Tang, Pang, Ma, and Wang}}}
-\bibcite{lillicrap2015continuous}{{33}{2015}{{Lillicrap et~al.}}{{Lillicrap, Hunt, Pritzel, Heess, Erez, Tassa, Silver, and Wierstra}}}
-\bibcite{ma2025dsac}{{34}{2025}{{Ma et~al.}}{{Ma, Chen, Xia, Yang, Zhao, and Zhou}}}
+\bibcite{fujimoto2018addressing}{{13}{2018}{{Fujimoto et~al.}}{{Fujimoto, Hoof, and Meger}}}
+\bibcite{Gal2016Dropout}{{14}{2016}{{Gal \& Ghahramani}}{{Gal and Ghahramani}}}
+\bibcite{Gal2016ImprovingPILCO}{{15}{2016{a}}{{Gal et~al.}}{{Gal, McAllister, and Rasmussen}}}
+\bibcite{gal2017concrete}{{16}{2017}{{Gal et~al.}}{{Gal, Hron, and Kendall}}}
+\bibcite{gal2016uncertainty}{{17}{2016{b}}{{Gal et~al.}}{{}}}
+\bibcite{haarnoja2017reinforcement}{{18}{2017}{{Haarnoja et~al.}}{{Haarnoja, Tang, Abbeel, and Levine}}}
+\bibcite{haarnoja2018soft}{{19}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Hartikainen, Tucker, Ha, Tan, Kumar, Zhu, Gupta, Abbeel, et~al.}}}
+\bibcite{he2021mepg}{{20}{2021}{{He et~al.}}{{He, Su, Gong, and Hou}}}
+\bibcite{hiraoka2021dropout}{{21}{2021}{{Hiraoka et~al.}}{{Hiraoka, Imagawa, Hashimoto, Onishi, and Tsuruoka}}}
+\bibcite{janner2019trust}{{22}{2019}{{Janner et~al.}}{{Janner, Fu, Zhang, and Levine}}}
+\bibcite{jaques2019way}{{23}{2019}{{Jaques et~al.}}{{Jaques, Ghandeharioun, Shen, Ferguson, Lapedriza, Jones, Gu, and Picard}}}
+\bibcite{kahn2017uncertainty}{{24}{2017}{{Kahn et~al.}}{{Kahn, Villaflor, Pong, Abbeel, and Levine}}}
+\bibcite{kendall2017uncertainties}{{25}{2017}{{Kendall \& Gal}}{{Kendall and Gal}}}
+\bibcite{kim2022efficient}{{26}{2022}{{Kim \& Oh}}{{Kim and Oh}}}
+\bibcite{kingma2014adam}{{27}{2014}{{Kingma \& Ba}}{{Kingma and Ba}}}
+\bibcite{kuznetsov2020controlling}{{28}{2020}{{Kuznetsov et~al.}}{{Kuznetsov, Shvechikov, Grishin, and Vetrov}}}
+\bibcite{lakshminarayanan2017simple}{{29}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
+\bibcite{lan2020maxmin}{{30}{2020}{{Lan et~al.}}{{Lan, Pan, Fyshe, and White}}}
+\bibcite{li2023realistic}{{31}{2023}{{Li et~al.}}{{Li, Tang, Pang, Ma, and Wang}}}
+\bibcite{lillicrap2015continuous}{{32}{2015}{{Lillicrap et~al.}}{{Lillicrap, Hunt, Pritzel, Heess, Erez, Tassa, Silver, and Wierstra}}}
+\bibcite{ma2025dsac}{{33}{2025}{{Ma et~al.}}{{Ma, Chen, Xia, Yang, Zhao, and Zhou}}}
+\bibcite{ma2021conservative}{{34}{2021}{{Ma et~al.}}{{Ma, Jayaraman, and Bastani}}}
 \bibcite{mnih2013playing}{{35}{2013}{{Mnih et~al.}}{{Mnih, Kavukcuoglu, Silver, Graves, Antonoglou, Wierstra, and Riedmiller}}}
 \bibcite{moerland2017efficient}{{36}{2017}{{Moerland et~al.}}{{Moerland, Broekens, and Jonker}}}
 \bibcite{moskovitz2021tactical}{{37}{2021}{{Moskovitz et~al.}}{{Moskovitz, Parker-Holder, Pacchiano, Arbel, and Jordan}}}
@@ -195,29 +198,29 @@
 \newlabel{app:results_of_ablations}{{B}{18}{Results of Ablation Studies}{appendix.1.B}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Pessimism Ablation}{18}{subsection.1.B.1}\protected@file@percent }
 \newlabel{app:pessimism_ablation}{{B.1}{18}{Pessimism Ablation}{subsection.1.B.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Episodic score curves of STAC with varying pessimism ($\beta $) parameter, with policy and critic dropout equal to $0.01$. }}{18}{figure.caption.29}\protected@file@percent }
-\newlabel{fig:pess_sens_pol_cri_dropout}{{4}{18}{Episodic score curves of STAC with varying pessimism ($\beta $) parameter, with policy and critic dropout equal to $0.01$}{figure.caption.29}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Average episodic value estimation error curves of STAC with varying pessimism ($\beta $) parameter, with policy and critic dropout equal to $0.01$. }}{18}{figure.caption.30}\protected@file@percent }
-\newlabel{fig:pess_sens_error_pol_cri_dropout}{{5}{18}{Average episodic value estimation error curves of STAC with varying pessimism ($\beta $) parameter, with policy and critic dropout equal to $0.01$}{figure.caption.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Episodic score curves of STAC with varying pessimism ($\beta $) parameter, with actor and critic dropout equal to $0.01$. }}{18}{figure.caption.30}\protected@file@percent }
+\newlabel{fig:pess_sens_pol_cri_dropout}{{5}{18}{Episodic score curves of STAC with varying pessimism ($\beta $) parameter, with actor and critic dropout equal to $0.01$}{figure.caption.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Average episodic value estimation error curves of STAC with varying pessimism ($\beta $) parameter, with actor and critic dropout equal to $0.01$. }}{18}{figure.caption.31}\protected@file@percent }
+\newlabel{fig:pess_sens_error_pol_cri_dropout}{{6}{18}{Average episodic value estimation error curves of STAC with varying pessimism ($\beta $) parameter, with actor and critic dropout equal to $0.01$}{figure.caption.31}{}}
 \citation{kingma2014adam}
 \@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Dropout Configuration Ablation}{19}{subsection.1.B.2}\protected@file@percent }
 \newlabel{app:dropout_ablation}{{B.2}{19}{Dropout Configuration Ablation}{subsection.1.B.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Episodic score curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos}). }}{19}{figure.caption.31}\protected@file@percent }
-\newlabel{fig:drop_sens}{{6}{19}{Episodic score curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos})}{figure.caption.31}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Average episodic value estimation error curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos}). }}{19}{figure.caption.32}\protected@file@percent }
-\newlabel{fig:drop_sens_error}{{7}{19}{Average episodic value estimation error curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos})}{figure.caption.32}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Episodic score curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos}). }}{19}{figure.caption.32}\protected@file@percent }
+\newlabel{fig:drop_sens}{{7}{19}{Episodic score curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos})}{figure.caption.32}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Average episodic value estimation error curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos}). }}{19}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:drop_sens_error}{{8}{19}{Average episodic value estimation error curves of STAC with 4 different dropout configurations, under fixed pessimism level yielding best performance (see Table \ref {tab:target_ent_pessimism_algos})}{figure.caption.33}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {C}Hyper-parameters and Experiment Details}{20}{appendix.1.C}\protected@file@percent }
 \newlabel{app:hyperparam_exp}{{C}{20}{Hyper-parameters and Experiment Details}{appendix.1.C}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Experimental Parameters per Algorithm}}{20}{table.caption.33}\protected@file@percent }
-\newlabel{tab:parameters_algos}{{4}{20}{Experimental Parameters per Algorithm}{table.caption.33}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Target policy entropy ($\bar  {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy. }}{20}{table.caption.34}\protected@file@percent }
-\newlabel{tab:target_ent_pessimism_algos}{{5}{20}{Target policy entropy ($\bar {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy}{table.caption.34}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Experimental Parameters per Algorithm}}{20}{table.caption.34}\protected@file@percent }
+\newlabel{tab:parameters_algos}{{4}{20}{Experimental Parameters per Algorithm}{table.caption.34}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Target policy entropy ($\bar  {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy. }}{20}{table.caption.35}\protected@file@percent }
+\newlabel{tab:target_ent_pessimism_algos}{{5}{20}{Target policy entropy ($\bar {H}$), pessimism $\beta $ and dropout rates per environment, yielding best results. All algorithms share same policy entropy}{table.caption.35}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {D}Network Architectures of STAC}{21}{appendix.1.D}\protected@file@percent }
 \newlabel{app:network_archs}{{D}{21}{Network Architectures of STAC}{appendix.1.D}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Critic network architecture}}{21}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:critic_visual}{{8}{21}{Critic network architecture}{figure.caption.35}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Policy network architecture}}{21}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:policy_visual}{{9}{21}{Policy network architecture}{figure.caption.35}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Critic network architecture}}{21}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:critic_visual}{{9}{21}{Critic network architecture}{figure.caption.36}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Actor network architecture}}{21}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:policy_visual}{{10}{21}{Actor network architecture}{figure.caption.36}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {E}Source Code}{21}{appendix.1.E}\protected@file@percent }
 \newlabel{app:code}{{E}{21}{Source Code}{appendix.1.E}{}}
 \gdef \@abspage@last{21}

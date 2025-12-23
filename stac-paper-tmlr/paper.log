@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.5)  21 DEC 2025 23:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.5)  23 DEC 2025 22:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1331,33 +1331,45 @@ Package pdftex.def Info: figures/main-comparison/error.png  used on input line
 596.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
  [9{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}] [10 <./figures/main-compar
-ison/score.png> <./figures/main-comparison/error.png>] [11] [12] [13] (./paper.
-bbl [14] [15]) [16] [17]
-<figures/stac-fixed-pessimism/score.png, id=579, 1156.32pt x 650.43pt>
+ison/score.png> <./figures/main-comparison/error.png>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [11]
+<figures/risk-sensitive/heatmap_riskypointmass.png, id=476, 1084.05pt x 252.945
+pt>
+File: figures/risk-sensitive/heatmap_riskypointmass.png Graphic file (type png)
+
+<use figures/risk-sensitive/heatmap_riskypointmass.png>
+Package pdftex.def Info: figures/risk-sensitive/heatmap_riskypointmass.png  use
+d on input line 668.
+(pdftex.def)             Requested size: 469.75496pt x 109.60948pt.
+
+[12 <./figures/risk-sensitive/heatmap_riskypointmass.png>] [13] (./paper.bbl
+[14] [15]) [16] [17]
+<figures/stac-fixed-pessimism/score.png, id=587, 1156.32pt x 650.43pt>
 File: figures/stac-fixed-pessimism/score.png Graphic file (type png)
 <use figures/stac-fixed-pessimism/score.png>
 Package pdftex.def Info: figures/stac-fixed-pessimism/score.png  used on input 
-line 760.
+line 771.
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
-<figures/stac-fixed-pessimism/error.png, id=580, 1156.32pt x 650.43pt>
+<figures/stac-fixed-pessimism/error.png, id=588, 1156.32pt x 650.43pt>
 File: figures/stac-fixed-pessimism/error.png Graphic file (type png)
 <use figures/stac-fixed-pessimism/error.png>
 Package pdftex.def Info: figures/stac-fixed-pessimism/error.png  used on input 
-line 767.
+line 778.
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
-<figures/stac-dropout/score.png, id=581, 1156.32pt x 650.43pt>
+<figures/stac-dropout/score.png, id=589, 1156.32pt x 650.43pt>
 File: figures/stac-dropout/score.png Graphic file (type png)
 <use figures/stac-dropout/score.png>
-Package pdftex.def Info: figures/stac-dropout/score.png  used on input line 777
+Package pdftex.def Info: figures/stac-dropout/score.png  used on input line 788
 .
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
-
-[18 <./figures/stac-fixed-pessimism/score.png> <./figures/stac-fixed-pessimism/
-error.png>]
-<figures/stac-dropout/error.png, id=590, 1156.32pt x 650.43pt>
+ [18 <./figures/stac-fixed-pessimism/score.png> <./figures/stac-fixed-pessimism
+/error.png>]
+<figures/stac-dropout/error.png, id=598, 1156.32pt x 650.43pt>
 File: figures/stac-dropout/error.png Graphic file (type png)
 <use figures/stac-dropout/error.png>
-Package pdftex.def Info: figures/stac-dropout/error.png  used on input line 784
+Package pdftex.def Info: figures/stac-dropout/error.png  used on input line 795
 .
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
 
@@ -1367,7 +1379,7 @@ Underfull \vbox (badness 6094) has occurred while \output is active []
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [20]
-Underfull \hbox (badness 10000) in paragraph at lines 937--938
+Underfull \hbox (badness 10000) in paragraph at lines 948--949
 \T1/lmr/m/n/10 (+20) Our re-sults can be ac-cessed pub-licly at []$\T1/lmtt/m/n
 /10 https : / / github . com / authors-[]github /
  []
@@ -1382,16 +1394,16 @@ L3 programming layer <2024-01-22>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `paper.out' has not changed.
-(rerunfilecheck)             Checksum: 2638308A2F2009632499226C5BEFF450;5008.
+(rerunfilecheck)             Checksum: 5606D255B3F94016FC3052E3E4F5B287;5023.
  ) 
 Here is how much of TeX's memory you used:
- 40468 strings out of 474222
- 911013 string characters out of 5748734
- 1958975 words of memory out of 5000000
- 61604 multiletter control sequences out of 15000+600000
- 641915 words of font info for 206 fonts, out of 8000000 for 9000
+ 40481 strings out of 474222
+ 911470 string characters out of 5748734
+ 1954975 words of memory out of 5000000
+ 61612 multiletter control sequences out of 15000+600000
+ 642081 words of font info for 208 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,12n,131p,1413b,2353s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,12n,131p,1510b,2353s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/ty
 pe1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></u
 sr/share/texmf/fonts/type1/public/lm/lmmi5.pfb></usr/share/texmf/fonts/type1/pu
@@ -1403,10 +1415,10 @@ pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmsy5.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></u
 sr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on paper.pdf (21 pages, 2395762 bytes).
+Output written on paper.pdf (21 pages, 2529534 bytes).
 PDF statistics:
- 732 PDF objects out of 1000 (max. 8388607)
- 636 compressed objects within 7 object streams
- 157 named destinations out of 1000 (max. 500000)
- 48995 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 740 PDF objects out of 1000 (max. 8388607)
+ 642 compressed objects within 7 object streams
+ 158 named destinations out of 1000 (max. 500000)
+ 49000 words of extra memory for PDF output out of 51595 (max. 10000000)
 
