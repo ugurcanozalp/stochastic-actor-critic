@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.5)  23 DEC 2025 22:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.5)  27 DEC 2025 17:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1229,36 +1229,36 @@ Package microtype Info: Loading generic protrusion settings for font family
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/
 dvips/lm/lm-ec.enc}]
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-90.
+96.
 
 (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-90.
+96.
 
 (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-190.
+196.
 
 (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-190.
+196.
 
 (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 190.
+(Font)              <10> on input line 196.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 190.
+(Font)              <7> on input line 196.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 190.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 190
+(Font)              <5> on input line 196.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 196
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -1267,7 +1267,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 190
+LaTeX Font Info:    Trying to load font information for U+msb on input line 196
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1278,7 +1278,7 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [2{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/
 enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr
 /share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}]
-Overfull \hbox (13.13788pt too wide) detected at line 241
+Overfull \hbox (13.13788pt too wide) detected at line 247
 [][][]\OML/lmm/m/it/10 ^^Y[]\OT1/lmr/m/n/10 (\OMS/lmsy/m/n/10 ^^A j \OML/lmm/m/
 it/10 s\OT1/lmr/m/n/10 ) = [] [] \U/msb/m/n/10 E[][][][]\OML/lmm/m/it/10 ^^Y\OT
 1/lmr/m/n/10 (\OMS/lmsy/m/n/10 ^^A j \OML/lmm/m/it/10 s\OT1/lmr/m/n/10 )[][][][
@@ -1288,9 +1288,9 @@ lmr/m/n/10 (\OML/lmm/m/it/10 a\OMS/lmsy/m/n/10 j\OML/lmm/m/it/10 s\OT1/lmr/m/n/
 10 )[]\OML/lmm/m/it/10 ;
  []
 
-[3] [4]
+[3] [4] [5]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-59.
+65.
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -1298,7 +1298,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [5]
+
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1306,85 +1306,88 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Underfull \vbox (badness 1762) has occurred while \output is active []
+Underfull \vbox (badness 6641) has occurred while \output is active []
 
  [6]
 [7]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 485.
+put line 491.
  [8]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 5
-42.
+48.
  (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<figures/main-comparison/score.png, id=423, 1156.32pt x 650.43pt>
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<figures/main-comparison/score.png, id=467, 1156.32pt x 650.43pt>
 File: figures/main-comparison/score.png Graphic file (type png)
 <use figures/main-comparison/score.png>
 Package pdftex.def Info: figures/main-comparison/score.png  used on input line 
-589.
+595.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
-<figures/main-comparison/error.png, id=425, 1156.32pt x 650.43pt>
+<figures/main-comparison/error.png, id=469, 1156.32pt x 650.43pt>
 File: figures/main-comparison/error.png Graphic file (type png)
 <use figures/main-comparison/error.png>
 Package pdftex.def Info: figures/main-comparison/error.png  used on input line 
-596.
+602.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
- [9{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}] [10 <./figures/main-compar
-ison/score.png> <./figures/main-comparison/error.png>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [11]
-<figures/risk-sensitive/heatmap_riskypointmass.png, id=476, 1084.05pt x 252.945
+Underfull \vbox (badness 5288) has occurred while \output is active []
+
+ [9{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}] [10 <./figures/main-compar
+ison/score.png> <./figures/main-comparison/error.png>] [11]
+<figures/risk-sensitive/heatmap_riskypointmass.png, id=518, 1084.05pt x 252.945
 pt>
 File: figures/risk-sensitive/heatmap_riskypointmass.png Graphic file (type png)
 
 <use figures/risk-sensitive/heatmap_riskypointmass.png>
 Package pdftex.def Info: figures/risk-sensitive/heatmap_riskypointmass.png  use
-d on input line 668.
+d on input line 675.
 (pdftex.def)             Requested size: 469.75496pt x 109.60948pt.
-
-[12 <./figures/risk-sensitive/heatmap_riskypointmass.png>] [13] (./paper.bbl
-[14] [15]) [16] [17]
-<figures/stac-fixed-pessimism/score.png, id=587, 1156.32pt x 650.43pt>
+ [12 <./figures/risk-sensitive/heatmap_riskypointmass.png>] [13] [14] (./paper.
+bbl [15] [16]) [17] [18]
+<figures/stac-fixed-pessimism/score.png, id=635, 1156.32pt x 650.43pt>
 File: figures/stac-fixed-pessimism/score.png Graphic file (type png)
 <use figures/stac-fixed-pessimism/score.png>
 Package pdftex.def Info: figures/stac-fixed-pessimism/score.png  used on input 
-line 771.
+line 778.
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
-<figures/stac-fixed-pessimism/error.png, id=588, 1156.32pt x 650.43pt>
+<figures/stac-fixed-pessimism/error.png, id=636, 1156.32pt x 650.43pt>
 File: figures/stac-fixed-pessimism/error.png Graphic file (type png)
 <use figures/stac-fixed-pessimism/error.png>
 Package pdftex.def Info: figures/stac-fixed-pessimism/error.png  used on input 
-line 778.
+line 785.
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
-<figures/stac-dropout/score.png, id=589, 1156.32pt x 650.43pt>
+<figures/stac-dropout/score.png, id=637, 1156.32pt x 650.43pt>
 File: figures/stac-dropout/score.png Graphic file (type png)
 <use figures/stac-dropout/score.png>
-Package pdftex.def Info: figures/stac-dropout/score.png  used on input line 788
+Package pdftex.def Info: figures/stac-dropout/score.png  used on input line 795
 .
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
- [18 <./figures/stac-fixed-pessimism/score.png> <./figures/stac-fixed-pessimism
-/error.png>]
-<figures/stac-dropout/error.png, id=598, 1156.32pt x 650.43pt>
+
+[19 <./figures/stac-fixed-pessimism/score.png> <./figures/stac-fixed-pessimism/
+error.png>]
+<figures/stac-dropout/error.png, id=647, 1156.32pt x 650.43pt>
 File: figures/stac-dropout/error.png Graphic file (type png)
 <use figures/stac-dropout/error.png>
-Package pdftex.def Info: figures/stac-dropout/error.png  used on input line 795
+Package pdftex.def Info: figures/stac-dropout/error.png  used on input line 802
 .
 (pdftex.def)             Requested size: 446.25204pt x 251.01677pt.
 
 Underfull \vbox (badness 6094) has occurred while \output is active []
 
- [19 <./figures/stac-dropout/score.png> <./figures/stac-dropout/error.png>]
+ [20 <./figures/stac-dropout/score.png> <./figures/stac-dropout/error.png>]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [20]
-Underfull \hbox (badness 10000) in paragraph at lines 948--949
+ [21]
+Underfull \hbox (badness 10000) in paragraph at lines 955--956
 \T1/lmr/m/n/10 (+20) Our re-sults can be ac-cessed pub-licly at []$\T1/lmtt/m/n
 /10 https : / / github . com / authors-[]github /
  []
 
-[21] (./paper.aux)
+[22] (./paper.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -1397,11 +1400,11 @@ Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: 5606D255B3F94016FC3052E3E4F5B287;5023.
  ) 
 Here is how much of TeX's memory you used:
- 40481 strings out of 474222
- 911470 string characters out of 5748734
- 1954975 words of memory out of 5000000
- 61612 multiletter control sequences out of 15000+600000
- 642081 words of font info for 208 fonts, out of 8000000 for 9000
+ 40530 strings out of 474222
+ 912518 string characters out of 5748734
+ 1953975 words of memory out of 5000000
+ 61639 multiletter control sequences out of 15000+600000
+ 642731 words of font info for 214 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,12n,131p,1510b,2353s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/ty
@@ -1415,10 +1418,10 @@ pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmsy5.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></u
 sr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on paper.pdf (21 pages, 2529534 bytes).
+Output written on paper.pdf (22 pages, 2538167 bytes).
 PDF statistics:
- 740 PDF objects out of 1000 (max. 8388607)
- 642 compressed objects within 7 object streams
- 158 named destinations out of 1000 (max. 500000)
+ 788 PDF objects out of 1000 (max. 8388607)
+ 689 compressed objects within 7 object streams
+ 168 named destinations out of 1000 (max. 500000)
  49000 words of extra memory for PDF output out of 51595 (max. 10000000)
 

@@ -49,13 +49,13 @@ def visualize_masspoint_behavior(agents: List[Agent]):
         ax_xy[i].set_xlabel("$x$")
         if i == 0:
             ax_xy[i].set_ylabel(f"$y$")
-        countorf_xy = ax_xy[i].contourf(x_grid, y_grid, f_x_y, cmap="turbo", vmin=0, vmax=2.5, levels=np.linspace(0, 2.5, 200), extend='both')
+        countorf_xy = ax_xy[i].contourf(x_grid, y_grid, f_x_y, cmap="inferno", vmin=0, vmax=2.5, levels=np.linspace(0, 2.5, 200), extend='both')
         if i == ncol - 1:
             cbar_xy = fig_xy.colorbar(countorf_xy, use_gridspec=False)
             cbar_xy.locator = MaxNLocator(nbins=5)
             cbar_xy.update_ticks()      
-        danger_circ=plt.Circle((0.5, 0.5), 0.3, color='w', fill=False)
-        target_circ=plt.Circle((0.0, 0.0), 0.05, color='w', fill=True)       
+        danger_circ=plt.Circle((0.5, 0.5), 0.3, color='g', fill=False, linewidth=2)
+        target_circ=plt.Circle((0.0, 0.0), 0.05, color='g', fill=True, linewidth=2)
         ax_xy[i].add_patch(danger_circ)
         ax_xy[i].add_patch(target_circ)
 

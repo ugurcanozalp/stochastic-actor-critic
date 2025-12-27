@@ -7,45 +7,45 @@ Warning--can't use both volume and number fields in cetin2023learning
 Warning--can't use both volume and number fields in dabney2018distributional
 Warning--empty journal in gal2016uncertainty
 Warning--can't use both volume and number fields in yang2021wcsac
-You've used 46 entries,
+You've used 55 entries,
             2773 wiz_defined-function locations,
-            820 strings with 13948 characters,
-and the built_in function-call counts, 25254 in all, are:
-= -- 2126
-> -- 1978
-< -- 21
-+ -- 663
-- -- 615
-* -- 2176
-:= -- 3950
-add.period$ -- 144
-call.type$ -- 46
-change.case$ -- 338
-chr.to.int$ -- 44
-cite$ -- 96
-duplicate$ -- 1041
-empty$ -- 1729
-format.name$ -- 678
-if$ -- 5221
+            866 strings with 15631 characters,
+and the built_in function-call counts, 30224 in all, are:
+= -- 2573
+> -- 2300
+< -- 28
++ -- 771
+- -- 714
+* -- 2572
+:= -- 4694
+add.period$ -- 175
+call.type$ -- 55
+change.case$ -- 398
+chr.to.int$ -- 53
+cite$ -- 114
+duplicate$ -- 1270
+empty$ -- 2108
+format.name$ -- 790
+if$ -- 6293
 int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 45
-newline$ -- 238
-num.names$ -- 184
-pop$ -- 681
+missing$ -- 54
+newline$ -- 283
+num.names$ -- 220
+pop$ -- 806
 preamble$ -- 1
-purify$ -- 294
+purify$ -- 345
 quote$ -- 0
-skip$ -- 889
+skip$ -- 1076
 stack$ -- 0
-substring$ -- 617
-swap$ -- 154
-text.length$ -- 11
+substring$ -- 782
+swap$ -- 201
+text.length$ -- 15
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 501
+type$ -- 600
 warning$ -- 4
-while$ -- 175
+while$ -- 216
 width$ -- 0
-write$ -- 590
+write$ -- 709
 (There were 4 warnings)

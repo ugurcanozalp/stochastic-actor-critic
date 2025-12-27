@@ -1,4 +1,4 @@
-\begin{thebibliography}{46}
+\begin{thebibliography}{55}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -16,6 +16,20 @@ Mastane Achab, Reda Alami, Yasser Abdelaziz~Dahou Djilali, Kirill Fedyanin, and
   Eric Moulines.
 \newblock One-step distributional reinforcement learning.
 \newblock \emph{arXiv preprint arXiv:2304.14421}, 2023.
+
+\bibitem[Audibert et~al.(2007)Audibert, Munos, and
+  Szepesv{\'a}ri]{audibert2007tuning}
+Jean-Yves Audibert, R{\'e}mi Munos, and Csaba Szepesv{\'a}ri.
+\newblock Tuning bandit algorithms in stochastic environments.
+\newblock In \emph{International conference on algorithmic learning theory},
+  pp.\  150--165. Springer, 2007.
+
+\bibitem[Azizzadenesheli et~al.(2018)Azizzadenesheli, Brunskill, and
+  Anandkumar]{azizzadenesheli2018efficient}
+Kamyar Azizzadenesheli, Emma Brunskill, and Animashree Anandkumar.
+\newblock Efficient exploration through bayesian deep q-networks.
+\newblock In \emph{2018 Information Theory and Applications Workshop (ITA)},
+  pp.\  1--9. IEEE, 2018.
 
 \bibitem[Ba et~al.(2016)Ba, Kiros, and Hinton]{ba2016layer}
 Jimmy~Lei Ba, Jamie~Ryan Kiros, and Geoffrey~E Hinton.
@@ -46,6 +60,12 @@ Kurtland Chua, Roberto Calandra, Rowan McAllister, and Sergey Levine.
 \newblock Deep reinforcement learning in a handful of trials using
   probabilistic dynamics models.
 \newblock \emph{Advances in neural information processing systems}, 31, 2018.
+
+\bibitem[Ciosek et~al.(2019)Ciosek, Vuong, Loftin, and
+  Hofmann]{ciosek2019better}
+Kamil Ciosek, Quan Vuong, Robert Loftin, and Katja Hofmann.
+\newblock Better exploration with optimistic actor critic.
+\newblock \emph{Advances in Neural Information Processing Systems}, 32, 2019.
 
 \bibitem[Dabney et~al.(2018{\natexlab{a}})Dabney, Ostrovski, Silver, and
   Munos]{dabney2018implicit}
@@ -82,6 +102,14 @@ Jingliang Duan, Yang Guan, Shengbo~Eben Li, Yangang Ren, Qi~Sun, and Bo~Cheng.
   for addressing value estimation errors.
 \newblock \emph{IEEE transactions on neural networks and learning systems},
   33\penalty0 (11):\penalty0 6584--6598, 2021.
+
+\bibitem[Duan et~al.(2025)Duan, Wang, Xiao, Gao, Li, Liu, Zhang, Cheng, and
+  Li]{duan2025distributional}
+Jingliang Duan, Wenxuan Wang, Liming Xiao, Jiaxin Gao, Shengbo~Eben Li, Chang
+  Liu, Ya-Qin Zhang, Bo~Cheng, and Keqiang Li.
+\newblock Distributional soft actor-critic with three refinements.
+\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
+  Intelligence}, 2025.
 
 \bibitem[Fujimoto et~al.(2018)Fujimoto, Hoof, and
   Meger]{fujimoto2018addressing}
@@ -178,6 +206,13 @@ Diederik~P Kingma and Jimmy Ba.
 \newblock Adam: A method for stochastic optimization.
 \newblock \emph{arXiv preprint arXiv:1412.6980}, 2014.
 
+\bibitem[Kocsis \& Szepesv{\'a}ri(2006)Kocsis and
+  Szepesv{\'a}ri]{kocsis2006bandit}
+Levente Kocsis and Csaba Szepesv{\'a}ri.
+\newblock Bandit based monte-carlo planning.
+\newblock In \emph{European conference on machine learning}, pp.\  282--293.
+  Springer, 2006.
+
 \bibitem[Kuznetsov et~al.(2020)Kuznetsov, Shvechikov, Grishin, and
   Vetrov]{kuznetsov2020controlling}
 Arsenii Kuznetsov, Pavel Shvechikov, Alexander Grishin, and Dmitry Vetrov.
@@ -252,6 +287,11 @@ Michal Nauman, Micha{\l} Bortkiewicz, Piotr Mi{\l}o{\'s}, Tomasz Trzci{\'n}ski,
   bitter lesson of reinforcement learning.
 \newblock \emph{arXiv preprint arXiv:2403.00514}, 2024.
 
+\bibitem[O'Donoghue(2023)]{o2023efficient}
+Brendan O'Donoghue.
+\newblock Efficient exploration via epistemic-risk-seeking policy optimization.
+\newblock \emph{arXiv preprint arXiv:2302.09339}, 2023.
+
 \bibitem[Paszke et~al.(2019)Paszke, Gross, Massa, Lerer, Bradbury, Chanan,
   Killeen, Lin, Gimelshein, Antiga, et~al.]{paszke2019pytorch}
 Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory
@@ -277,6 +317,11 @@ Yichuan~Charlie Tang, Jian Zhang, and Ruslan Salakhutdinov.
 \newblock Worst cases policy gradients.
 \newblock \emph{arXiv preprint arXiv:1911.03618}, 2019.
 
+\bibitem[Th{\'e}ate \& Ernst(2023)Th{\'e}ate and Ernst]{theate2023risk}
+Thibaut Th{\'e}ate and Damien Ernst.
+\newblock Risk-sensitive policy with distributional reinforcement learning.
+\newblock \emph{Algorithms}, 16\penalty0 (7):\penalty0 325, 2023.
+
 \bibitem[Thrun \& Schwartz(2014)Thrun and Schwartz]{thrun2014issues}
 Sebastian Thrun and Anton Schwartz.
 \newblock Issues in using function approximation for reinforcement learning.
@@ -300,11 +345,24 @@ Hado Van~Hasselt, Yotam Doron, Florian Strub, Matteo Hessel, Nicolas Sonnerat,
 \newblock Deep reinforcement learning and the deadly triad.
 \newblock \emph{arXiv preprint arXiv:1812.02648}, 2018.
 
+\bibitem[Wu et~al.(2023)Wu, El-Shamouty, Nitsche, and Huber]{wu2023uncertainty}
+Xinyang Wu, Mohamed El-Shamouty, Christof Nitsche, and Marco~F Huber.
+\newblock Uncertainty-guided active reinforcement learning with bayesian neural
+  networks.
+\newblock In \emph{2023 IEEE International Conference on Robotics and
+  Automation (ICRA)}, pp.\  5751--5757. IEEE, 2023.
+
 \bibitem[Yang et~al.(2021)Yang, Sim{\~a}o, Tindemans, and Spaan]{yang2021wcsac}
 Qisong Yang, Thiago~D Sim{\~a}o, Simon~H Tindemans, and Matthijs~TJ Spaan.
 \newblock Wcsac: Worst-case soft actor critic for safety-constrained
   reinforcement learning.
 \newblock In \emph{Proceedings of the AAAI Conference on Artificial
   Intelligence}, volume~35, pp.\  10639--10646, 2021.
+
+\bibitem[Zhang et~al.(2024)Zhang, Han, Xiong, Zhu, and
+  L{\"u}]{zhang2024explorer}
+Junwei Zhang, Shuai Han, Xi~Xiong, Sheng Zhu, and Shuai L{\"u}.
+\newblock Explorer-actor-critic: Better actors for deep reinforcement learning.
+\newblock \emph{Information Sciences}, 662:\penalty0 120255, 2024.
 
 \end{thebibliography}
