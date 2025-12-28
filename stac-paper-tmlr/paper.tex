@@ -159,8 +159,6 @@
 
 % ESTAC is important for comparison.
 % Risky mass point ablation is very important.
-% Explain what is one-step uncertainty in the intro. DONE i think.
-% Update actor-critic update iteration notation. DONE 
 
 \section{Introduction}
 
@@ -669,7 +667,11 @@ Dropout’s primary role in STAC is as a regularization tool to improve optimiza
 
 In STAC, actor updates are pessimistic for one-step return uncertainty. However, critic targets are also pessimistic with respect to consecutive steps. Therefore, pessimism is also bootstrapped along with reward, and it is expected to observe increasing risk-averse behavior when higher $\beta$ is used. 
 
-Following \citet{ma2021conservative} and \citet{ma2025dsac}, risky navigation task is used as a simple stochastic problem. The environment is named as \verb~RiskyPointMass-v0~. The goal of this task is to navigate a point mass towards a target point while avoiding a danger zone, in a two dimensional space. Danger zone is a circular area with a radius of $r_0 = 0.3$, centered at point $(0.5, 0.5)$. Initial states are randomly selected from $\mathcal{U}(0.3, 1)$ for both coordinates, excluding the danger zone. Episode terminates if the agent is close to target point $(0, 0)$ by Euclidean distance of $0.05$. At each step, the agent recieves sum of three reward components: negative Euclidean distance, fixed $-0.1$ points to promote episode termination, a penalty of $-10$ points with probability $0.1\exp(-4 r^2/r_0^2)$ where $r$ is the distance to danger zone center. The agent can move by $0.1$ unit at most in both dimensions plus a random slip (at most $0.02$ unit). The reward function is designed so that optimal risk-neutral solution is to navigate linearly to the target point whereas optimal risk-averse solution is to navigate around the danger zone circle. 
+Following \citet{ma2021conservative} and \citet{ma2025dsac}, risky navigation task is used as a simple stochastic problem. The environment is named as \verb~RiskyPointMass-v0~. The goal of this task is to navigate a point mass towards a target point while avoiding a danger zone, in a two dimensional space. Danger zone is a circular area with a radius of $r_0 = 0.3$, centered at point $(0.5, 0.5)$. Initial states are randomly selected from $\mathcal{U}(0.3, 1)$ for both coordinates, excluding the danger zone. Episode terminates if the agent is close to target point $(0, 0)$ by Euclidean distance of $0.05$. At each step, the agent recieves sum of three reward components: negative Euclidean distance to the target, fixed $-0.1$ points to promote episode termination, a penalty of $-10$ points if the agent is within danger zone with probability $0.1\exp(-4 r^2/r_0^2)$ where $r$ is the distance to danger zone center. The agent can move by $0.1$ unit at most in both dimensions plus a random slip (at most $0.02$ unit). The reward function is designed so that optimal risk-neutral solution is to navigate linearly to the target point whereas optimal risk-averse solution is to navigate around the danger zone circle. 
+
+For each $\beta$ value, STAC is run on this environment with a same single seed. In Figure \ref{fig:pointmass_heatmap}, for varying $\beta$ values, position densities of the trained agents are demonstrated. The bigger green circles represent danger zone boundaries, whereas quarter green circles on the lower left represent the target points. For this demonstration, 200 evaluation steps are run with random initial points. Clearly, with higher $\beta$ values, the agent prefers to go around the circle as opposed to agents trained with lower $\beta$.  
+
+As expected, STAC not only mitigates overestimation but also ensures risk-averse learning with pessimism on temporal uncertainty. 
 
 \begin{figure}%[H]
 	\centering
