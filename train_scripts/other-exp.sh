@@ -28,8 +28,7 @@ do
 	done
 done
 
-
-# DSACT 
+# DSAC
 for env_idx in {0..8}
 do
 	env=${envs[env_idx]}
@@ -40,7 +39,7 @@ do
 	for seed in {1..5}
 	do 
 		echo "Seed: ${seed}"
-		python -m scripts.dsact \
+		python -m scripts.dsac \
 		--env_name=$env \
 		--autotune \
 		--target_entropy=$target_ent \
