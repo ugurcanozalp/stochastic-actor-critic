@@ -18,17 +18,19 @@ do
 	for seed in {1..5}
 	do 
 		echo "Seed: ${seed}"
-		python -m scripts.dstac \
+		python -m scripts.stac \
 		--env_name=$env \
 		--autotune \
 		--target_entropy=$target_ent \
 		--beta=$beta \
+		--beta_lr=1e-5 \
+		--autopessimism \
 		--pi_dropout=0 \
 		--q_dropout=0 \
 		--seed=$seed \
 		--render_mode none \
 		--max_train_steps=$step \
-		--env_kwargs $env_kw
+		--env_kwargs $env_kw 
 
 	done
 done
