@@ -157,9 +157,6 @@
 % keywords can be added for arxiv version. 
 %\keywords{Reinforcement Learning \and Uncertainty \and Overestimation \and Pessimism \and Actor-Critic \and Dropout}
 
-% ESTAC is important for comparison.
-% Risky mass point ablation is very important.
-
 \section{Introduction}
 
 Actor-critic methods leverage off-policy samples to train critics, promising higher sample-efficient learning than on-policy algorithms. Despite this advantage, actor-critic agents often struggle with \emph{overestimation bias} in value function learning due to \emph{deadly triad} of function approximation, temporal difference, and off-policy learning \citep{thrun2014issues, sutton2018reinforcement, van2018deep}, which destabilizes training. In this work, we revisit these issues from a fresh perspective, focusing on the use of uncertainty modeling in actor-critic architectures. 
@@ -351,13 +348,6 @@ Under sub-Gaussian assumption, if there exist an upper bound for overestimation,
 
 The source of overestimation and necessity of pessimistic training is revealed in Theorem \ref{thm:overestimation}, Corollary \ref{cor:pessimism}. Moreover, maximum overestimation bound is demonstrated in Theorem \ref{thm:overestimation_bound}. As an additional notation, we introduce pessimistic distributional Bellman backup $\mathcal{T}_{\beta, D}^{\pi}\mathcal{Q}$ where pessimistic Bellman backup of sampled values are sampled from this distribution, i.e.,  $\mathcal{T}_{\beta}^{\pi} Q(s,a) \sim \mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$. The difference between $\mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$ and $\mathcal{T}^{\pi}_{D}\mathcal{Q}(s, a)$ is illustrated in Figure \ref{fig:evol_bellman_backup}. 
 
-\subsection{Optimal Pessimism Rate}
-Although using pessimistic critic targets for critic and actor training is not a new idea \citep{moskovitz2021tactical, kuznetsov2020controlling, chen2021randomized}, the question of how to determine pessimism $\beta$ remains. 
-
-There is no analytical way to determine the optimum pessimism level. \citet{moskovitz2021tactical} focus on updating pessimism \textit{on the fly} as a bandit problem instead of fixing it but this requires evaluating on-policy returns and introduces an online bandit to update pessimism. \citet{cetin2023learning} proposed generalized pessimism learning based on expected bias between temporal difference target and base value of critic. Both of these methods use pessimism upon epistemic uncertainty as overestimation mitigation mechanism. 
-
-%Distributional methods perform optimistic/pessimistic update to scale risk seeking/averse learning. In general, conditional value at risk (CVaR) measures of value distribution is used for this purpose \citep{dabney2018implicit, tang2019worst, yang2021wcsac, kim2022efficient, ma2025dsac}, while using standard deviation is also practical \citep{ma2025dsac}. 
-
 \section{Stochastic Actor-Critic}
 \label{sec:stac}
 
@@ -461,10 +451,6 @@ Learning objective is cross-entropy loss (log loss),
 
 According to Corollary \ref{cor:pessimism}, pessimistic TD targets should be used to train critic network. However, this analysis do not account for policy learning since policy is assumed as $\text{softmax}$ over action values. In actor-crtic framework, same pessimistic objective should be used for policy improvement, since policy evaluation and policy improvement objective should be the same. In other words, at learning step $k$, Bellman backup must be equal to Bellman policy evaluation with the new policy, $\mathcal{T}^* Q^k \disteq \mathcal{T}^{\pi^{k+1}} Q^k$. It is only possible by using same pessimistic critic value for policy improvement. 
 
-\subsection{Pessimistic Objective}
-
-In STAC, pessimism is modeled as a fixed parameter, unlike the work of \citep{moskovitz2021tactical} and \citep{cetin2023learning}. Introducing such a mechanism would increase complexity of the algorithm, and it is observed that a properly selected pessimism rate is enough to obtain sufficient performance, as shown in the experiments. 
-
 \subsection{Dropout}
 
 STAC employs dropout to prevent over-fitting, and overestimation indirectly \citet{nauman2024overestimation}. While dropout may also promote exploration by injecting stochasticity into the policy and value estimates, we do not attempt to isolate or prove this effect here. 
@@ -525,9 +511,9 @@ Networks illustrations are available in Appendix \ref{app:network_archs}. Note t
 
 Through Gymnasium API \citep{towers_gymnasium_2023}, six MuJoCo and three Box2D environments are used for experiments as they are tested by most algorithms in the literature. Box2D environments are inherently random, \verb|BipedalWalker-v3| and \verb|BipedalWalkerHardcore-v3| models a two-legged robot on randomly generated terrain, while \verb|LunarLander-v3| models a landing spaceship under wind and turbulence, which is maximized in our experiments. 
 
-Hyper-parameters per environment can be found in Table \ref{tab:parameters_algos} of Appendix \ref{app:hyperparam_exp}. For all experiments, PyTorch (version 2.7.1) \citep{paszke2019pytorch} is used. Please refer to Appendix \ref{app:code} for the codebase. 
-
 For evaluation, after each 1000 time steps, we execute a single test episode using the online policy and measure its performance by calculating the total reward accumulated during the episode. Specified environments are trained through a fixed number of environment interactions, repeated 5 times to assess the stability of the algorithm. Further experimental details are presented in Appendix \ref{app:hyperparam_exp}.
+
+Hyper-parameters per environment can be found in Table \ref{tab:parameters_algos} of Appendix \ref{app:hyperparam_exp}. For all experiments, PyTorch (version 2.7.1) \citep{paszke2019pytorch} is used. Please refer to Appendix \ref{app:code} for the codebase. 
 
 \subsection{Comparison to Other Algorithms}
 
@@ -535,14 +521,14 @@ Our experiments aim to investigate whether enhancing off-policy actor-critic met
 
 We also add another algorithm called Epistemic Stochastic Actor-Critic (ESTAC), with double distributional critic with one-step uncertainty similar to STAC. For overestimation, minimum of two critic is used for learning similar to SAC and DSAC, instead of pessimism on temporal aleatoric uncertainty. The purpose here is to discover source of improvements of STAC over other methods, and the only difference between ESTAC and STAC is overestimation mitigation mechanism. 
 
-The pessimism rate and dropout configuration used for comparison is resulted from ablation studies, and explained in the next section. Optimal configurations are summarized in Table \ref{tab:target_ent_pessimism_algos}. 
+The pessimism rates and dropout configurations used for comparison are resulted from ablation studies, and explained in the next section. Optimal configurations are summarized in Table \ref{tab:target_ent_pessimism_algos}. 
 
 \paragraph{Learning curves} In Figure \ref{fig:main_comparison}, the performance of STAC is shown against previously mentioned SOTA algorithms. Additionally, value estimation errors are presented in Figure \ref{fig:error_comparison}. The bold lines represent the inter-quartile mean, while the shaded area indicates the quartiles (to represent randomness through seeds) of the total reward across evaluation episodes. Average returns through all learning processes averaged over random seeds are summarized in Table \ref{tab:env_auc_results} and final performance is summarized in Table \ref{tab:env_pess_results}. 
 
 % Learning curves are available in Appendix \ref{app:stac_and_others_curves}.
 
 \begin{table}[h!]
-	\addtolength{\tabcolsep}{12pt}
+	\addtolength{\tabcolsep}{1pt}
 	\centering
 	\caption{Average episodic return through learning procedure and over five training runs on MuJoCo and Box2D tasks. ± sign represents mean and standard deviation of overall score. } 
 	\label{tab:env_auc_results}
@@ -567,10 +553,10 @@ The pessimism rate and dropout configuration used for comparison is resulted fro
 
 
 \begin{table}[h!]
-	\addtolength{\tabcolsep}{2pt}
+	\addtolength{\tabcolsep}{1pt}
 	\centering
 	\caption{Inter-quartile mean results of last \%1 of evaluation episodes, $\beta$ and dropout for STAC is selected with best performance. } 
-	\label{tab:env_pess_results}
+	\label{tab:env_iqm_results}
 	\begin{tabular}{|c c c c c c |}
 		\hline
 		Env  & \# steps & DSAC & ESTAC & SAC & STAC \\ 
@@ -604,7 +590,7 @@ The pessimism rate and dropout configuration used for comparison is resulted fro
 \end{figure}
 %%
 
-\paragraph{Sample efficiency} As seen from Figure \ref{fig:main_comparison} and Table \ref{tab:env_auc_results}, STAC outperforms other algorithms on many environments in terms of sample efficiency (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|Hopper-v4|, \verb|Swimmer-v4| \verb|Walker-v4|). Although ESTAC and SAC performs better on some environments, STAC still has a competitive performance, no convergence issue, and achieves this by using single critic while others use double. STAC has different components compared to other algorithms: pessimism is a must for convergence, while actor dropout is optional for performance improvement. However, critic dropout is necessary for some environments. Details will be discussed in the next section. 
+\paragraph{Sample efficiency} As seen from Figure \ref{fig:main_comparison}, Table \ref{tab:env_auc_results} and Table \ref{tab:env_iqm_results}, STAC outperforms other algorithms on some environments in terms of sample efficiency (see \verb|BipedalWalkerHardcore-v3|, \verb|HalfCheetah-v4|, \verb|Hopper-v4|, \verb|Swimmer-v4|). However, it is important to note that there are many factors that affects performance, such as distribution modeling method, number of critics and regularization method, network size and learning rates etc. Therefore, rather than performance, we demonstrat that STAC has a competitive performance, no convergence issue, and achieves this by using single critic while others use double. 
 
 % significance test? unpaired t-test ? ...
 
@@ -669,9 +655,7 @@ In STAC, actor updates are pessimistic for one-step return uncertainty. However,
 
 Following \citet{ma2021conservative} and \citet{ma2025dsac}, risky navigation task is used as a simple stochastic problem. The environment is named as \verb~RiskyPointMass-v0~. The goal of this task is to navigate a point mass towards a target point while avoiding a danger zone, in a two dimensional space. Danger zone is a circular area with a radius of $r_0 = 0.3$, centered at point $(0.5, 0.5)$. Initial states are randomly selected from $\mathcal{U}(0.3, 1)$ for both coordinates, excluding the danger zone. Episode terminates if the agent is close to target point $(0, 0)$ by Euclidean distance of $0.05$. At each step, the agent recieves sum of three reward components: negative Euclidean distance to the target, fixed $-0.1$ points to promote episode termination, a penalty of $-10$ points if the agent is within danger zone with probability $0.1\exp(-4 r^2/r_0^2)$ where $r$ is the distance to danger zone center. The agent can move by $0.1$ unit at most in both dimensions plus a random slip (at most $0.02$ unit). The reward function is designed so that optimal risk-neutral solution is to navigate linearly to the target point whereas optimal risk-averse solution is to navigate around the danger zone circle. 
 
-For each $\beta$ value, STAC is run on this environment with a same single seed. In Figure \ref{fig:pointmass_heatmap}, for varying $\beta$ values, position densities of the trained agents are demonstrated. The bigger green circles represent danger zone boundaries, whereas quarter green circles on the lower left represent the target points. For this demonstration, 200 evaluation steps are run with random initial points. Clearly, with higher $\beta$ values, the agent prefers to go around the circle as opposed to agents trained with lower $\beta$.  
-
-As expected, STAC not only mitigates overestimation but also ensures risk-averse learning with pessimism on temporal uncertainty. 
+For each $\beta$ value, STAC is run on this environment with a same single seed. In Figure \ref{fig:pointmass_heatmap}, for varying $\beta$ values, position densities of the trained agents are demonstrated. The bigger green circles represent danger zone boundaries, whereas quarter green circles on the lower left represent the target points. For this demonstration, 200 evaluation steps are run with random initial points. Clearly, with higher $\beta$ values, the agent prefers to go around the circle as opposed to agents trained with lower $\beta$. As expected, STAC not only mitigates overestimation but also ensures risk-averse learning with pessimism on temporal uncertainty. 
 
 \begin{figure}%[H]
 	\centering
@@ -684,8 +668,8 @@ As expected, STAC not only mitigates overestimation but also ensures risk-averse
 
 \paragraph{Overestimation reduction by epistemic uncertainty} In the literature, overestimation problem is solved by pessimistic learning based on \textit{epistemic uncertainty} of critic \citep{chen2021randomized, hiraoka2021dropout}. The same approach is also used in model-based RL methods \citep{janner2019trust, chua2018deep, depeweg2016learning}. Recently, for off-policy model-free actor-critic algorithms, epistemic uncertainty is estimated by using double network \citep{fujimoto2018addressing, haarnoja2018soft} or ensemble networks \citep{chen2021randomized, moskovitz2021tactical}. Ensemble of critics are computationally expensive as there are multiple of parameters to be optimized. Using dropout is a kind of Bayesian approximation, so another way to assess epistemic uncertainty \citep{Gal2016Dropout}. It has applications on model-based \citep{Gal2016ImprovingPILCO, gal2017concrete, kahn2017uncertainty} and model-free \citep{moerland2017efficient, jaques2019way, he2021mepg} reinforcement learning. For actor-critic, \citet{hiraoka2021dropout} found out that using Bayesian dropout also reduces the necessary critic ensemble size. The mentioned methods use a constant level of pessimism for policy evaluation and improvement, while \citet{moskovitz2021tactical} focused on updating pessimism \textit{on the fly} as a bandit problem rather than fixing it. 
 
-\paragraph{Distributional/safe reinforcement learning}  
-Aleatoric uncertainty representation for the value function carries fundamental importance, especially in the presence of approximation \citep{bellemare2017distributional}. This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional, ma2025dsac}, or a normal distribution \citep{tang2019worst, yang2021wcsac} to model cumulative return behavior. For safety-critical RL applications to avoid catastrophic situations, pessimistic policy updates upon aleatoric uncertainty of return are used by \citet{tang2019worst} and \citet{yang2021wcsac}. These methods use pessimism only on actor update for safety, not for overestimation reduction, and models cumulative return uncertainty. 
+\paragraph{Risk-sensitive reinforcement learning}  
+Aleatoric uncertainty representation for the value function carries fundamental importance, especially in the presence of approximation \citep{bellemare2017distributional}. This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional, ma2025dsac}, or a normal distribution \citep{tang2019worst, yang2021wcsac} to model cumulative return behavior. For safety-critical RL applications to avoid catastrophic situations, pessimistic policy updates upon aleatoric uncertainty of return are used by \citet{tang2019worst} and \citet{yang2021wcsac}. Different than STAC, these methods use pessimism only on actor update for safety, not for overestimation reduction, and models full return uncertainty. 
 
 \paragraph{Overestimation reduction by aleatoric uncertainty}  
 \citet{kuznetsov2020controlling} claims \textit{aleatoric uncertainty} is also responsible for overestimation since any randomness is exploited when the Bellman optimality operator ($\mathcal{T}^*$) is employed. For this purpose, they use ensemble networks for epistemic uncertainty, in which each network is a distributional network (as quantiles) for aleatoric uncertainty assessment, and used both types of uncertainties for overestimation correction. Similarly, STAC uses distributional critic, but only models temporal (one-step) aleatoric uncertainty rather than full return distribution as this is the main source of overestimation. It is also not epistemic uncertainty since it is not related about weights of the critic network.
@@ -694,7 +678,7 @@ Aleatoric uncertainty representation for the value function carries fundamental 
 
 In this paper, we introduced Stochastic Actor-Critic (STAC), a novel off-policy actor-critic algorithm. The main idea is to mitigate overestimation for the sake of faster and more robust learning by incorporating the pessimistic learning objective using temporal aleatoric critic uncertainty. For this, critic is modeled as a distributional (heteroscedastic) neural network unlike previous approaches. Although normal distribution is used for this purpose, our analysis is valid for all sub-Gaussian critic representations. Unlike distributional RL methods, STAC only models uncertainty sourced by policy updates and one-step environment uncertainty, rather than cumulative return distribution. 
 
-We derived an upper bound for overestimation, demonstrating that an adequate level of pessimism mitigates overestimation without succumbing to underestimation, thus facilitating computation and sample-efficient learning. Lastly, using dropout on actor and critic networks are proposed to mitigate over-fitting, reducing overestimation indirectly. Actor dropout always improves performance, whereas using dropout on critic is only required to ensure learning convergence. 
+We derived an upper bound for overestimation, demonstrating that an adequate level of pessimism mitigates overestimation without succumbing to underestimation, thus facilitating computation and sample-efficient learning. Lastly, using dropout on actor and critic networks are proposed to mitigate over-fitting. Actor dropout always improves performance, whereas using dropout on critic is only required to ensure learning convergence. 
 
 \paragraph{Adaptive Pessimism} Our ablation studies demonstrate the effects of dropout rate and pessimism, revealing the sensitivity of the learning procedure to these parameters. For each specific environment and optimization method, an optimal level of pessimism and dropout exists. A promising direction for future research is to develop a grounded method to adjust the pessimism level for specific environments and agents to allow better adaptation for the learner to the environment. In addition, the sensitivity of similar algorithms to pessimism and dropout rate should be investigated in depth. 
 
