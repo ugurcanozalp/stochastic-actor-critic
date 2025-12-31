@@ -72,3 +72,28 @@ do
 		--env_kwargs $env_kw
 	done
 done
+
+# DSAC with dropout
+for env_idx in {0..8}
+do
+	env=${envs[env_idx]}
+	step=${total_steps[env_idx]}
+	target_ent=${target_entropies[env_idx]}
+	env_kw=${env_kw_params[env_idx]}	
+	echo "Environment: ${env}, Target Entropy: ${target_ent}, Total time steps: ${step}" 
+	for seed in {1..5}
+	do 
+		echo "Seed: ${seed}"
+		python -m scripts.dsac \
+		--env_name=$env \
+		--autotune \
+		--target_entropy=$target_ent \
+		--pi_dropout=0.01 \
+		--q_dropout=0.01 \
+		--algo_tag "__-@delta" \
+		--seed=$seed \
+		--render_mode none \
+		--max_train_steps=$step \
+		--env_kwargs $env_kw
+	done
+done

@@ -1,4 +1,4 @@
-\begin{thebibliography}{55}
+\begin{thebibliography}{57}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -49,6 +49,11 @@ Edoardo Cetin and Oya Celiktutan.
 \newblock In \emph{Proceedings of the AAAI conference on artificial
   intelligence}, volume~37, pp.\  6971--6979, 2023.
 
+\bibitem[Chen et~al.(2025)Chen, Liu, Zhou, Qu, and Qi]{chen2025unleashing}
+Deshu Chen, Yuchen Liu, Zhijian Zhou, Chao Qu, and Yuan Qi.
+\newblock Unleashing flow policies with distributional critics.
+\newblock \emph{arXiv preprint arXiv:2509.23087}, 2025.
+
 \bibitem[Chen et~al.(2021)Chen, Wang, Zhou, and Ross]{chen2021randomized}
 Xinyue Chen, Che Wang, Zijian Zhou, and Keith Ross.
 \newblock Randomized ensembled double q-learning: Learning fast without a
@@ -94,6 +99,12 @@ Stefan Depeweg, Jos{\'e}~Miguel Hern{\'a}ndez-Lobato, Finale Doshi-Velez, and
 Armen Der~Kiureghian and Ove Ditlevsen.
 \newblock Aleatory or epistemic? does it matter?
 \newblock \emph{Structural safety}, 31\penalty0 (2):\penalty0 105--112, 2009.
+
+\bibitem[Dong et~al.(2025)Dong, Zheng, Finn, Sadigh, and
+  Eysenbach]{dong2025value}
+Perry Dong, Chongyi Zheng, Chelsea Finn, Dorsa Sadigh, and Benjamin Eysenbach.
+\newblock Value flows.
+\newblock \emph{arXiv preprint arXiv:2510.07650}, 2025.
 
 \bibitem[Duan et~al.(2021)Duan, Guan, Li, Ren, Sun, and
   Cheng]{duan2021distributional}

@@ -148,131 +148,94 @@
 
 \begin{abstract}
 	
-	Off-policy actor-critic methods in reinforcement learning train a critic with temporal-difference updates and use it as a learning signal for the policy (actor). This design typically achieves higher sample efficiency than on-policy methods. However, critic networks tend to overestimate value estimate systematically. This is often addressed by introducing a pessimistic bias based on uncertainty estimates. Most of current methods employ techniques to quantify the critic’s epistemic uncertainty (due to lack of data) for scaling pessimistic updates. %Moreover, certain network regularization methods are shown to reduce overestimation bias. 
-	In this work, we propose a new algorithm called Stochastic Actor-Critic (STAC) that incorporates temporal (one-step) aleatoric uncertainty (due to noise within data) of the critic to scale pessimistic bias in the temporal-difference targets, instead of epistemic uncertainty. STAC uses a single distributional critic network to model distribution in value predictions, and applies dropout to both the critic and actor networks for regularization. 
-	Our results show that pessimism based on the distributional critic alone suffices to mitigate overestimation, and results in risk aversion in stochastic environments. Introducing dropout further improves training stability and performance by means of regularization. With this combination, STAC achieves high sample efficiency using just a single distributional critic network. 
+	Off-policy actor-critic methods in reinforcement learning train a critic with temporal-difference updates and use it as a learning signal for the policy (actor). This design typically achieves higher sample efficiency than purely on-policy methods. However, critic networks tend to overestimate value estimates systematically. This is often addressed by introducing a pessimistic bias based on uncertainty estimates. Current methods employ ensembling to quantify the critic’s epistemic uncertainty (arising from limited data) to scale pessimistic updates. %Moreover, certain network regularization methods are shown to reduce overestimation bias. 
+	In this work, we propose a new algorithm called Stochastic Actor-Critic (STAC) that incorporates temporal (one-step) aleatoric uncertainty (due to noise in the data) of the critic to scale pessimistic bias in the temporal-difference targets, rather than relying on epistemic uncertainty. STAC uses a single distributional critic network to model the temporal distribution of return, and applies dropout to both the critic and actor networks for regularization. 
+	Our results show that pessimism based on a distributional critic alone suffices to mitigate overestimation, and leads to risk-averse behavior in stochastic environments. Introducing dropout further improves training stability and performance by means of regularization. With this combination, STAC achieves better computational efficiency using a single distributional critic network. 
 	
 \end{abstract}
 
 % keywords can be added for arxiv version. 
 %\keywords{Reinforcement Learning \and Uncertainty \and Overestimation \and Pessimism \and Actor-Critic \and Dropout}
 
+% RUN DSAC with dropout...
+
 \section{Introduction}
 
-Actor-critic methods leverage off-policy samples to train critics, promising higher sample-efficient learning than on-policy algorithms. Despite this advantage, actor-critic agents often struggle with \emph{overestimation bias} in value function learning due to \emph{deadly triad} of function approximation, temporal difference, and off-policy learning \citep{thrun2014issues, sutton2018reinforcement, van2018deep}, which destabilizes training. In this work, we revisit these issues from a fresh perspective, focusing on the use of uncertainty modeling in actor-critic architectures. 
+Actor-critic methods leverage off-policy samples to train critics, promising higher sample-efficient learning than on-policy algorithms. Despite this advantage, actor-critic agents often struggle with \emph{overestimation bias} in value function learning due to the joint effects of function approximation, temporal-difference learning, and off-policy sampling \citep{thrun2014issues, sutton2018reinforcement, van2018deep}, which can destabilize training. In this work, we revisit this problem from a fresh perspective, focusing on the use of uncertainty modeling in actor-critic architectures. 
 
-Epistemic uncertainty is the indicator of lack of training data, and used to scale critic overestimation with pessimism by most of the current actor-critic methods \citep{fujimoto2018addressing, haarnoja2018soft, kuznetsov2020controlling, moskovitz2021tactical, chen2021randomized, hiraoka2021dropout, zhang2024explorer}. These methods use critic ensembles for this kind of uncertainty modeling. However, pessimistic updates based on epistemic critic (cumulative return) uncertainty hinders exploration of state-action space, contradicting with \textit{optimism in the face of uncertainty} principle \citep{kocsis2006bandit, audibert2007tuning, azizzadenesheli2018efficient, ciosek2019better, o2023efficient, wu2023uncertainty}. 
+Epistemic uncertainty indicates a lack of training data and is used by current actor-critic methods to scale pessimistic updates \citep{fujimoto2018addressing, haarnoja2018soft, kuznetsov2020controlling, moskovitz2021tactical, chen2021randomized, hiraoka2021dropout, zhang2024explorer}. These methods use critic ensembles for this kind of uncertainty modeling. However, pessimistic updates based on epistemic uncertainty in the critic may hinder exploration of the state–action space, contradicting the principle of \textit{optimism in the face of uncertainty} \citep{kocsis2006bandit, audibert2007tuning, azizzadenesheli2018efficient, ciosek2019better, o2023efficient, wu2023uncertainty}.
 
-On the other hand, aleatoric uncertainty is the measure of noise within training data. Some works propose to use pessimistic updates based on both epistemic and aleatoric uncertainty of return (discounted cumulative reward) for overestimation mitigation \citep{kuznetsov2020controlling}. Originally, modeling aleatoric uncertainty is topic of distributional reinforcement learning \citep{bellemare2017distributional, dabney2018distributional, kim2022efficient, duan2021distributional, duan2025distributional, ma2025dsac}, and mainly used to scale risk sensitivity of the agent \citep{tang2019worst, yang2021wcsac, theate2023risk, ma2025dsac}. While pessimistic policy updates lead to risk-averse behavior, optimistic updates results in risk-seeking behavior. 
+On the other hand, aleatoric uncertainty is a measure of noise within training data. Some works propose to use pessimistic updates based on both epistemic and aleatoric uncertainty of return (discounted cumulative reward) for overestimation mitigation \citep{kuznetsov2020controlling}. Originally, modeling aleatoric uncertainty is a topic of distributional reinforcement learning \citep{bellemare2017distributional, dabney2018distributional, kim2022efficient, duan2021distributional, duan2025distributional, ma2025dsac}, and mainly used to scale risk sensitivity of the agent \citep{tang2019worst, yang2021wcsac, theate2023risk, ma2025dsac}. While pessimistic policy updates lead to risk-averse behavior, optimistic updates result in risk-seeking behavior. Recently, in Q-learning setting, \citet{achab2023one} proposed to model temporal aleatoric distribution of return, in which uncertainty is induced by only one-step dynamics of the environment, rather than across all steps. This approach is proven to have convergence guarantees theoretically. 
 
-Recently, in Q-learning setting, \citet{achab2023one} proposed to model distribution of return induced by only one-step dynamics of the environment, rather than across all steps. This approach is proven to have convergence guarantees theoretically. Upon this idea, we hypothesize that this kind of uncertainty should be the base for scaling overestimation in actor-critic, since it includes all uncertainty sources that contribute to overestimation: transition stochasticity, the policy-induced noise in bootstrapped targets, and learning errors, but not return across all steps. 
+In off-policy actor-critic methods, the temporal-difference target changes continuously as the policy is updated. Although policy improvement is deterministic given a critic, high-dimensional function approximation causes small critic errors to be selectively exploited in a non-stationary manner, inducing irreducible variability in value targets even in deterministic environments, which is a major source of overestimation. We argue that this variability is best captured as temporal aleatoric uncertainty in the critic output, as it aggregates all uncertainty sources contributing to overestimation: policy-induced effects and transition or reward stochasticity.
 
-Based on this idea, we introduce a novel off-policy distributional actor-critic algorithm, Stochastic Actor-Critic (STAC), specifically modeling one-step return uncertainty for critic, and pessimistic updates based on this distribution. This way, STAC eliminates the need for double/ensemble critics, reducing both computation and memory costs. In other words, STAC uses \textit{pessimism in the face of temporal aleatoric uncertainty} for overestimation mitigation.  
+In this work, we show that temporal aleatoric uncertainty can be modeled by a distributional critic, and that pessimism applied to this uncertainty alone is sufficient to control overestimation—without ensembles or multiple critics. Based on this idea, we introduce a novel off-policy distributional actor-critic algorithm, Stochastic Actor-Critic (STAC), specifically modeling one-step return uncertainty for critic, and pessimistic updates based on this distribution. This way, STAC eliminates the need for double/ensemble critics, reducing both computation and memory costs. In other words, STAC uses \textit{pessimism in the face of temporal aleatoric uncertainty} for overestimation mitigation.  
 
-Our method differs from other methods using aleatoric uncertainty for risk aversion \citet{tang2019worst, yang2021wcsac, kim2022efficient, ma2025dsac}. These methods, incorporate pessimism on total return uncertainty only for actor updates, whereas STAC uses pessimism on temporal (one-step) uncertainty for both critic and actor updates. The main purpose is overestimation mitigation rather than risk-averse learning, but pessimism in STAC still yields to risk aversion, similar to fully distributional methods. 
+Our method differs from other methods using aleatoric uncertainty for risk aversion \citet{tang2019worst, yang2021wcsac, kim2022efficient, ma2025dsac}. These methods, incorporate pessimism on total return uncertainty only for actor updates, whereas STAC uses pessimism on temporal uncertainty for both critic and actor updates. The main purpose is overestimation mitigation rather than risk-averse learning, but pessimism in STAC still yields to risk aversion, similar to fully distributional methods. 
 
-Recent work of \citet{nauman2024overestimation} has also shown that network regularization has positive impact on overestimation by reducing over-fitting. Ensemble based methods inherently regularized by using multiple critic networks. Since STAC employs a single critic network, it is sensitive to learning errors and over-fitting. For this purpose, dropout mechanism \citep{srivastava2014dropout} and layer normalization \citep{ba2016layer} is employed in both actor and critic networks. 
+Recent work of \citet{nauman2024overestimation} has also shown that network regularization has positive impact on overestimation by reducing over-fitting. Ensemble based methods inherently regularized by using multiple critic networks. Since STAC uses a single critic network, it is sensitive to learning errors and over-fitting. For this purpose, dropout \citep{srivastava2014dropout} and layer normalization \citep{ba2016layer} are employed in both actor and critic networks as regularization tools.
 
-The implementation is very simple and can be obtained by introducing dropout to networks, modeling a distributional critic and defining and pessimistic learning objective upon Soft Actor-Critic algorithm \citep{haarnoja2018soft}. We conduct experiments on standard RL benchmarks to evaluate the performance of STAC compared to existing methods. Our results demonstrate the effectiveness of STAC in achieving competitive performance to SOTA methods while requiring fewer computational resources (single critic), making it a promising approach for real-world RL applications. 
-
-
+The implementation is very simple and can be obtained by introducing dropout to networks, modeling a distributional critic and defining a pessimistic learning objective upon Soft Actor-Critic algorithm \citep{haarnoja2018soft}. We conduct experiments on standard RL benchmarks to evaluate the performance of STAC compared to existing methods. Our results demonstrate the effectiveness of STAC in achieving competitive performance with state-of-the-art methods while requiring fewer computational resources (single critic), making it a promising approach for real-world RL applications. 
 
 \section{Preliminaries}
 
 \label{sec:preliminaries}
 
+This section introduces the minimum background required to analyze uncertainty-induced overestimation in off-policy actor-critic methods. Throughout the paper, $\mathcal{P}(\Omega)$ denotes the set of all possible probability distributions on the set $\Omega$. $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. 
+
 \subsection{Aleatoric and Epistemic Uncertainty}
 
-In this part, we explain the differences between two main types of uncertainties, \textit{aleatoric} and \textit{epistemic} uncertainty \citep{der2009aleatory, kendall2017uncertainties, gal2016uncertainty}. 
+Uncertainty in an estimate is mainly categorized as either \textit{aleatoric} or \textit{epistemic}  \citep{der2009aleatory, kendall2017uncertainties, gal2016uncertainty}. Epistemic uncertainty refers to uncertainty of model parameters ($\theta$) due to insufficient training data. Given the training data $\mathcal{D}$ and prior distribution $p(\theta)$ over the network parameters $\theta$, we can compute the posterior distribution over the parameters $p(\theta \mid \mathcal{D})$ using Bayesian inference. 
 
-\paragraph{Aleatoric Uncertainty} 
-This type of uncertainty comes from the inherent randomness within the data. Even if more data are collected, it is unavoidable and cannot be reduced, because it is an intrinsic part of the process being modeled, including measurement errors or natural variability in the data. 
+On the other hand, aleatoric uncertainty is induced by the inherent randomness within the data. Even with infinite data, it is unavoidable and cannot be reduced, because it is an intrinsic part of the process being modeled. In deep learning, we can model this by having a distributional network that outputs a probability distribution $p_{\theta}(y|x)$ conditioned on input $x$ \citep{lakshminarayanan2017simple, kendall2017uncertainties}. Given a dataset $\mathcal{D}$, the loss function for training the network can be derived from the negative log-likelihood: $\mathcal{L}_{\theta}(\mathcal{D}) = \mathbb{E}_{\{(x_i, y_i)\} \sim \mathcal{D}} [ -\log{p_{\theta}(y_i|x_i)} ] $. In reinforcement learning, aleatoric uncertainty naturally arises from stochastic rewards, transition dynamics, and policy-induced randomness in temporal-difference targets. 
 
-For regression problems in deep learning, we can model this by having a distributional network (with parameter $\theta$) that outputs a probability distribution $p_{\theta}(y|x)$ conditioned on input $x$ \citep{lakshminarayanan2017simple, kendall2017uncertainties}. Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$, the loss function for training the network can be derived from the negative log-likelihood of the normal distribution: $\mathcal{L}_{\theta}(\mathcal{D}) = \mathbb{E}_{\{(x_i, y_i)\} \sim \mathcal{D}} [ -\log{p_{\theta}(y_i|x_i)} ] $. 
+\subsection{Maximum Entropy Actor-Critic Reinforcement Learning}
 
-\paragraph{Epistemic Uncertainty} 
-Epistemic uncertainty reflects the uncertainty in the model parameters ($\theta$) due to insufficient training data. Aleatoric uncertainty is high in inherently random regions while epistemic uncertainty is high where there is no (or less) data. Given the training data $\mathcal{D}$ and prior distribution $p(\theta)$ over the network parameters $\theta$, we can compute the posterior distribution over the parameters $p(\theta \mid \mathcal{D})$ using Bayesian inference to represent epistemic uncertainty. 
-
-The predictive distribution of output is $p(y \mid x, \mathcal{D}) = \int p(y \mid x, \theta) p(\theta \mid \mathcal{D}) d\theta$, and it is often approximated by sampling several sets of parameters from the posterior distribution $p(\theta \mid \mathcal{D})$ representing epistemic uncertainty, and averaging predictions from distribution $p(y \mid x, \theta)$ representing aleatoric uncertainty. 
-
-%During prediction, we marginalize over the posterior distribution of the parameters to obtain the predictive distribution of outputs: $p(y \mid x, \mathcal{D}) = \int p(y \mid x, \theta) p(\theta \mid \mathcal{D}) d\theta$, and it is often approximated by sampling several sets of parameters from the posterior distribution $p(\theta \mid \mathcal{D})$ representing epistemic uncertainty, and averaging predictions from distribution $p(y \mid x, \theta)$ representing aleatoric uncertainty. 
-
-\subsection{Reinforcement Learning}
-This section is dedicated to briefly explain the reinforcement learning concept and actor-critic methodology. Throughout the paper, $\mathcal{P}(\Omega)$ denotes the set of all possible probability distributions on set $\Omega$. 
-
-\paragraph{Model-free Reinforcement Learning}
 In reinforcement learning language, the agent lives in a Markov Decision Process (MDP) which is represented by a tuple $\mathcal{M} = (\mathcal{S}, \mathcal{A}, d_0, \tau, R)$, where $\mathcal{S}$ is the state space, $\mathcal{A}$ is the action space, $d_0 \in \mathcal{P}(\mathcal{S})$ is the initial state distribution, $\tau: \mathcal{S}\times\mathcal{A} \rightarrow \mathcal{P}(\mathcal{S})$ is the transition kernel and $R: \mathcal{S}\times\mathcal{A} \rightarrow \mathbb{R}$ is the reward function. 
 
-The initial state is sampled first, $s_0 \sim d_0(\cdot)$. At each time $t$ being on $s_t \in \mathcal{S}$; next state is obtained from the environment, $s_{t+1} \sim \tau(\cdot \mid s_t,a_t)$ depending on the taken action $a_t \sim \pi(\cdot \mid s_t)$. Finally, a reward is obtained, $r_t=R(s_t, a_t)$ from the reward function $R$.   
-The ultimate goal of the agent is to derive a policy $\pi: \mathcal{S} \rightarrow \mathcal{P}(\mathcal{A})$ to maximize discounted cumulative return, i.e., state value function for a given state $s$, 
+The initial state is sampled first, $s_0 \sim d_0(\cdot)$. At time step $t$, being in state $s_t$; next state is obtained from the environment, $s_{t+1} \sim \tau(\cdot \mid s_t,a_t)$ depending on the taken action $a_t \sim \pi(\cdot \mid s_t)$. Finally, a reward is obtained, $r_t=R(s_t, a_t)$ from the reward function $R$. Return and action return are defined respectively as follows,
+
 \begin{equation}
 	\label{eqn:value_defn}
-	V^{\pi}(s) = \mathbb{E}_{\pi,\tau} \Big[ \sum_{t=0}^{\infty} \gamma^{t} R(s_t, a_t) \Big| s_0=s \Big].
+	G^{\pi}(s) \disteq \sum_{t=0}^{\infty} \gamma^{t} \big( R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \big), \quad s_0=s, 
 \end{equation}
 
-\paragraph{Maximum Entropy Actor-Critic}
-To promote random actions for exploration and algorithm robustness, maximum entropy framework introduces policy entropy bonus into value functions \citep{haarnoja2017reinforcement, haarnoja2018soft}, 
 \begin{equation}
-	\label{eqn:maxent_value_defn}
-	V^{\pi}(s) = \mathbb{E}_{\pi,\tau} \Big[ \sum_{t=0}^{\infty} \gamma^{t} R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \Big| s_0=s \Big], 
+	\label{eqn:maxent_zreturn_defn}
+	Z^{\pi}(s, a) \disteq R(s, a) + \sum_{t=1}^{\infty} \gamma^{t} \big( R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \big) , \quad s_0=s, \quad  a_0=a,  
 \end{equation}
-\begin{equation}
-	\label{eqn:maxent_qvalue_defn}
-	Q^{\pi}(s, a) = R(s, a) + \mathbb{E}_{\pi,\tau} \Big[ \sum_{t=1}^{\infty} \gamma^{t} R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \Big| s_0=s, a_0=a \Big]. 
-\end{equation}
-where $Q$ is state-action value function. Learning iterates between solving policy evaluation and policy improvement. For the definition of state-action value function, Bellman backup operator $\mathcal{T}^{\pi}$ is defined, 
+
+The ultimate goal of the agent is to derive a policy $\pi: \mathcal{S} \rightarrow \mathcal{P}(\mathcal{A})$ to maximize discounted return $G^{\pi}$ with entropy bonus \citep{haarnoja2017reinforcement, haarnoja2018soft}. However, returns are random variables, and cannot be used as objective. Therefore, value ($V$) and action-value ($Q$) functions are defined as expectations of return over policy and transition dynamics, $V^{\pi}(s) = \mathbb{E}_{\pi,\tau} \big[ G^{\pi}(s) \big]$, $Q^{\pi}(s, a) = \mathbb{E}_{\pi,\tau} \big[ Z^{\pi}(s, a) \big]$. Actor-critic methods model action value function $Q$, and learning iterates between solving policy evaluation and policy improvement. 
+
+Policy evaluation minimizes the temporal difference: $\big\| \mathcal{T}^{\pi} Q(s, a) - Q(s, a) \big\|$ by a gradient step, where $\mathcal{T}^{\pi} Q$ is the Bellman backup operator, and defined as, 
+
 \begin{equation}
 	\label{eqn:q_eval}
-	\mathcal{T}^{\pi} Q(s,a) = R(s,a) + \gamma \mathbb{E}_{\substack{s'\sim\tau(\cdot \mid s,a) \\ a' \sim \pi(\cdot \mid s')}} \big[ Q(s',a') - \alpha \log \pi(a' \mid s') \big], 
-\end{equation}
-and the critic is expected to remain same if this operator applied on itself, i.e., $Q^{\pi}(s,a) = \mathcal{T}^{\pi} Q^{\pi}(s,a)$. Policy evaluation minimizes the temporal difference, i.e., the difference between $Q$ and $\mathcal{T}^{\pi} Q$ to satisfy this condition. Therefore, at each iteration $k$, error norm is minimized by a gradient step (with learning rate $\eta_{Q}$) to update critic, 
-
-\begin{equation}
-	\label{eqn:q_update}
-	Q^{k+1} = Q^{k} - \eta_{Q} \nabla_{Q} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ \big\| \mathcal{T}^{\pi} Q^{k} (s, a) - Q(s, a) \big\| \Big], 
-\end{equation}	
-
-where $\pi_B$ is behavioral policy and $\rho_{\pi_B}$ represents distribution of visited states by $\pi_B$. In practice, the temporal difference (TD) target is used instead of the Bellman backup $\mathcal{T}^{\pi} Q(s,a)$ for learning. TD target is calculated by a random action drawn from the policy $\pi$, instead of expectation. 
-
-The optimal policy gives the maximum value, i.e., $\pi^*(\cdot|s) = \arg\max_{\pi} V^{\pi}(s)$. Policy improvement is minimizing KL divergence from policy to softmax policy of critic by a gradient step (with learning rate $\eta_{Q}$), 
-
-\begin{equation}
-	\label{eqn:pi_update}
-	\pi^{k+1} = \pi^{k} -\eta_{\pi} \nabla_{\pi} \mathbb{E}_{\substack{s\sim\rho_{\pi_B}}} \Big[ \text{KL} \Big( \pi(\cdot \mid s) \Big|\Big| \frac{\exp({\alpha}^{-1} Q^{k}(s,\cdot))}{ \int_{\mathcal{A}} \exp( {\alpha}^{-1} Q^{k}(s,a)) da} \Big) \Big]
-	= \pi^{k} + \eta \nabla_{\pi} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi }} \Big[ Q^{k}(s,a) - \alpha \log \pi(a|s) \Big],
+	\mathcal{T}^{\pi} Q(s,a) = R(s,a) + \gamma \mathbb{E}_{\substack{s'\sim\tau(\cdot \mid s,a) \\ a' \sim \pi(\cdot \mid s')}} \big[ Q(s',a') - \alpha \log \pi(a' \mid s') \big]. 
 \end{equation}
 
-After sufficient iteration, both actor and critic converge to optimality in the ideal case. In this iteration, critic is also updated, $Q^{k+1}(s,a) = \mathcal{T}^{*} Q^{k}(s,a)$, where $\mathcal{T}^{*}$ is the Bellman optimality opertor (Equation 5 from \citet{haarnoja2017reinforcement}), 
+Policy improvement is minimizing value function $V^{\pi}(s)=\mathbb{E}_{a\sim\pi } \Big[ Q^{\pi}(s,a) - \alpha \log \pi(a|s) \Big]$ by a gradient step. After policy improvement and policy evaluation at step $k$, updated action value function at step $k+1$ is $Q^{k+1}(s,a) = \mathcal{T}^{*} Q^{k}(s,a)$, where $\mathcal{T}^{*}$ is the Bellman optimality operator (Equation 5 from \citet{haarnoja2017reinforcement}), 
 
 \begin{equation}
 	\label{eqn:q_optimal}
 	\mathcal{T}^{*} Q(s,a) = R(s,a) + \gamma \mathbb{E}_{s'\sim\tau(\cdot \mid s,a)} \Big[ \Tilde{\alpha} \log \Big( \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} {Q}(s',a')) da' \Big) \Big]. 
 \end{equation}
 
-and the optimal critic function satisfies the Bellman optimality condition, $Q^{*}(s,a) = \mathcal{T}^{*} Q^{*}(s,a)$. $\Tilde{\alpha} \in [ \alpha, \infty ) $ is defined to demonstrate the continuum of policy improvement, i.e., the fact that policy is updated by partially exploiting state-action value function at each iteration of Equation \ref{eqn:pi_update}. As $\Tilde{\alpha} \rightarrow \infty$, $\mathcal{T}^{*}Q$ boils down to $\mathcal{T}^{\mathcal{U}}Q$, which represents state-action value for uniform policy. On the other hand, $\Tilde{\alpha} = \alpha$ represents updated state-action value after complete exploitation. Consequently, in deep learning setting, a higher learning rate of actor network ($\eta_{\pi}$) results in lower $\Tilde{\alpha}$, closer to $\alpha$. 
+$\Tilde{\alpha} \in [ \alpha, \infty ) $ is defined to demonstrate the continuum of policy improvement, i.e., the fact that policy is updated by partially exploiting state-action value function at each iteration. As $\Tilde{\alpha} \rightarrow \infty$, $\mathcal{T}^{*}Q$ boils down to $\mathcal{T}^{\mathcal{U}}Q$, which represents action value for uniform policy. On the other hand, $\Tilde{\alpha} = \alpha$ represents updated action value after complete exploitation. Consequently, in deep learning setting, a higher learning rate of actor network results in lower $\Tilde{\alpha}$, closer to $\alpha$. 
 
 \section{Distributional Reinforcement Learning and Overestimation}
 
 \subsection{Distributional Maximum Entropy Actor-Critic}
-Instead of learning expectation of discounted return (value function), probability distribution of return can also be modeled as a random variable to identify possible consequences of given policy \citep{bellemare2017distributional}. This also constitutes the methodology of distributional maximum entropy actor-critic methods \citep{duan2021distributional, ma2025dsac}. For this, state-action return distribution  $\mathcal{Z}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ is defined, where state-action return is sampled from this distribution, $Z(s, a) \sim \mathcal{Z}(s, a)$. Recall that $Q(s,a) = \mathbb{E}_{\mathcal{Z}, \tau} [ Z(s,a) ]$. 
+Instead of learning action value function $Q$, action return can also be modeled as a random variable to identify possible consequences of a given policy \citep{bellemare2017distributional}. This also constitutes the methodology of distributional maximum entropy actor-critic methods \citep{duan2021distributional, ma2025dsac}. For this, action return distribution  $\mathcal{Z}\in\mathcal{P}(\mathbb{R}^{\mathcal{S}\times\mathcal{A}})$ is defined, where action returns are sampled from this distribution, $Z(s, a) \sim \mathcal{Z}(s, a)$. Recall that $Q(s,a) = \mathbb{E}_{\mathcal{Z}, \tau} [ Z(s,a) ]$. The corresponding Bellman backup operator $\mathcal{T}^{\pi}$ is defined as, 
 
-\begin{equation}
-	\label{eqn:maxent_zreturn_defn}
-	Z^{\pi}(s, a) \disteq R(s, a) + \sum_{t=1}^{\infty} \gamma^{t} \big( R(s_t, a_t) - \alpha \log \pi(a_t|s_t) \big) , \quad s_0=s, \quad  a_0=a,  
-\end{equation}
-where $a_t \sim \pi(\cdot|s_t)$, $s_{t+1} \sim \tau(\cdot|s_t, a_t)$. Corresponding definition by Bellman backup operator $\mathcal{T}^{\pi}$ is defined as 
 \begin{equation}
 	\label{eqn:z_eval}
 	\mathcal{T}^{\pi} Z(s,a) \disteq R(s,a) + \gamma \big( Z(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
 \end{equation}
-where $A \disteq B $ indicates that two random variables, $A$ and $B$, have identical probability laws. To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback-Leibler divergence from distributional Bellman backup by a gradient step (with learning rate $\eta_{Z}$),
 
-\begin{equation}
-	\label{eqn:z_update}
-	\mathcal{Z}^{k+1} = \mathcal{Z}^{k} - \eta_{Z} \nabla_{\mathcal{Z}}  \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Z}^k(s, a) || \mathcal{Z}(s, a) \big) \Big]. 
-\end{equation}	
+To make notation easier, distributional Bellman backup $\mathcal{T}^{\pi}_{D}\mathcal{Z}$ is defined, where Bellman backup of sampled values are sampled from this distribution, i.e., $\mathcal{T}^{\pi} Z(s,a) \sim \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a)$. At each step $k$, the state-action return distribution is updated by minimizing Kullback-Leibler divergence from distributional Bellman backup: $D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Z}(s, a) || \mathcal{Z}(s, a) \big)$ by a gradient step. 
 
-\paragraph{One-step Distributional Uncertainty} Unlike conventional distributional modeling, it is also possible expected return (value function) instead of random return for bootstrapping in Bellman backup as proposed by \citet{achab2020ranking, achab2023one}. This way, uncertainty due to environment stochasticity and actor induced uncertainty (due to policy improvement) are modeled for only one step. This distribution is denoted as $\mathcal{Q}$ instead of $\mathcal{Z}$. Therefore, $Q\sim\mathcal{Q}$ is a random variable anymore. Bellman backup is defined similar as in Equation \ref{eqn:z_eval} but expectation of next-state value is used, 
+\paragraph{One-step Distributional Uncertainty} Unlike conventional distributional modeling, it is also possible to model action return with randomness only up to first step \citet{achab2020ranking, achab2023one}. In this approach, Bellman backup uses expectation (deterministic) of return of next state and action. This way, uncertainty due to environment stochasticity and actor-induced uncertainty (due to policy improvement) are modeled for only one step, which directly targets the source of critic overestimation. This distribution is denoted as $\mathcal{Q}$ instead of $\mathcal{Z}$. Therefore, $Q\sim\mathcal{Q}$ is a random variable unlike previous formulation. Bellman backup is defined similar as in Equation \ref{eqn:z_eval} but expectation of next-state value is used, 
 
 \begin{equation}
 	\label{eqn:q_evs_eval}
@@ -280,19 +243,7 @@ where $A \disteq B $ indicates that two random variables, $A$ and $B$, have iden
 \end{equation}
 
 %The difference arises on the optimization process. 
-At each step $k$, the state-action value distribution is updated by minimizing negative log-likelihood of average distributional Bellman backup by a gradient step (with learning rate $\eta_{Q}$),
-
-\begin{equation}
-	\label{eqn:q_update}
-	\mathcal{Q}^{k+1} = \mathcal{Q}^{k} -\eta_{Q} \nabla_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Q}^k(s, a) || \mathcal{Q}(s, a) \big) \Big]. 
-\end{equation}	
-
-%\begin{equation}
-%	\label{eqn:q_update}
-%	\mathcal{Q}^{k+1} = \arg\min_{\mathcal{Q}} \mathbb{E}_{\substack{s\sim\rho_{\pi_B} \\ a\sim\pi_B}} \Big[ -\log \mathcal{Q} \big( \mathbb{E}_{Q\sim\mathcal{Q}^k} [ \mathcal{T}^{\pi} Q(s, a) ] | s, a \big) \Big]. 
-%\end{equation}	
-
-Corresponding Bellman optimality operator is as follows, 
+At each step $k$, the state-action value distribution is updated by minimizing Kullback-Leibler divergence from distributional Bellman backup: $D_{\mathrm{KL}} \big( \mathcal{T}^{\pi}_{D}\mathcal{Q}(s, a) || \mathcal{Q}(s, a) \big)$ by a gradient step. Corresponding Bellman optimality operator is as follows, 
 
 \begin{equation}
 	\label{eqn:q_optimal}
@@ -303,12 +254,12 @@ This operator is proved to be a contraction in Q-learning by \citet{achab2023one
 
 \subsection{Quantifying Overestimation for Sub-Gaussian Critic Distributions}
 
-Let $\mu(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ Q(s,a) ]$, the Bellman optimality backup of mean is not equal to mean of the backup, $\mathcal{T}^{*} \mu(s,a) \neq \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ due to policy improvement, and the difference is the overestimation bias. In this section, we analyze the overestimation bias similar to \citet{chen2021randomized} and \citet{lan2020maxmin} but in the soft learning framework instead of discrete actions. We define overestimation error as difference between $\mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ and average $\mathcal{T}^{*} \mu(s,a)$ as $\epsilon$, 
+Let $\mu(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ Q(s,a) ]$, the Bellman optimality backup of the mean is not equal to the mean of the backup, $\mathcal{T}^{*} \mu(s,a) \neq \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ due to policy improvement, and the difference is the overestimation bias. In this section, we analyze the overestimation bias similar to \citet{chen2021randomized} and \citet{lan2020maxmin} but in the soft learning framework instead of discrete actions. We define the overestimation error as the difference between $\mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ]$ and average $\mathcal{T}^{*} \mu(s,a)$ as $\epsilon$, 
 \begin{equation}
 	\epsilon(s,a) = \mathbb{E}_{\mathcal{Q}, \tau} [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} \mu(s,a). 
 \end{equation}
 
-In the ideal case, $\epsilon(s,a)$ should be zero if there is no overestimation, which is not the case due to critic uncertainty. To quantify it, we assume that critic distribution $\mathcal{Q}(s, a)$ is sub-Gaussian with variance proxy $\sigma^2(s,a)$ and mean $\mu(s,a)$. 
+In the ideal case, $\epsilon(s,a)$ should be zero if there is no overestimation, which is not the case due to critic uncertainty. To quantify it, we assume that critic distribution $\mathcal{Q}(s, a)$ is sub-Gaussian with variance proxy $\sigma^2(s,a)$ and mean $\mu(s,a)$. We adopt a sub-Gaussian assumption as it provides a mild and widely used concentration model that enables analytic overestimation bounds without restricting the critic to a specific parametric distribution.
 
 \begin{definition}
 	\label{defn:subgauss}
@@ -318,7 +269,7 @@ In the ideal case, $\epsilon(s,a)$ should be zero if there is no overestimation,
 	\end{equation}
 \end{definition}
 
-Under sub-Gaussian assumption, if there exist an upper bound for overestimation, this bound can be used to devise a pessimistic Bellman backup operator. For this, we present Theorem \ref{thm:overestimation}. The proof is available in Appendix \ref{app:proofs}. 
+Under the sub-Gaussian assumption, Theorem \ref{thm:overestimation} quantifies how critic uncertainty propagates through the soft Bellman optimality operator and Corollary \ref{cor:pessimism} motivates a variance-dependent pessimistic correction.
 
 \begin{theorem}[Overestimation quantification for sub-Gaussian critics]
 	\label{thm:overestimation}
@@ -335,8 +286,10 @@ Under sub-Gaussian assumption, if there exist an upper bound for overestimation,
 		\label{eqn:q_evs_eval_pessimistic}
 		\mathcal{T}_{\beta}^{\pi} Q(s,a) \disteq R(s,a) + \gamma \big( \mu(s',a') - \beta \sigma(s',a') - \alpha \log \pi(a' \mid s') \big), \quad s'\sim\tau(\cdot \mid s,a), \quad a' \sim \pi(\cdot \mid s'), 
 	\end{equation}
-	in which mean is shifted by $- \beta \sigma$,  $\Tilde{\mu} = \mu - \beta \sigma$, prevents overestimation as long as $\beta \geq \max\limits_{(s, a)} \frac{1}{2}{\Tilde{\alpha}}^{-1} \sigma(s, a)$. 
+	prevents overestimation as long as $\beta \geq \max\limits_{(s, a)} \frac{1}{2}{\Tilde{\alpha}}^{-1} \sigma(s, a)$. 
 \end{corollary}
+
+Moreover, maximum overestimation bound is demonstrated in Theorem \ref{thm:overestimation_bound}.
 
 \begin{theorem}[Overestimation bound]
 	\label{thm:overestimation_bound}
@@ -346,20 +299,22 @@ Under sub-Gaussian assumption, if there exist an upper bound for overestimation,
 	\end{align} 
 \end{theorem}
 
-The source of overestimation and necessity of pessimistic training is revealed in Theorem \ref{thm:overestimation}, Corollary \ref{cor:pessimism}. Moreover, maximum overestimation bound is demonstrated in Theorem \ref{thm:overestimation_bound}. As an additional notation, we introduce pessimistic distributional Bellman backup $\mathcal{T}_{\beta, D}^{\pi}\mathcal{Q}$ where pessimistic Bellman backup of sampled values are sampled from this distribution, i.e.,  $\mathcal{T}_{\beta}^{\pi} Q(s,a) \sim \mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$. The difference between $\mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$ and $\mathcal{T}^{\pi}_{D}\mathcal{Q}(s, a)$ is illustrated in Figure \ref{fig:evol_bellman_backup}. 
+As an additional notation, we introduce pessimistic distributional Bellman backup $\mathcal{T}_{\beta, D}^{\pi}\mathcal{Q}$ where pessimistic Bellman backup of sampled values are sampled from this distribution, i.e.,  $\mathcal{T}_{\beta}^{\pi} Q(s,a) \sim \mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$. The difference between $\mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$ and $\mathcal{T}^{\pi}_{D}\mathcal{Q}(s, a)$ is illustrated in Figure \ref{fig:evol_bellman_backup}. 
+
+Taken together, these results show that overestimation in off-policy actor-critic methods originates from temporal uncertainty in Bellman targets, and that a simple variance-proxy-based pessimistic shift is sufficient to control it. This observation motivates the Stochastic Actor-Critic algorithm introduced next.
 
 \section{Stochastic Actor-Critic}
 \label{sec:stac}
 
-In this section, we discuss key mechanisms needed for computation and sample efficient actor-critic learning and propose our algorithm \textit{Stochastic Actor-Critic}. This algorithm employs \textit{single distributional} critic network $\mathcal{Q}_{\theta}$ by parameter set $\theta$ which captures temporal (one-step) aleatoric uncertainty, and dropout along with layer normalization for network regularization. Actor network $\pi_{\phi}$ outputs a \verb|tanh| transformed normal distribution to bound actions to $[-1, 1]$, and parameterized by set $\phi$. Unlike other methods, STAC uses critic estimates in a pessimistic manner using temporal aleatoric uncertainty, for policy evaluation and policy improvement. 
+In this section, we discuss key mechanisms needed for computation and sample efficient actor-critic learning and propose our algorithm \textit{Stochastic Actor-Critic}. This algorithm employs a \textit{single distributional} critic network $\mathcal{Q}_{\theta}$ by parameter set $\theta$ which captures temporal (one-step) aleatoric uncertainty, and dropout along with layer normalization for network regularization. Actor network $\pi_{\phi}$ outputs a \verb|tanh| transformed normal distribution to bound actions to $[-1, 1]$, and is parameterized by set $\phi$. Unlike other methods, STAC uses critic prediction in a pessimistic manner using temporal aleatoric uncertainty, for policy evaluation and policy improvement. 
 
-The rationale behind this argument is that most of the temporal difference target randomness due to environment stochasticity and ongoing actor updates (policy improvement) are inherently appears as aleatoric uncertainty, and overestimation is the result of this randomness. Unlike distributional methods \citep{bellemare2017distributional}, aleatoric uncertainty of full return is not modeled since it is not related to overestimation. 
+The rationale behind this argument is that most of the temporal difference target randomness due to environment stochasticity and ongoing actor updates (policy improvement) inherently appears in the form of aleatoric uncertainty from the critic's side, and overestimation is the result of this randomness. Although policy improvement itself is deterministic given a critic, small approximation errors in the critic are selectively exploited by the policy update in a non-stationary manner, which induces unpredictable variability in Bellman targets in practice. Unlike distributional methods \citep{bellemare2017distributional}, we do not model aleatoric uncertainty of the full return, since it is not directly related to overestimation.
 
-Pessimism in STAC also yields to risk-averse learning although return is modeled for one-step, since critic is also learned by pessimistic updates. Conventional distributional algorithms model full return as a distribution and updates only actor in pessimistic way, not critic, usually by conditional value at risk measure (CVaR) \citep{dabney2018implicit, tang2019worst, yang2021wcsac, kim2022efficient, ma2025dsac} or by standard deviation \citep{ma2025dsac}. 
+Although return uncertainty is modeled only for one-step, pessimism in STAC also leads to risk-averse learning since critic is also learned by pessimistic updates. Conventional distributional algorithms model full return as a distribution. For risk-averse learning only actor is updated in pessimistic way, not critic, usually by conditional value at risk measure (CVaR) \citep{dabney2018implicit, tang2019worst, yang2021wcsac, kim2022efficient, ma2025dsac} or by standard deviation \citep{ma2025dsac}. 
 
-Out-of-distribution states and actions are detected by high epistemic uncertainty, and should not be disregarded by pessimism. On the contrary, these state-action pairs should be explored with suitable methods. Therefore, in our opinion, epistemic uncertainty should not be used for overestimation mitigation unlike previous methods. 
+Epistemic pessimism naturally decreases the degree of overestimation by decreasing probability of critic errors which are exploited by policy improvement later. However, out-of-distribution states and actions are detected by high epistemic uncertainty, and should not be suppressed by pessimism. On the contrary, these state-action pairs should be visited for exploration. Therefore, epistemic uncertainty should not be used as a pessimism signal for overestimation mitigation unlike previous methods. 
 
-\citep{nauman2024overestimation} demonstrated that pessimism on critic ensemble (they call it critic regularization) degrades performance when combined with network regularization methods. Our idea is that using epistemic uncertainty for pessimism slows down learning and inherently regularizes learning. STAC directly employs network regularization by dropout and layer normalization. 
+\citep{nauman2024overestimation} demonstrated that network regularization methods improve performance. Since STAC employs a single critic network, it is prone to over-fitting more than ensemble based methods. To prevent it, STAC employs dropout \citep{srivastava2014dropout} similar to \citet{hiraoka2021dropout}. While dropout may also promote exploration by injecting stochasticity into the policy and value estimates, we do not attempt to isolate or prove this effect here. Dropout also allows capturing the probabilistic nature of a network, representing Bayesian neural networks \citep{Gal2016Dropout}. However, it is important to note that STAC employs dropout on both critic and actor networks only for regularization purposes, not for epistemic modeling. 
 
 \begin{figure}
 	\centering
@@ -399,17 +354,17 @@ Out-of-distribution states and actions are detected by high epistemic uncertaint
 			\addplot[red,  name path=S,thick] {gauss(x,\zmu,\zsig)};
 			% LINES
 			\addplot[black,dashed,thin]
-			coordinates {(\nzmu,0) (\nzmu, {1.05*gauss(\nzmu,\nzmu,\gam*\nzsig)})}
+			coordinates {(\nzmu,0) (\nzmu, {1.05*gauss(\nzmu,\nzmu,\nzsig)})}
 			node[below=0pt,pos=0] {};			
 			\addplot[black,dashed,thin]
-			coordinates {(\nzmu-\pess*\nzsig,0) (\nzmu-\pess*\nzsig, {1.01*gauss(\nzmu,\nzmu,\gam*\nzsig)})}
+			coordinates {(\nzmu-\pess*\nzsig,0) (\nzmu-\pess*\nzsig, {1.05*gauss(\nzmu,\nzmu,\nzsig)})}
 			node[below=0pt,pos=0] {};
 			%\addplot[black,dashed,thin]
 			%coordinates {(\rew+\nzmu-\pess*\nzsig,0) (\rew+\nzmu-\pess*\nzsig, {1.01*gauss(\nzmu,\nzmu,\gam*\nzsig)})}
 			%node[below=0pt,pos=0] {};
 			
 			\addplot[<-,black,thin,dashed]
-			coordinates {(\nzmu-\pess*\nzsig,{1.01*gauss(\nzmu,\nzmu,\nzsig)}) (\nzmu, {1.01*gauss(\nzmu,\nzmu,\nzsig)})}
+			coordinates {(\nzmu-\pess*\nzsig,{1.01*gauss(\nzmu,\nzmu,\nzsig)}) (\nzmu, {1.02*gauss(\nzmu,\nzmu,\nzsig)})}
 			node[above,at end] {$-\gamma \beta \sigma(s',a')$};
 			
 			%\addplot[<-,violet,thin,dashed]
@@ -425,14 +380,14 @@ Out-of-distribution states and actions are detected by high epistemic uncertaint
 			
 		\end{axis}
 	\end{tikzpicture}
-	\caption{Evolution of Pessimistic Distributional Bellman Backup. While $\mathcal{T}^{\pi}_{D}\mathcal{Q}(s, a)$ is overestimated, a corrected backup $\mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$ is closer to $\mathcal{Q}(s, a)$. }	
+	\caption{Evolution of the Pessimistic Distributional Bellman Backup. While $\mathcal{T}^{\pi}_{D}\mathcal{Q}(s, a)$ is overestimated, a corrected backup $\mathcal{T}^{\pi}_{\beta, D}\mathcal{Q}(s, a)$ is closer to $\mathcal{Q}(s, a)$. }	
 	\label{fig:evol_bellman_backup}
 \end{figure}
 
 
 \subsection{Policy Evaluation}
 
-For simplicity, STAC models critic as normal distribution. This contradicts with bounded distribution assumption of Theorem \ref{thm:overestimation}, but it yields a simple loss function and is easy to interpret. Still, it is reasonable to assume critic distribution is bounded for finite horizon or discounted MDPs ($\gamma<1$) with bounded reward functions. This assumption yields the tightest bound for overestimation, converting second inequality into an equality in the proof of Theorem \ref{thm:overestimation}. This way, overestimation is closer to the upper bound and yields the worst case. 
+For simplicity, STAC models critic as normal distribution. This contradicts the bounded distribution assumption of Theorem \ref{thm:overestimation}, but it yields a simple loss function and is easy to interpret. Still, it is reasonable to assume critic distribution is bounded for finite horizon or discounted MDPs ($\gamma<1$) with bounded reward functions. %This boundedness assumption yields the tightest bound for overestimation, converting second inequality into an equality in the proof of Theorem \ref{thm:overestimation}. This way, overestimation is closer to the upper bound and yields the worst case. 
 
 Using transition tuples from experience replay as batch, $\mathcal{D}_b = \{(s_i, a_i, r_i, s_i', \texttt{done}_i)\}_{i=1}^{N_b}$, temporal difference (TD) target $Q_i^{TD}$, representing Bellman backup, is $\beta$-pessimistic, 
 
@@ -449,18 +404,12 @@ Learning objective is cross-entropy loss (log loss),
 
 \subsection{Policy Improvement}
 
-According to Corollary \ref{cor:pessimism}, pessimistic TD targets should be used to train critic network. However, this analysis do not account for policy learning since policy is assumed as $\text{softmax}$ over action values. In actor-crtic framework, same pessimistic objective should be used for policy improvement, since policy evaluation and policy improvement objective should be the same. In other words, at learning step $k$, Bellman backup must be equal to Bellman policy evaluation with the new policy, $\mathcal{T}^* Q^k \disteq \mathcal{T}^{\pi^{k+1}} Q^k$. It is only possible by using same pessimistic critic value for policy improvement. 
-
-\subsection{Dropout}
-
-STAC employs dropout to prevent over-fitting, and overestimation indirectly \citet{nauman2024overestimation}. While dropout may also promote exploration by injecting stochasticity into the policy and value estimates, we do not attempt to isolate or prove this effect here. 
-
-Dropout also allows to capture the probabilistic nature of a network, representing Bayesian neural networks \citep{Gal2016Dropout}. Previous methods also use dropout or ensembles to approximate Bayesian posterior of critic network, for overestimation correction \citep{hiraoka2021dropout, chen2021randomized}. However, both dropout and ensemble methods also regularize learning process, and STAC employs dropout on both critic and actor networks only for regularization purposes. 
+According to Corollary \ref{cor:pessimism}, pessimistic TD targets should be used to train critic network. However, this analysis does not account for policy learning since policy is assumed as $\text{softmax}$ over action values. In actor-crtic framework, same pessimistic objective should be used for policy improvement, since policy evaluation and policy improvement objective should be the same. In other words, at learning step $k$, Bellman backup must be equal to Bellman policy evaluation with the new policy, $\mathcal{T}^* Q^k \disteq \mathcal{T}^{\pi^{k+1}} Q^k$. It is only possible by using same pessimistic critic value for policy improvement. 
 
 \subsection{Other Details and Algorithm Summary}
 
 \paragraph{Layer Normalization} 
-We implement Layer Normalization \citep{ba2016layer} after all hidden activations of critic and actor networks, similar to \citet{hiraoka2021dropout}, to regularize learning and prevent possible numerical instabilities. 
+We implement Layer Normalization \citep{ba2016layer} after all hidden activations of critic and actor networks, in order to stabilize learning and prevent possible numerical instabilities. 
 
 \paragraph{Lagged critic for TD target}
 When the trained critic network is also used in calculating the target value, the critic training is prone to divergence \citep{li2023realistic}. For this, a common approach is to use another critic network to evaluate TD target \citep{mnih2013playing}. Similar to \citet{lillicrap2015continuous}, \citet{fujimoto2018addressing}, and \citet{haarnoja2018soft}, we use a delayed form of critic network for TD target evaluations as demonstrated in Equation \ref{eqn:td_target}. The parameters of target critic are only updated by Polyak averaging of main critic network weights through learning steps; $\bar{\theta} \leftarrow \rho \bar{\theta} + (1-\rho) \theta $. This strategy is important to ensure the stability of temporal difference learning. 
@@ -493,12 +442,11 @@ Networks illustrations are available in Appendix \ref{app:network_archs}. Note t
 		\For{$G$ gradient steps}
 		%\State Sample $\mathcal{D}_b=(s,a,r,s',\texttt{done}) \sim \mathcal{D}$
 		\State $\mathcal{D}_b = \{(s_i, a_i, r_i, s_i', \texttt{done}_i)\}_{i=1}^{N_b}  \sim  \mathcal{D} $  \Comment{Sample minibatch for training}
-		\State $\Tilde{a}_{i}'\sim\pi_{\phi}(\cdot \mid s_i'), \quad \forall i \in \{1,2,...,N_b\}$ \Comment{Sample next actions}
-		\State $Q_i^{TD} = r_i + \gamma (\mu_{\bar{\theta}}(s_i', \Tilde{a}_{i}') - \beta \sigma_{\bar{\theta}}(s_i', \Tilde{a}_{i}')) (\neg\texttt{done}_i), \quad \forall i \in \{1,2,...,N_b\}$ \Comment{Build TD targets}
+		\State $\Tilde{a}_{i}'\sim\pi_{\phi}(\cdot \mid s_i')$ \Comment{Sample next actions}
+		\State $Q_i^{TD} = r_i + \gamma (\mu_{\bar{\theta}}(s_i', \Tilde{a}_{i}') - \beta \sigma_{\bar{\theta}}(s_i', \Tilde{a}_{i}') -\alpha \log \pi_{\phi}(\Tilde{a}_{i}' \mid s_i') ) (\neg\texttt{done}_i)$ \Comment{Build TD targets}
 		\State $\theta \leftarrow \theta - \eta_{Q} \nabla_{\theta} \Big( \frac{1}{N_{b}} \sum_{i=1}^{N_b}  - \log{\mathcal{Q}_{\theta} (Q_i^{TD} \mid s_i,a_i)} \Big) $ \Comment{Update critic}
 		\State $\phi \leftarrow \phi - \eta_{\pi} \nabla_{\phi} \Big( \frac{1}{N_{b}} \sum_{i=1}^{N_b} \mathbb{E}_{a\sim\pi_{\phi}(\cdot \mid s_i)} \big[ \mu_{\theta}(s_i, a) - \beta \sigma_{\theta}(s_i, a) - \alpha \log{\pi_{\phi}(a \mid s_i)} \big] \Big) $  \Comment{Update actor}
 		\State $\alpha \leftarrow \alpha - \eta_{\alpha} \nabla_{\alpha} \Big( - \alpha \mathcal{\bar{H}} + \alpha \sum_{i=1}^{N_b} \mathbb{E}_{a\sim\pi_{\phi}(\cdot \mid s_i)} \big[ -\log \pi_{\phi}(a \mid s_i) \big] \Big) $  \Comment{Update temperature}
-		
 		\State $\bar{\theta} \leftarrow \rho \bar{\theta} + (1-\rho) \theta $  \Comment{Update target critic network}
 		\EndFor
 		\EndFor
@@ -519,11 +467,11 @@ Hyper-parameters per environment can be found in Table \ref{tab:parameters_algos
 
 Our experiments aim to investigate whether enhancing off-policy actor-critic methodology with STAC can improve their sample and computation efficiency on continuous-control benchmarks. For this purpose, STAC is compared to similar competitive algorithms; Distributional Soft-Actor Critic (DSAC) \citep{ma2025dsac}, and Soft Actor-Critic (SAC) \citep{haarnoja2018soft}. Both methods use minimum of double critics for updates. All algorithm results are obtained using in-house code with the same network architectures (including layer normalization but not dropout) to make a fair comparison. 
 
-We also add another algorithm called Epistemic Stochastic Actor-Critic (ESTAC), with double distributional critic with one-step uncertainty similar to STAC. For overestimation, minimum of two critic is used for learning similar to SAC and DSAC, instead of pessimism on temporal aleatoric uncertainty. The purpose here is to discover source of improvements of STAC over other methods, and the only difference between ESTAC and STAC is overestimation mitigation mechanism. 
+We also add another algorithm called Epistemic Stochastic Actor-Critic (ESTAC), with double distributional critic with one-step uncertainty similar to STAC. For overestimation, minimum of two critic is used for learning similar to SAC and DSAC, instead of temporal aleatoric pessimism. The purpose here is to discover source of improvements of STAC over other methods, and the only difference between ESTAC and STAC is overestimation mitigation mechanism. 
 
 The pessimism rates and dropout configurations used for comparison are resulted from ablation studies, and explained in the next section. Optimal configurations are summarized in Table \ref{tab:target_ent_pessimism_algos}. 
 
-\paragraph{Learning curves} In Figure \ref{fig:main_comparison}, the performance of STAC is shown against previously mentioned SOTA algorithms. Additionally, value estimation errors are presented in Figure \ref{fig:error_comparison}. The bold lines represent the inter-quartile mean, while the shaded area indicates the quartiles (to represent randomness through seeds) of the total reward across evaluation episodes. Average returns through all learning processes averaged over random seeds are summarized in Table \ref{tab:env_auc_results} and final performance is summarized in Table \ref{tab:env_pess_results}. 
+\paragraph{Learning curves} In Figure \ref{fig:main_comparison}, the performance of STAC is shown against previously mentioned state-of-the-art algorithms. Additionally, value estimation errors are presented in Figure \ref{fig:error_comparison}. The bold lines represent the inter-quartile mean, while the shaded area indicates the quartiles (to represent randomness through seeds) of the total reward across evaluation episodes. Average returns through all learning processes averaged over random seeds are summarized in Table \ref{tab:env_auc_results} and final performance is summarized in Table \ref{tab:env_pess_results}. 
 
 % Learning curves are available in Appendix \ref{app:stac_and_others_curves}.
 
@@ -669,32 +617,32 @@ For each $\beta$ value, STAC is run on this environment with a same single seed.
 \paragraph{Overestimation reduction by epistemic uncertainty} In the literature, overestimation problem is solved by pessimistic learning based on \textit{epistemic uncertainty} of critic \citep{chen2021randomized, hiraoka2021dropout}. The same approach is also used in model-based RL methods \citep{janner2019trust, chua2018deep, depeweg2016learning}. Recently, for off-policy model-free actor-critic algorithms, epistemic uncertainty is estimated by using double network \citep{fujimoto2018addressing, haarnoja2018soft} or ensemble networks \citep{chen2021randomized, moskovitz2021tactical}. Ensemble of critics are computationally expensive as there are multiple of parameters to be optimized. Using dropout is a kind of Bayesian approximation, so another way to assess epistemic uncertainty \citep{Gal2016Dropout}. It has applications on model-based \citep{Gal2016ImprovingPILCO, gal2017concrete, kahn2017uncertainty} and model-free \citep{moerland2017efficient, jaques2019way, he2021mepg} reinforcement learning. For actor-critic, \citet{hiraoka2021dropout} found out that using Bayesian dropout also reduces the necessary critic ensemble size. The mentioned methods use a constant level of pessimism for policy evaluation and improvement, while \citet{moskovitz2021tactical} focused on updating pessimism \textit{on the fly} as a bandit problem rather than fixing it. 
 
 \paragraph{Risk-sensitive reinforcement learning}  
-Aleatoric uncertainty representation for the value function carries fundamental importance, especially in the presence of approximation \citep{bellemare2017distributional}. This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional, ma2025dsac}, or a normal distribution \citep{tang2019worst, yang2021wcsac} to model cumulative return behavior. For safety-critical RL applications to avoid catastrophic situations, pessimistic policy updates upon aleatoric uncertainty of return are used by \citet{tang2019worst} and \citet{yang2021wcsac}. Different than STAC, these methods use pessimism only on actor update for safety, not for overestimation reduction, and models full return uncertainty. 
+Aleatoric uncertainty representation for the value function carries fundamental importance, especially in the presence of approximation \citep{bellemare2017distributional}. This can be conducted by atoms \citep{bellemare2017distributional}, quantiles \citep{dabney2018distributional, ma2025dsac}, or a normal distribution \citep{tang2019worst, yang2021wcsac} to model cumulative return behavior. For safety-critical RL applications to avoid catastrophic situations, aleatoric pessimism is used by \citet{tang2019worst} and \citet{yang2021wcsac}. Different than STAC, these methods use pessimism only on actor update for safety, not for overestimation reduction, and models full return uncertainty. 
 
 \paragraph{Overestimation reduction by aleatoric uncertainty}  
 \citet{kuznetsov2020controlling} claims \textit{aleatoric uncertainty} is also responsible for overestimation since any randomness is exploited when the Bellman optimality operator ($\mathcal{T}^*$) is employed. For this purpose, they use ensemble networks for epistemic uncertainty, in which each network is a distributional network (as quantiles) for aleatoric uncertainty assessment, and used both types of uncertainties for overestimation correction. Similarly, STAC uses distributional critic, but only models temporal (one-step) aleatoric uncertainty rather than full return distribution as this is the main source of overestimation. It is also not epistemic uncertainty since it is not related about weights of the critic network.
 
 \section{Conclusion \& Future Directions}
 
-In this paper, we introduced Stochastic Actor-Critic (STAC), a novel off-policy actor-critic algorithm. The main idea is to mitigate overestimation for the sake of faster and more robust learning by incorporating the pessimistic learning objective using temporal aleatoric critic uncertainty. For this, critic is modeled as a distributional (heteroscedastic) neural network unlike previous approaches. Although normal distribution is used for this purpose, our analysis is valid for all sub-Gaussian critic representations. Unlike distributional RL methods, STAC only models uncertainty sourced by policy updates and one-step environment uncertainty, rather than cumulative return distribution. 
+In this paper, we introduced Stochastic Actor-Critic (STAC), a novel off-policy actor-critic algorithm. The main idea is to mitigate overestimation for the sake of faster and more robust learning by incorporating the pessimistic learning objective using temporal aleatoric critic uncertainty. For this, critic is modeled as a distributional neural network unlike previous approaches.  Although normal distribution is used for this purpose, our analysis is valid for all sub-Gaussian critic representations. 
 
-We derived an upper bound for overestimation, demonstrating that an adequate level of pessimism mitigates overestimation without succumbing to underestimation, thus facilitating computation and sample-efficient learning. Lastly, using dropout on actor and critic networks are proposed to mitigate over-fitting. Actor dropout always improves performance, whereas using dropout on critic is only required to ensure learning convergence. 
+We derived an upper bound for overestimation, demonstrating that an adequate level of pessimism mitigates overestimation without succumbing to underestimation, thus facilitating computation and sample-efficient learning. As a by-product, this approach also yields risk-averse learning process. Lastly, using dropout on actor and critic networks are proposed to mitigate over-fitting. Actor dropout always improves performance, whereas using dropout on critic is only required to ensure learning convergence. 
 
-\paragraph{Adaptive Pessimism} Our ablation studies demonstrate the effects of dropout rate and pessimism, revealing the sensitivity of the learning procedure to these parameters. For each specific environment and optimization method, an optimal level of pessimism and dropout exists. A promising direction for future research is to develop a grounded method to adjust the pessimism level for specific environments and agents to allow better adaptation for the learner to the environment. In addition, the sensitivity of similar algorithms to pessimism and dropout rate should be investigated in depth. 
+\paragraph{Adaptive Pessimism} Our ablation studies demonstrate the effects of dropout rate and pessimism, revealing the sensitivity of the learning procedure to these parameters. For each specific environment and optimization method, an optimal level of pessimism and dropout exists. A promising direction for future research is to develop a grounded method to adjust the pessimism level for specific environments and agents to allow better adaptation for the learner to the environment, similar to \citet{moskovitz2021tactical, cetin2023learning}. 
 
-\paragraph{Pessimism under Stochastic Environments} The effect of pessimism on highly stochastic environments is also an important topic for research. As shown, pessimistic updates lead to risk-averse behavior. It is worth to investigate whether a risk-seeking learning with overestimation correction is ever possible. 
+\paragraph{Distribution Modeling} For better modeling, aleatoric critic uncertainty can be modeled by quantiles \citep{dabney2018distributional, ma2025dsac} or flow matching \citep{chen2025unleashing, dong2025value}, rather than normal distribution. 
 
-% While mitigating overestimation, risk seeking learning is worth investigating. This requires to distinguish aleatoric and epistemic uncertainty of value estimations.  
+\paragraph{Pessimism under Stochastic Environments} The effect of pessimism on highly stochastic environments is also an important topic for research. As shown, pessimistic updates lead to risk-averse behavior. Our results are limited to simple stochastic tasks, and it is worth to investigate STAC empirically on more advanced ones. 
 
-\paragraph{Exploration} Current methods use epistemic critic uncertainty for overestimation problem, which contradicts with \textit{optimism in the face of uncertainty} principle. Future researches might consider using epistemic critic and actor uncertainty for exploration, retaining pessimism on temporal aleatoric uncertainty. 
+\paragraph{Exploration} Current methods use epistemic critic uncertainty for overestimation problem, which contradicts with \textit{optimism in the face of uncertainty} principle. Future researches might consider using epistemic critic and actor uncertainty for exploration, retaining temporal aleatoric pessimism. 
 
-\paragraph{Broader Impact} STAC tackles critical challenges such as accelerating learning, improving stability, and ensuring computation efficiency. Our research not only pushes the boundaries of reinforcement learning but also promises significant implications for enhancing the safety and intelligence of robots, self-driving cars, and autonomous systems in healthcare and finance.
+\paragraph{Broader Impact} STAC is an important contribution to understand overestimation phenomenon in off-policy actor-critic learning. It demonstrates that critic overestimation is a topic of distributional learning, and the solution is to devise a risk-averse learning objective for both actor and critic. Moreover, it also proves that modeling epistemic uncertainty is not necessary at all for this problem, improving computation efficiency directly. 
 
 \subsubsection*{Acknowledgments}
 % We want to thank the reviewers for taking the time and effort to go through our manuscript. We really appreciate the helpful comments and suggestions, which have helped us make the paper better.
 This research has received no external funding. 
 
-\newpage
+%\newpage
 
 %Bibliography
 \bibliography{references}
@@ -805,7 +753,7 @@ This research has received no external funding.
 		\begin{tabular}{@{}lll@{}}
 			\toprule
 			\textbf{Algorithm}             & \textbf{Parameter}      & \textbf{Value}          \\ \midrule
-			\multirow{11}{*}{SAC, ESTAC, STAC}    & Optimizer               & Adam (\citep{kingma2014adam}) \\
+			\multirow{11}{*}{DSAC, ESTAC, SAC, STAC}    & Optimizer               & Adam (\citep{kingma2014adam}) \\
 			& Critic Learning Rate    & $3 \times 10^{-4}$      \\
 			& Actor Learning Rate     & $3 \times 10^{-4}$      \\
 			& Discount Rate ($\gamma$)& 0.99                    \\
@@ -813,8 +761,11 @@ This research has received no external funding.
 			& Target Entropy ($\bar{H}$) & $-|\mathcal{A}|$       \\			
 			& Replay Buffer Size      & $1 \times 10^{6}$       \\
 			& Mini-Batch Size         & 256                     \\
-			& Random Starting Data    & 10000                   \\
-			& UTD Ratio ($G$)         & 1                        \\                  		
+			& Learning Starting Step    & 10000                   \\
+			& UTD Ratio ($G$)         & 1                        \\
+			\midrule
+			\multirow{2}{*}{DSAC}     & Number of Quantiles     & 25 \\
+			& Huber Loss threshold ($\kappa$)           & 1.0                     \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
