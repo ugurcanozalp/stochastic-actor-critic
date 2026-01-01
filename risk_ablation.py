@@ -31,7 +31,7 @@ def visualize_masspoint_behavior(agents: List[Agent]):
 
     obs_memory_list = []
     for i, agent in enumerate(agents):
-        for _ in range(200):  # 100 episodes
+        for _ in range(500):  # 500 episodes
             agent.eval(record=True, exploit=False)
             obs_memory_list.append(agent._obs_history)
         obs_memory = np.concatenate(obs_memory_list, axis=0)
