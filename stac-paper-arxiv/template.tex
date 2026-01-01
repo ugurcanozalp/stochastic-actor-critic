@@ -1,20 +1,6 @@
+\documentclass{article}
 
-\documentclass[10pt]{article} % For LaTeX2e
-%\usepackage{tmlr}
-% If accepted, instead use the following line for the camera-ready submission:
-%\usepackage[accepted]{tmlr}
-% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
-\usepackage[preprint]{tmlr}
-
-%% TODO when published:
-% - change \usepackage{tmlr} usage
-% - Update github links
-% - Update openreview link 
-% - Update acknowledgement depending on review process 
-% - Update Month/Year
-
-% Optional math commands from https://github.com/goodfeli/dlbook_notation.
-\input{math_commands.tex}
+\usepackage{arxiv}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -41,6 +27,9 @@
 \usepackage[title]{appendix}
 \usepackage{multirow}
 \usepackage{multicol}
+
+\usepackage{natbib}
+\usepackage{doi}
 
 %\usepackage[dvipsnames]{xcolor}
 
@@ -113,37 +102,64 @@
 \newtheorem{lemma}{Lemma}[theorem]
 \newcommand\disteq{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny D}}}{=}}}
 
+
 \title{Stochastic Actor-Critic: Mitigating Overestimation via Temporal Aleatoric Uncertainty}
-%      A Single Distributional Critic is Enough to Mitigate Overestimation Bias of Actor-Critic Reinforcement Learning
 
-% Authors must not appear in the submitted version. They should be hidden
-% as long as the tmlr package is used without the [accepted] or [preprint] options.
-% Non-anonymous submissions will be rejected without review.
+%\date{September 9, 1985}	% Here you can change the date presented in the paper title
+%\date{} 					% Or removing it
 
-\author{\name Uğurcan Özalp \email ugurcanozalp06@gmail.com \\
-	\addr Turkish Aerospace \\
-	Ankara, Turkey
-	%\AND
-	%\name Raia Hadsell \email raia@google.com \\
-	%\addr DeepMind
-	%\AND
-	%\name Hugo Larochelle \email hugolarochelle@google.com\\
-	%\addr Mila, Universit\'e de Montr\'eal \\
-	%Google Research\\
-	%CIFAR Fellow}
-	}
-	% The \author macro works with any number of authors. Use \AND 
-	% to separate the names and addresses of multiple authors.
+\author{ \href{https://orcid.org/0000-0002-1406-6874}{\includegraphics[scale=0.06]{orcid.pdf}\hspace{1mm}Uğurcan Özalp} 	\\
+	%\thanks{Use footnote for providing further
+	%	information about author (webpage, alternative
+	%	address)---\emph{not} for acknowledging funding agencies.} \\
+	Turkish Aerospace \\
+	Ankara, Türkiye \\
+	\texttt{ugurcanozalp06@gmail.com} \\
+	%% examples of more authors
+	%\And
+	%\href{https://orcid.org/0000-0000-0000-0000}{\includegraphics[scale=0.06]{orcid.pdf}\hspace{1mm}Elias D.~Striatum} \\
+	%Department of Electrical Engineering\\
+	%Mount-Sheikh University\\
+	%Santa Narimana, Levand \\
+	%\texttt{stariate@ee.mount-sheikh.edu} \\
+	%% \AND
+	%% Coauthor \\
+	%% Affiliation \\
+	%% Address \\
+	%% \texttt{email} \\
+	%% \And
+	%% Coauthor \\
+	%% Affiliation \\
+	%% Address \\
+	%% \texttt{email} \\
+	%% \And
+	%% Coauthor \\
+	%% Affiliation \\
+	%% Address \\
+	%% \texttt{email} \\
+}
 
-\newcommand{\fix}{\marginpar{FIX}}
-\newcommand{\new}{\marginpar{NEW}}
+% Uncomment to remove the date
+%\date{}
 
-\def\month{11}  % Insert correct month for camera-ready version
-\def\year{2024} % Insert correct year for camera-ready version
-\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
-	
-	
+% Uncomment to override  the `A preprint' in the header
+%\renewcommand{\headeright}{Technical Report}
+%\renewcommand{\undertitle}{Technical Report}
+%\renewcommand{\shorttitle}{\textit{arXiv} Template}
+
+%%% Add PDF metadata to help others organize their library
+%%% Once the PDF is generated, you can check the metadata with
+%%% $ pdfinfo template.pdf
+\hypersetup{
+pdftitle={Stochastic Actor-Critic: Mitigating Overestimation via Temporal Aleatoric Uncertainty},
+pdfsubject={ cs.LG, eess.SY, cs.NE, math.ST},
+pdfauthor={Uğurcan Özalp},
+pdfkeywords={Reinforcement Learning, Uncertainty, Overestimation, Pessimism, Actor-Critic, Dropout},
+}
+
 \begin{document}
+\maketitle
+
 \maketitle
 
 \begin{abstract}
@@ -155,7 +171,7 @@
 \end{abstract}
 
 % keywords can be added for arxiv version. 
-%\keywords{Reinforcement Learning \and Uncertainty \and Overestimation \and Pessimism \and Actor-Critic \and Dropout}
+\keywords{Reinforcement Learning \and Uncertainty \and Overestimation \and Pessimism \and Actor-Critic \and Dropout}
 
 % RUN DSAC with dropout...
 
@@ -528,45 +544,45 @@ Final performane of learning processes averaged over random seeds are summarized
 STAC is experimented under varying levels of pessimism $\beta$ and dropout rates to isolate effect of pessimism and dropout individually. We used 5 pessimism level and 4 dropout configurations: no dropout, actor dropout, critic dropout and actor\&critic dropout. 
 
 \begin{table}[h!]
-\addtolength{\tabcolsep}{1pt}
-\centering
-\caption{Inter-quartile mean scores of last \%1 of evaluation episodes, for varying $\beta$. Dropout rate is 0.01 for critic and actor. } 
-\label{tab:stac_ablation}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{|c c c c c c|}
-	\hline
-	Env & $\beta=0.0$ & $\beta=0.125$ & $\beta=0.25$ & $\beta=0.375$ & $\beta=0.5$ \\
-	\hline
-	%\multirow[t]{3}{*}{\verb~Ant-v4~}  & 3181.2±2643.0 & 4623.6±2569.6 & \textbf{5088.0±2295.8} & 5084.5±1998.5 & 4392.7±1506.6 \\
-	\verb~Ant-v4~ & 5264.4 & \textbf{7082.7} & 6907.3 & 6246.4 & 4834.4 \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~BipedalWalker-v3~}  & 171.5±163.3 & 204.3±156.7 & 241.5±131.8 & \textbf{261.5±113.3} & 249.4±124.0 \\
-	\verb~BipedalWalker-v3~ & 171.9 & 125.4 & 262.6 & \textbf{308.0} & 305.1 \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~BipedalWalkerHardcore-v3~}  & 73.2±139.9 & \textbf{78.6±138.5} & 37.5±98.9 & -17.1±30.5 & -42.8±43.7 \\
-	\verb~BipedalWalkerHardcore-v3~ & 61.8 & \textbf{118.8} & 43.4 & -0.0 & -59.8 \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~HalfCheetah-v4~}  & \textbf{11291.8±3095.7} & 9815.4±2794.4 & 10769.5±3028.2 & 9938.3±2441.2 & 8528.9±2823.5 \\
-	\verb~HalfCheetah-v4~ & \textbf{14489.5} & 12299.6 & 13385.4 & 11042.1 & 7602.7 \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~Hopper-v4~}  & 1040.9±515.2 & 1350.8±858.7 & 2107.5±1192.3 & \textbf{2620.3±1130.2} & 2614.3±1167.4 \\
-	\verb~Hopper-v4~ & 1132.4 & 1308.8 & 2643.4 & 3318.2 & \textbf{3363.7} \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~Humanoid-v4~}  & 3753.4±2973.4 & 5245.1±3211.9 & \textbf{5695.8±2748.9} & 5480.4±2404.1 & 5402.0±2387.7 \\
-	\verb~Humanoid-v4~ & 5623.9 & \textbf{8407.2} & 8277.9 & 7587.2 & 6930.8 \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~LunarLander-v3~}  & \textbf{201.6±135.0} & 199.9±135.3 & 99.7±131.7 & -23.9±100.1 & -85.3±77.2 \\
-	\verb~LunarLander-v3~ & \textbf{265.7} & 263.8 & 157.2 & 14.3 & -77.7 \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~Swimmer-v4~}  & \textbf{70.3±29.4} & 66.4±26.8 & 54.5±16.1 & 48.2±10.5 & 43.4±6.0 \\
-	\verb~Swimmer-v4~ & \textbf{103.7} & 93.5 & 70.0 & 54.2 & 45.9 \\
-	\cline{1-6}
-	%\multirow[t]{3}{*}{\verb~Walker2d-v4~}  & 3164.1±2203.5 & 4571.3±2146.6 & 4834.9±1654.7 & \textbf{4949.6±1449.0} & 4690.1±1361.2 \\
-	\verb~Walker2d-v4~ & 4299.2 & \textbf{6306.4} & 5842.1 & 5795.2 & 5539.1 \\
-	\cline{1-6}
-	\hline
-\end{tabular}
-}
+	\addtolength{\tabcolsep}{1pt}
+	\centering
+	\caption{Inter-quartile mean scores of last \%1 of evaluation episodes, for varying $\beta$. Dropout rate is 0.01 for critic and actor. } 
+	\label{tab:stac_ablation}
+	\resizebox{\columnwidth}{!}{
+		\begin{tabular}{|c c c c c c|}
+			\hline
+			Env & $\beta=0.0$ & $\beta=0.125$ & $\beta=0.25$ & $\beta=0.375$ & $\beta=0.5$ \\
+			\hline
+			%\multirow[t]{3}{*}{\verb~Ant-v4~}  & 3181.2±2643.0 & 4623.6±2569.6 & \textbf{5088.0±2295.8} & 5084.5±1998.5 & 4392.7±1506.6 \\
+			\verb~Ant-v4~ & 5264.4 & \textbf{7082.7} & 6907.3 & 6246.4 & 4834.4 \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~BipedalWalker-v3~}  & 171.5±163.3 & 204.3±156.7 & 241.5±131.8 & \textbf{261.5±113.3} & 249.4±124.0 \\
+			\verb~BipedalWalker-v3~ & 171.9 & 125.4 & 262.6 & \textbf{308.0} & 305.1 \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~BipedalWalkerHardcore-v3~}  & 73.2±139.9 & \textbf{78.6±138.5} & 37.5±98.9 & -17.1±30.5 & -42.8±43.7 \\
+			\verb~BipedalWalkerHardcore-v3~ & 61.8 & \textbf{118.8} & 43.4 & -0.0 & -59.8 \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~HalfCheetah-v4~}  & \textbf{11291.8±3095.7} & 9815.4±2794.4 & 10769.5±3028.2 & 9938.3±2441.2 & 8528.9±2823.5 \\
+			\verb~HalfCheetah-v4~ & \textbf{14489.5} & 12299.6 & 13385.4 & 11042.1 & 7602.7 \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~Hopper-v4~}  & 1040.9±515.2 & 1350.8±858.7 & 2107.5±1192.3 & \textbf{2620.3±1130.2} & 2614.3±1167.4 \\
+			\verb~Hopper-v4~ & 1132.4 & 1308.8 & 2643.4 & 3318.2 & \textbf{3363.7} \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~Humanoid-v4~}  & 3753.4±2973.4 & 5245.1±3211.9 & \textbf{5695.8±2748.9} & 5480.4±2404.1 & 5402.0±2387.7 \\
+			\verb~Humanoid-v4~ & 5623.9 & \textbf{8407.2} & 8277.9 & 7587.2 & 6930.8 \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~LunarLander-v3~}  & \textbf{201.6±135.0} & 199.9±135.3 & 99.7±131.7 & -23.9±100.1 & -85.3±77.2 \\
+			\verb~LunarLander-v3~ & \textbf{265.7} & 263.8 & 157.2 & 14.3 & -77.7 \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~Swimmer-v4~}  & \textbf{70.3±29.4} & 66.4±26.8 & 54.5±16.1 & 48.2±10.5 & 43.4±6.0 \\
+			\verb~Swimmer-v4~ & \textbf{103.7} & 93.5 & 70.0 & 54.2 & 45.9 \\
+			\cline{1-6}
+			%\multirow[t]{3}{*}{\verb~Walker2d-v4~}  & 3164.1±2203.5 & 4571.3±2146.6 & 4834.9±1654.7 & \textbf{4949.6±1449.0} & 4690.1±1361.2 \\
+			\verb~Walker2d-v4~ & 4299.2 & \textbf{6306.4} & 5842.1 & 5795.2 & 5539.1 \\
+			\cline{1-6}
+			\hline
+		\end{tabular}
+	}
 \end{table}
 
 %Tabular results regarding average and final performance for different pessimism levels are summarized in Table \ref{tab:stac_ablation}.
@@ -630,8 +646,8 @@ This research has received no external funding.
 %\newpage
 
 %Bibliography
-\bibliography{references}
-\bibliographystyle{tmlr}
+\bibliographystyle{unsrtnat}
+\bibliography{references}  %%% Uncomment this line and comment out the ``thebibliography'' section below to use the external .bib file (using bibtex) .
 %\printbibliography
 
 \newpage 
@@ -641,58 +657,58 @@ This research has received no external funding.
 	
 	\section{Proofs}
 	\label{app:proofs}
-
-\begin{proof}[Proof of Theorem \ref{thm:overestimation}]
-	%\label{proof:overest2}
-	% R(s,a) + \gamma \mathbb{E}_{\substack{ q\sim \mathcal{Q} \\ s'\sim\tau(\cdot \mid s,a) }} \Big[ \Tilde{\alpha} \log \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} q(s',a')) da' \Big] \\
-	Analyzing Bellman update $\mathcal{T}^{*} Q(s,a)$, 
-	\begin{align*}
-		\mathcal{T}^{*} Q(s,a) &= R(s,a) + \gamma \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a')) da' \Big) \Big] \\
-		&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a')) da'  \Big] \Big) \\
-		&= R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \exp({\Tilde{\alpha}}^{-1} Q(s',a')) \Big] da' \Big) \\
-		&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big) \\
-	\end{align*}
-	First inequality is by Jensen's inequality (using concave property of $\log$ function) while the following equality is a result of Tonelli's theorem. The second inequality results from the sub-Gaussian assumption \ref{defn:subgauss}. 
-\end{proof} 
-
-% \mathbb{R}^{\mathcal{S}\times\mathcal{A}}
-\begin{proof}[Proof of Corollary \ref{cor:pessimism}]
-	From the Theorem \ref{thm:overestimation}, we can show that 
-	\begin{align*}
-		\mathcal{T}_{\beta}^{*} Q(s,a) 
-		&= R(s,a) + \gamma \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a') - \beta\sigma(s',a')) da' \Big) \Big] \\
-		&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} (\mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-1} \sigma^2(s',a')) ) da' \Big) \\
-		&=  R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu^{\dagger}(s',a')) da' \Big) = \mathcal{T}^{*} \mu^{\dagger}(s,a). 
-	\end{align*}
-	where we have defined $\mu^{\dagger}(s',a') = \mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-1} \sigma^2(s',a')) $. If $\beta \geq \max\limits_{(s', a')} \frac{1}{2}{\Tilde{\alpha}}^{-1} \sigma(s', a')$, then $\mu^{\dagger}(s',a') < \mu(s',a')$. So we can show that
-	\begin{equation}
-		\mathcal{T}_{\beta}^{*} Q(s,a) \leq \mathcal{T}^{*} \mu^{\dagger}(s,a) \leq \mathcal{T}^{*} \mu(s,a).  
-	\end{equation}
-\end{proof}
-
-\begin{proof}[Proof of Theorem \ref{thm:overestimation_bound}]
-	From the Theorem \ref{thm:overestimation}, we can show that
-	\begin{align*}
-		\mathbb{E}_{s'\sim\tau} [ \mathcal{T}^{*} Q(s,a) ] &\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big) \Big] \\
-		&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \big) \cdot \big( \max_{a'} \exp( \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') \big) \Big) \Big] \\  
-		% &= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \Big) + \frac{1}{2\Tilde{\alpha}} \max_{a'} \sigma^2(s',a') \Big] \\ 
-		&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \Big) \Big] + \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau } \Big[ \max_{a'} \sigma^2(s',a') \Big]. \\ 
-	\end{align*}
 	
-	The second inequality is a result of the mean value theorem for integrals. In the last equality, the first two terms are equal to $\mathcal{T}^{*} \mu(s,a)$. Therefore, 
-	\begin{align*}
-		\epsilon(s, a) = \mathbb{E}_{s'\sim\tau} [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} \mu(s,a) \leq \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau} \Big[ \max_{a'} \sigma^2(s', a') \Big]. 
-	\end{align*} 
-\end{proof}
-			
+	\begin{proof}[Proof of Theorem \ref{thm:overestimation}]
+		%\label{proof:overest2}
+		% R(s,a) + \gamma \mathbb{E}_{\substack{ q\sim \mathcal{Q} \\ s'\sim\tau(\cdot \mid s,a) }} \Big[ \Tilde{\alpha} \log \int_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} q(s',a')) da' \Big] \\
+		Analyzing Bellman update $\mathcal{T}^{*} Q(s,a)$, 
+		\begin{align*}
+			\mathcal{T}^{*} Q(s,a) &= R(s,a) + \gamma \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a')) da' \Big) \Big] \\
+			&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a')) da'  \Big] \Big) \\
+			&= R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \exp({\Tilde{\alpha}}^{-1} Q(s',a')) \Big] da' \Big) \\
+			&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big) \\
+		\end{align*}
+		First inequality is by Jensen's inequality (using concave property of $\log$ function) while the following equality is a result of Tonelli's theorem. The second inequality results from the sub-Gaussian assumption \ref{defn:subgauss}. 
+	\end{proof} 
+	
+	% \mathbb{R}^{\mathcal{S}\times\mathcal{A}}
+	\begin{proof}[Proof of Corollary \ref{cor:pessimism}]
+		From the Theorem \ref{thm:overestimation}, we can show that 
+		\begin{align*}
+			\mathcal{T}_{\beta}^{*} Q(s,a) 
+			&= R(s,a) + \gamma \mathbb{E}_{Q\sim \mathcal{Q}} \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp({\Tilde{\alpha}}^{-1} Q(s',a') - \beta\sigma(s',a')) da' \Big) \Big] \\
+			&\leq R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} (\mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-1} \sigma^2(s',a')) ) da' \Big) \\
+			&=  R(s,a) + \gamma \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu^{\dagger}(s',a')) da' \Big) = \mathcal{T}^{*} \mu^{\dagger}(s,a). 
+		\end{align*}
+		where we have defined $\mu^{\dagger}(s',a') = \mu(s',a') - \beta \sigma(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-1} \sigma^2(s',a')) $. If $\beta \geq \max\limits_{(s', a')} \frac{1}{2}{\Tilde{\alpha}}^{-1} \sigma(s', a')$, then $\mu^{\dagger}(s',a') < \mu(s',a')$. So we can show that
+		\begin{equation}
+			\mathcal{T}_{\beta}^{*} Q(s,a) \leq \mathcal{T}^{*} \mu^{\dagger}(s,a) \leq \mathcal{T}^{*} \mu(s,a).  
+		\end{equation}
+	\end{proof}
+	
+	\begin{proof}[Proof of Theorem \ref{thm:overestimation_bound}]
+		From the Theorem \ref{thm:overestimation}, we can show that
+		\begin{align*}
+			\mathbb{E}_{s'\sim\tau} [ \mathcal{T}^{*} Q(s,a) ] &\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') + \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') ) da' \Big) \Big] \\
+			&\leq R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \big) \cdot \big( \max_{a'} \exp( \frac{1}{2} {\Tilde{\alpha}}^{-2} \sigma^2(s',a') \big) \Big) \Big] \\  
+			% &= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \Big) + \frac{1}{2\Tilde{\alpha}} \max_{a'} \sigma^2(s',a') \Big] \\ 
+			&= R(s,a) + \gamma \mathbb{E}_{s'\sim\tau } \Big[ \Tilde{\alpha} \log \Big( \int\limits_{\mathcal{A}} \exp( {\Tilde{\alpha}}^{-1} \mu(s',a') ) da' \Big) \Big] + \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau } \Big[ \max_{a'} \sigma^2(s',a') \Big]. \\ 
+		\end{align*}
+		
+		The second inequality is a result of the mean value theorem for integrals. In the last equality, the first two terms are equal to $\mathcal{T}^{*} \mu(s,a)$. Therefore, 
+		\begin{align*}
+			\epsilon(s, a) = \mathbb{E}_{s'\sim\tau} [ \mathcal{T}^{*} Q(s,a) ] - \mathcal{T}^{*} \mu(s,a) \leq \frac{\gamma}{2\Tilde{\alpha}} \mathbb{E}_{s'\sim\tau} \Big[ \max_{a'} \sigma^2(s', a') \Big]. 
+		\end{align*} 
+	\end{proof}
+	
 	\newpage
-
+	
 	\section{Results of Ablation Studies}
 	\label{app:results_of_ablations}
 	
 	\subsection{Pessimism Ablation}
 	\label{app:pessimism_ablation}
-
+	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.95\textwidth,height=\textheight,keepaspectratio]{figures/stac-fixed-pessimism/score.png}
@@ -706,10 +722,10 @@ This research has received no external funding.
 		\caption{Average episodic value estimation error curves of STAC with varying pessimism ($\beta$) parameter, with actor and critic dropout equal to $0.01$. }
 		\label{fig:pess_sens_error_pol_cri_dropout}
 	\end{figure}	
-
+	
 	\subsection{Dropout Configuration Ablation}
 	\label{app:dropout_ablation}
-
+	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.95\textwidth,height=\textheight,keepaspectratio]{figures/stac-dropout/score.png}
@@ -724,7 +740,7 @@ This research has received no external funding.
 		\label{fig:drop_sens_error}
 	\end{figure}	
 	
-
+	
 	\section{Hyper-parameters and Experiment Details}
 	\label{app:hyperparam_exp}
 	
@@ -775,103 +791,103 @@ This research has received no external funding.
 		\end{tabular}
 	\end{table}	
 	
-\section{Network Architectures of STAC}
-\label{app:network_archs}
-
-%% Network illustrations
-\begin{figure}[H]
-	\centering
-	\begin{minipage}{.5\textwidth}
+	\section{Network Architectures of STAC}
+	\label{app:network_archs}
+	
+	%% Network illustrations
+	\begin{figure}[H]
 		\centering
-		
-		\begin{tikzpicture}[node distance=0.2cm, baseline]
+		\begin{minipage}{.5\textwidth}
+			\centering
 			
-			% Input Layer
-			\node[inplayer] (input) {Input ($d_s + d_a$): $(s,a)$};
+			\begin{tikzpicture}[node distance=0.2cm, baseline]
+				
+				% Input Layer
+				\node[inplayer] (input) {Input ($d_s + d_a$): $(s,a)$};
+				
+				% First Layer
+				\node[layer,below=of input] (fc1) {Linear (256)};
+				\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
+				\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
+				\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
+				
+				% Second Layer
+				\node[layer,below=of relu1] (fc2) {Linear (256)};
+				\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
+				\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
+				\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
+				
+				% Output Layer
+				\node[layer,below=of relu2] (output) {Linear (2)};
+				\node[output,below=0.2cm of output] (gaussian) {$\mathcal{N} (\mu(1), \sigma^2(1))$};
+				
+				
+				% Draw connections
+				\draw[->] (input) -- (fc1);
+				\draw[->] (fc1) -- (dropout1);
+				\draw[->] (dropout1) -- (norm1);
+				\draw[->] (norm1) -- (relu1);
+				\draw[->] (relu1) -- (fc2);
+				\draw[->] (fc2) -- (dropout2);
+				\draw[->] (dropout2) -- (norm2);
+				\draw[->] (norm2) -- (relu2);
+				\draw[->] (relu2) -- (output);
+				\draw[->] (output) -- (gaussian);
+				
+				%% Label for Critic
+				%\node[above=0.5cm of input] {Critic Network};
+				
+			\end{tikzpicture}
 			
-			% First Layer
-			\node[layer,below=of input] (fc1) {Linear (256)};
-			\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
-			\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
-			\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
+			\captionof{figure}{Critic network architecture}
+			\label{fig:critic_visual}
+		\end{minipage}%
+		\begin{minipage}{.5\textwidth}
+			\centering
 			
-			% Second Layer
-			\node[layer,below=of relu1] (fc2) {Linear (256)};
-			\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
-			\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
-			\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
+			% Policy Network
+			\begin{tikzpicture}[node distance=0.2cm]
+				
+				% Input Layer
+				\node[inplayer] (input) {Input ($d_s$): $s$};
+				
+				% First Layer
+				\node[layer,below=of input] (fc1) {Linear (256)};
+				\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
+				\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
+				\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
+				
+				% Second Layer
+				\node[layer,below=of relu1] (fc2) {Linear (256)};
+				\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
+				\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
+				\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
+				
+				% Output Layer
+				\node[layer,below=of relu2] (output) {Linear (2$d_a$)};
+				\node[output,below=0.2cm of output] (squashed) {$\tanh_{\#}\mathcal{N} ( \mu(d_a), \sigma^2(d_a) )$};
+				
+				% Draw connections
+				\draw[->] (input) -- (fc1);
+				\draw[->] (fc1) -- (dropout1);
+				\draw[->] (dropout1) -- (norm1);
+				\draw[->] (norm1) -- (relu1);
+				\draw[->] (relu1) -- (fc2);
+				\draw[->] (fc2) -- (dropout2);
+				\draw[->] (dropout2) -- (norm2);
+				\draw[->] (norm2) -- (relu2);
+				\draw[->] (relu2) -- (output);
+				\draw[->] (output) -- (squashed);
+				
+				%% Label for Policy
+				%\node[above=0.5cm of input] {Policy Network};
+			\end{tikzpicture}
 			
-			% Output Layer
-			\node[layer,below=of relu2] (output) {Linear (2)};
-			\node[output,below=0.2cm of output] (gaussian) {$\mathcal{N} (\mu(1), \sigma^2(1))$};
-			
-			
-			% Draw connections
-			\draw[->] (input) -- (fc1);
-			\draw[->] (fc1) -- (dropout1);
-			\draw[->] (dropout1) -- (norm1);
-			\draw[->] (norm1) -- (relu1);
-			\draw[->] (relu1) -- (fc2);
-			\draw[->] (fc2) -- (dropout2);
-			\draw[->] (dropout2) -- (norm2);
-			\draw[->] (norm2) -- (relu2);
-			\draw[->] (relu2) -- (output);
-			\draw[->] (output) -- (gaussian);
-			
-			%% Label for Critic
-			%\node[above=0.5cm of input] {Critic Network};
-			
-		\end{tikzpicture}
-		
-		\captionof{figure}{Critic network architecture}
-		\label{fig:critic_visual}
-	\end{minipage}%
-	\begin{minipage}{.5\textwidth}
-		\centering
-		
-		% Policy Network
-		\begin{tikzpicture}[node distance=0.2cm]
-			
-			% Input Layer
-			\node[inplayer] (input) {Input ($d_s$): $s$};
-			
-			% First Layer
-			\node[layer,below=of input] (fc1) {Linear (256)};
-			\node[dropout,below=0.2cm of fc1] (dropout1) {Dropout};
-			\node[norm,below=0.2cm of dropout1] (norm1) {LayerNorm};
-			\node[activation,below=0.2cm of norm1] (relu1) {ReLU};
-			
-			% Second Layer
-			\node[layer,below=of relu1] (fc2) {Linear (256)};
-			\node[dropout,below=0.2cm of fc2] (dropout2) {Dropout};
-			\node[norm,below=0.2cm of dropout2] (norm2) {LayerNorm};
-			\node[activation,below=0.2cm of norm2] (relu2) {ReLU};
-			
-			% Output Layer
-			\node[layer,below=of relu2] (output) {Linear (2$d_a$)};
-			\node[output,below=0.2cm of output] (squashed) {$\tanh_{\#}\mathcal{N} ( \mu(d_a), \sigma^2(d_a) )$};
-			
-			% Draw connections
-			\draw[->] (input) -- (fc1);
-			\draw[->] (fc1) -- (dropout1);
-			\draw[->] (dropout1) -- (norm1);
-			\draw[->] (norm1) -- (relu1);
-			\draw[->] (relu1) -- (fc2);
-			\draw[->] (fc2) -- (dropout2);
-			\draw[->] (dropout2) -- (norm2);
-			\draw[->] (norm2) -- (relu2);
-			\draw[->] (relu2) -- (output);
-			\draw[->] (output) -- (squashed);
-			
-			%% Label for Policy
-			%\node[above=0.5cm of input] {Policy Network};
-		\end{tikzpicture}
-		
-		\captionof{figure}{Actor network architecture}
-		\label{fig:policy_visual}
-	\end{minipage}
-\end{figure}
-%%	
+			\captionof{figure}{Actor network architecture}
+			\label{fig:policy_visual}
+		\end{minipage}
+	\end{figure}
+	%%	
 	
 	\section{Source Code}
 	\label{app:code}
@@ -880,4 +896,3 @@ This research has received no external funding.
 \end{appendices}
 
 \end{document}
-
