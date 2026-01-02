@@ -1,4 +1,4 @@
-\begin{thebibliography}{51}
+\begin{thebibliography}{53}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -324,6 +324,19 @@ Edoardo Cetin and Oya Celiktutan.
 \newblock Learning pessimism for reinforcement learning.
 \newblock In \emph{Proceedings of the AAAI conference on artificial
   intelligence}, volume~37, pages 6971--6979, 2023.
+
+\bibitem[Lim and Malik(2022)]{lim2022distributional}
+Shiau~Hong Lim and Ilyas Malik.
+\newblock Distributional reinforcement learning for risk-sensitive policies.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  35:\penalty0 30977--30989, 2022.
+
+\bibitem[Greenberg et~al.(2022)Greenberg, Chow, Ghavamzadeh, and
+  Mannor]{greenberg2022efficient}
+Ido Greenberg, Yinlam Chow, Mohammad Ghavamzadeh, and Shie Mannor.
+\newblock Efficient risk-averse reinforcement learning.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  35:\penalty0 32639--32652, 2022.
 
 \bibitem[Chen et~al.(2025)Chen, Liu, Zhou, Qu, and Qi]{chen2025unleashing}
 Deshu Chen, Yuchen Liu, Zhijian Zhou, Chao Qu, and Yuan Qi.

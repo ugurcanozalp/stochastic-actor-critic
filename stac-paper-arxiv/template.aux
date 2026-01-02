@@ -44,7 +44,6 @@
 \newlabel{thm:overestimation}{{3.1}{4}{Overestimation quantification for sub-Gaussian critics}{theorem.3.1}{}}
 \newlabel{cor:pessimism}{{3.1.1}{4}{Pessimistic critic target}{corollary.3.1.1}{}}
 \newlabel{eqn:q_evs_eval_pessimistic}{{11}{4}{Pessimistic critic target}{equation.3.11}{}}
-\newlabel{thm:overestimation_bound}{{3.2}{4}{Overestimation bound}{theorem.3.2}{}}
 \citation{bellemare2017distributional}
 \citation{dabney2018implicit,tang2019worst,yang2021wcsac,kim2022efficient,ma2025dsac}
 \citation{ma2025dsac}
@@ -52,12 +51,13 @@
 \citation{srivastava2014dropout}
 \citation{hiraoka2021dropout}
 \citation{Gal2016Dropout}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Evolution of the Pessimistic Distributional Bellman Backup. While $\mathcal  {T}^{\pi }_{D}\mathcal  {Q}(s, a)$ is overestimated, a corrected backup $\mathcal  {T}^{\pi }_{\beta , D}\mathcal  {Q}(s, a)$ is closer to $\mathcal  {Q}(s, a)$. }}{5}{figure.caption.2}\protected@file@percent }
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:evol_bellman_backup}{{1}{5}{Evolution of the Pessimistic Distributional Bellman Backup. While $\mathcal {T}^{\pi }_{D}\mathcal {Q}(s, a)$ is overestimated, a corrected backup $\mathcal {T}^{\pi }_{\beta , D}\mathcal {Q}(s, a)$ is closer to $\mathcal {Q}(s, a)$}{figure.caption.2}{}}
+\newlabel{thm:overestimation_bound}{{3.2}{5}{Overestimation bound}{theorem.3.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Stochastic Actor-Critic}{5}{section.4}\protected@file@percent }
 \newlabel{sec:stac}{{4}{5}{Stochastic Actor-Critic}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Policy Evaluation}{5}{subsection.4.1}\protected@file@percent }
+\newlabel{eqn:td_target}{{13}{5}{Policy Evaluation}{equation.4.13}{}}
 \citation{ba2016layer}
+\citation{nauman2024overestimation,hiraoka2021dropout}
 \citation{li2023realistic}
 \citation{mnih2013playing}
 \citation{lillicrap2015continuous}
@@ -66,39 +66,40 @@
 \citation{haarnoja2018soft}
 \citation{kingma2014adam}
 \citation{towers_gymnasium_2023}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Policy Evaluation}{6}{subsection.4.1}\protected@file@percent }
-\newlabel{eqn:td_target}{{13}{6}{Policy Evaluation}{equation.4.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Evolution of the Pessimistic Distributional Bellman Backup. While $\mathcal  {T}^{\pi }_{D}\mathcal  {Q}(s, a)$ is overestimated, a corrected backup $\mathcal  {T}^{\pi }_{\beta , D}\mathcal  {Q}(s, a)$ is closer to $\mathcal  {Q}(s, a)$. }}{6}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:evol_bellman_backup}{{1}{6}{Evolution of the Pessimistic Distributional Bellman Backup. While $\mathcal {T}^{\pi }_{D}\mathcal {Q}(s, a)$ is overestimated, a corrected backup $\mathcal {T}^{\pi }_{\beta , D}\mathcal {Q}(s, a)$ is closer to $\mathcal {Q}(s, a)$}{figure.caption.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Policy Improvement}{6}{subsection.4.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Other Details and Algorithm Summary}{6}{subsection.4.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Layer Normalization}{6}{section*.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Lagged critic for TD target}{6}{section*.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Automatic temperature tuning}{6}{section*.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{6}{section.5}\protected@file@percent }
-\newlabel{sec:experiments}{{5}{6}{Experiments}{section.5}{}}
 \citation{paszke2019pytorch}
 \citation{ma2025dsac}
 \citation{haarnoja2018soft}
 \@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Stochastic Actor-Critic}}{7}{algorithm.1}\protected@file@percent }
 \newlabel{alg:stac}{{1}{7}{Stochastic Actor-Critic}{algorithm.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{7}{section.5}\protected@file@percent }
+\newlabel{sec:experiments}{{5}{7}{Experiments}{section.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Comparison to Other Algorithms}{7}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Learning curves}{7}{section*.6}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Episodic score curves of STAC and other algorithms. }}{8}{figure.caption.8}\protected@file@percent }
 \newlabel{fig:main_comparison}{{2}{8}{Episodic score curves of STAC and other algorithms}{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Average episodic value estimation error of STAC and other algorithms.}}{8}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:error_comparison}{{3}{8}{Average episodic value estimation error of STAC and other algorithms}{figure.caption.9}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Inter-quartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance. }}{9}{table.caption.7}\protected@file@percent }
-\newlabel{tab:env_iqm_results}{{1}{9}{Inter-quartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance}{table.caption.7}{}}
-\@writefile{toc}{\contentsline {paragraph}{Sample efficiency}{9}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Learning curves}{8}{section*.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Inter-quartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance. }}{8}{table.caption.7}\protected@file@percent }
+\newlabel{tab:env_iqm_results}{{1}{8}{Inter-quartile mean results of last \%1 of evaluation episodes, $\beta $ and dropout for STAC is selected with best performance}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Sample efficiency}{8}{section*.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Average episodic value estimation error of STAC and other algorithms.}}{9}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:error_comparison}{{3}{9}{Average episodic value estimation error of STAC and other algorithms}{figure.caption.9}{}}
 \@writefile{toc}{\contentsline {paragraph}{ESTAC vs STAC}{9}{section*.11}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Sweeping Pessimism and Dropout}{9}{subsection.5.2}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Inter-quartile mean scores of last \%1 of evaluation episodes, for varying $\beta $. Dropout rate is 0.01 for critic and actor. }}{9}{table.caption.12}\protected@file@percent }
 \newlabel{tab:stac_ablation}{{2}{9}{Inter-quartile mean scores of last \%1 of evaluation episodes, for varying $\beta $. Dropout rate is 0.01 for critic and actor}{table.caption.12}{}}
 \@writefile{toc}{\contentsline {paragraph}{Learning curves}{9}{section*.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Pessimism}{9}{section*.14}\protected@file@percent }
 \citation{ma2021conservative}
 \citation{ma2025dsac}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Position occurrence density heatmap of STAC on RiskyPointMass-v0 for different $\beta $ values. The green circle on the middle represents boundary of danger zone. Episodes are terminated when point mass enters green area on the lower left. }}{10}{figure.caption.17}\protected@file@percent }
 \newlabel{fig:pointmass_heatmap}{{4}{10}{Position occurrence density heatmap of STAC on RiskyPointMass-v0 for different $\beta $ values. The green circle on the middle represents boundary of danger zone. Episodes are terminated when point mass enters green area on the lower left}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {paragraph}{Pessimism}{10}{section*.14}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Dropout}{10}{section*.15}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Pessimism under Environment Stochasticity}{10}{section*.16}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Risk Sensitivity by Pessimism}{10}{subsection.5.3}\protected@file@percent }
@@ -110,23 +111,21 @@
 \citation{hiraoka2021dropout}
 \citation{moskovitz2021tactical}
 \citation{cetin2023learning}
+\citation{kuznetsov2020controlling}
 \citation{bellemare2017distributional}
 \citation{bellemare2017distributional}
 \citation{dabney2018distributional,ma2025dsac}
 \citation{tang2019worst,yang2021wcsac}
-\citation{tang2019worst}
-\citation{yang2021wcsac}
-\citation{kuznetsov2020controlling}
+\citation{tang2019worst,yang2021wcsac,lim2022distributional,greenberg2022efficient,ma2025dsac}
 \citation{moskovitz2021tactical,cetin2023learning}
-\citation{dabney2018distributional,ma2025dsac}
-\citation{chen2025unleashing,dong2025value}
 \@writefile{toc}{\contentsline {paragraph}{Results}{11}{section*.19}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {6}Related Work}{11}{section.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by epistemic uncertainty}{11}{section*.20}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Risk-sensitive reinforcement learning}{11}{section*.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by aleatoric uncertainty}{11}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by aleatoric uncertainty}{11}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Risk-sensitive reinforcement learning}{11}{section*.22}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion \& Future Directions}{11}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Adaptive Pessimism and Regularization}{11}{section*.23}\protected@file@percent }
+\citation{dabney2018distributional,ma2025dsac}
+\citation{chen2025unleashing,dong2025value}
 \bibstyle{unsrtnat}
 \bibdata{references}
 \bibcite{thrun2014issues}{{1}{2014}{{Thrun and Schwartz}}{{}}}
@@ -142,12 +141,13 @@
 \bibcite{kocsis2006bandit}{{11}{2006}{{Kocsis and Szepesv{\'a}ri}}{{}}}
 \bibcite{audibert2007tuning}{{12}{2007}{{Audibert et~al.}}{{Audibert, Munos, and Szepesv{\'a}ri}}}
 \bibcite{azizzadenesheli2018efficient}{{13}{2018}{{Azizzadenesheli et~al.}}{{Azizzadenesheli, Brunskill, and Anandkumar}}}
-\bibcite{ciosek2019better}{{14}{2019}{{Ciosek et~al.}}{{Ciosek, Vuong, Loftin, and Hofmann}}}
-\bibcite{o2023efficient}{{15}{2023}{{O'Donoghue}}{{}}}
-\bibcite{wu2023uncertainty}{{16}{2023}{{Wu et~al.}}{{Wu, El-Shamouty, Nitsche, and Huber}}}
+\@writefile{toc}{\contentsline {paragraph}{Adaptive Pessimism and Regularization}{12}{section*.23}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Distribution Modeling}{12}{section*.24}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Exploration}{12}{section*.25}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Broader Impact}{12}{section*.26}\protected@file@percent }
+\bibcite{ciosek2019better}{{14}{2019}{{Ciosek et~al.}}{{Ciosek, Vuong, Loftin, and Hofmann}}}
+\bibcite{o2023efficient}{{15}{2023}{{O'Donoghue}}{{}}}
+\bibcite{wu2023uncertainty}{{16}{2023}{{Wu et~al.}}{{Wu, El-Shamouty, Nitsche, and Huber}}}
 \bibcite{bellemare2017distributional}{{17}{2017}{{Bellemare et~al.}}{{Bellemare, Dabney, and Munos}}}
 \bibcite{dabney2018distributional}{{18}{2018{a}}{{Dabney et~al.}}{{Dabney, Rowland, Bellemare, and Munos}}}
 \bibcite{kim2022efficient}{{19}{2022}{{Kim and Oh}}{{}}}
@@ -181,8 +181,10 @@
 \bibcite{chua2018deep}{{47}{2018}{{Chua et~al.}}{{Chua, Calandra, McAllister, and Levine}}}
 \bibcite{depeweg2016learning}{{48}{2016}{{Depeweg et~al.}}{{Depeweg, Hern{\'a}ndez-Lobato, Doshi-Velez, and Udluft}}}
 \bibcite{cetin2023learning}{{49}{2023}{{Cetin and Celiktutan}}{{}}}
-\bibcite{chen2025unleashing}{{50}{2025}{{Chen et~al.}}{{Chen, Liu, Zhou, Qu, and Qi}}}
-\bibcite{dong2025value}{{51}{2025}{{Dong et~al.}}{{Dong, Zheng, Finn, Sadigh, and Eysenbach}}}
+\bibcite{lim2022distributional}{{50}{2022}{{Lim and Malik}}{{}}}
+\bibcite{greenberg2022efficient}{{51}{2022}{{Greenberg et~al.}}{{Greenberg, Chow, Ghavamzadeh, and Mannor}}}
+\bibcite{chen2025unleashing}{{52}{2025}{{Chen et~al.}}{{Chen, Liu, Zhou, Qu, and Qi}}}
+\bibcite{dong2025value}{{53}{2025}{{Dong et~al.}}{{Dong, Zheng, Finn, Sadigh, and Eysenbach}}}
 \@writefile{toc}{\contentsline {section}{\numberline {A}Proofs}{15}{appendix.1.A}\protected@file@percent }
 \newlabel{app:proofs}{{A}{15}{Proofs}{appendix.1.A}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {B}Results of Ablation Studies}{16}{appendix.1.B}\protected@file@percent }

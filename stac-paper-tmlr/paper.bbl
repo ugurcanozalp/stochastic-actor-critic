@@ -1,4 +1,4 @@
-\begin{thebibliography}{57}
+\begin{thebibliography}{53}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -136,22 +136,17 @@ Yarin Gal and Zoubin Ghahramani.
 \newblock In \emph{Proceedings of the 33rd International Conference on Machine
   Learning (ICML-16)}, 2016.
 
-\bibitem[Gal et~al.(2016{\natexlab{a}})Gal, McAllister, and
-  Rasmussen]{Gal2016ImprovingPILCO}
-Yarin Gal, Rowan McAllister, and Carl~E. Rasmussen.
-\newblock Improving {PILCO} with {B}ayesian neural network dynamics models.
-\newblock In \emph{Data-Efficient Machine Learning workshop, ICML}, April
-  2016{\natexlab{a}}.
-
-\bibitem[Gal et~al.(2017)Gal, Hron, and Kendall]{gal2017concrete}
-Yarin Gal, Jiri Hron, and Alex Kendall.
-\newblock Concrete dropout.
-\newblock \emph{Advances in neural information processing systems}, 30, 2017.
-
-\bibitem[Gal et~al.(2016{\natexlab{b}})]{gal2016uncertainty}
+\bibitem[Gal et~al.(2016)]{gal2016uncertainty}
 Yarin Gal et~al.
 \newblock Uncertainty in deep learning.
-\newblock 2016{\natexlab{b}}.
+\newblock 2016.
+
+\bibitem[Greenberg et~al.(2022)Greenberg, Chow, Ghavamzadeh, and
+  Mannor]{greenberg2022efficient}
+Ido Greenberg, Yinlam Chow, Mohammad Ghavamzadeh, and Shie Mannor.
+\newblock Efficient risk-averse reinforcement learning.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  35:\penalty0 32639--32652, 2022.
 
 \bibitem[Haarnoja et~al.(2017)Haarnoja, Tang, Abbeel, and
   Levine]{haarnoja2017reinforcement}
@@ -167,12 +162,6 @@ Tuomas Haarnoja, Aurick Zhou, Kristian Hartikainen, George Tucker, Sehoon Ha,
 \newblock Soft actor-critic algorithms and applications.
 \newblock \emph{arXiv preprint arXiv:1812.05905}, 2018.
 
-\bibitem[He et~al.(2021)He, Su, Gong, and Hou]{he2021mepg}
-Qiang He, Huangyuan Su, Chen Gong, and Xinwen Hou.
-\newblock Mepg: A minimalist ensemble policy gradient framework for deep
-  reinforcement learning.
-\newblock \emph{arXiv preprint arXiv:2109.10552}, 2021.
-
 \bibitem[Hiraoka et~al.(2021)Hiraoka, Imagawa, Hashimoto, Onishi, and
   Tsuruoka]{hiraoka2021dropout}
 Takuya Hiraoka, Takahisa Imagawa, Taisei Hashimoto, Takashi Onishi, and
@@ -184,20 +173,6 @@ Takuya Hiraoka, Takahisa Imagawa, Taisei Hashimoto, Takashi Onishi, and
 Michael Janner, Justin Fu, Marvin Zhang, and Sergey Levine.
 \newblock When to trust your model: Model-based policy optimization.
 \newblock \emph{Advances in neural information processing systems}, 32, 2019.
-
-\bibitem[Jaques et~al.(2019)Jaques, Ghandeharioun, Shen, Ferguson, Lapedriza,
-  Jones, Gu, and Picard]{jaques2019way}
-Natasha Jaques, Asma Ghandeharioun, Judy~Hanwen Shen, Craig Ferguson, Agata
-  Lapedriza, Noah Jones, Shixiang Gu, and Rosalind Picard.
-\newblock Way off-policy batch deep reinforcement learning of implicit human
-  preferences in dialog.
-\newblock \emph{arXiv preprint arXiv:1907.00456}, 2019.
-
-\bibitem[Kahn et~al.(2017)Kahn, Villaflor, Pong, Abbeel, and
-  Levine]{kahn2017uncertainty}
-Gregory Kahn, Adam Villaflor, Vitchyr Pong, Pieter Abbeel, and Sergey Levine.
-\newblock Uncertainty-aware reinforcement learning for collision avoidance.
-\newblock \emph{arXiv preprint arXiv:1702.01182}, 2017.
 
 \bibitem[Kendall \& Gal(2017)Kendall and Gal]{kendall2017uncertainties}
 Alex Kendall and Yarin Gal.
@@ -257,6 +232,12 @@ Timothy~P Lillicrap, Jonathan~J Hunt, Alexander Pritzel, Nicolas Heess, Tom
 \newblock Continuous control with deep reinforcement learning.
 \newblock \emph{arXiv preprint arXiv:1509.02971}, 2015.
 
+\bibitem[Lim \& Malik(2022)Lim and Malik]{lim2022distributional}
+Shiau~Hong Lim and Ilyas Malik.
+\newblock Distributional reinforcement learning for risk-sensitive policies.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  35:\penalty0 30977--30989, 2022.
+
 \bibitem[Ma et~al.(2025)Ma, Chen, Xia, Yang, Zhao, and Zhou]{ma2025dsac}
 Xiaoteng Ma, Junyao Chen, Li~Xia, Jun Yang, Qianchuan Zhao, and Zhengyuan Zhou.
 \newblock Dsac: Distributional soft actor-critic for risk-sensitive
@@ -275,12 +256,6 @@ Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Alex Graves, Ioannis
   Antonoglou, Daan Wierstra, and Martin Riedmiller.
 \newblock Playing atari with deep reinforcement learning.
 \newblock \emph{arXiv preprint arXiv:1312.5602}, 2013.
-
-\bibitem[Moerland et~al.(2017)Moerland, Broekens, and
-  Jonker]{moerland2017efficient}
-Thomas~M Moerland, Joost Broekens, and Catholijn~M Jonker.
-\newblock Efficient exploration with double uncertain value networks.
-\newblock \emph{arXiv preprint arXiv:1711.10789}, 2017.
 
 \bibitem[Moskovitz et~al.(2021)Moskovitz, Parker-Holder, Pacchiano, Arbel, and
   Jordan]{moskovitz2021tactical}

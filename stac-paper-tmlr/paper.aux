@@ -55,6 +55,7 @@
 \citation{hiraoka2021dropout}
 \citation{Gal2016Dropout}
 \citation{ba2016layer}
+\citation{nauman2024overestimation,hiraoka2021dropout}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Evolution of the Pessimistic Distributional Bellman Backup. While $\mathcal  {T}^{\pi }_{D}\mathcal  {Q}(s, a)$ is overestimated, a corrected backup $\mathcal  {T}^{\pi }_{\beta , D}\mathcal  {Q}(s, a)$ is closer to $\mathcal  {Q}(s, a)$. }}{6}{figure.caption.2}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:evol_bellman_backup}{{1}{6}{Evolution of the Pessimistic Distributional Bellman Backup. While $\mathcal {T}^{\pi }_{D}\mathcal {Q}(s, a)$ is overestimated, a corrected backup $\mathcal {T}^{\pi }_{\beta , D}\mathcal {Q}(s, a)$ is closer to $\mathcal {Q}(s, a)$}{figure.caption.2}{}}
@@ -110,19 +111,18 @@
 \citation{hiraoka2021dropout}
 \citation{moskovitz2021tactical}
 \citation{cetin2023learning}
+\citation{kuznetsov2020controlling}
 \citation{bellemare2017distributional}
 \citation{bellemare2017distributional}
 \citation{dabney2018distributional,ma2025dsac}
 \citation{tang2019worst,yang2021wcsac}
-\citation{tang2019worst}
-\citation{yang2021wcsac}
-\citation{kuznetsov2020controlling}
+\citation{tang2019worst,yang2021wcsac,lim2022distributional,greenberg2022efficient,ma2025dsac}
 \citation{moskovitz2021tactical,cetin2023learning}
 \@writefile{toc}{\contentsline {paragraph}{Results}{12}{section*.19}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {6}Related Work}{12}{section.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by epistemic uncertainty}{12}{section*.20}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Risk-sensitive reinforcement learning}{12}{section*.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by aleatoric uncertainty}{12}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Overestimation reduction by aleatoric uncertainty}{12}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Risk-sensitive reinforcement learning}{12}{section*.22}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion \& Future Directions}{12}{section.7}\protected@file@percent }
 \citation{dabney2018distributional,ma2025dsac}
 \citation{chen2025unleashing,dong2025value}
@@ -151,43 +151,39 @@
 \bibcite{duan2025distributional}{{18}{2025}{{Duan et~al.}}{{Duan, Wang, Xiao, Gao, Li, Liu, Zhang, Cheng, and Li}}}
 \bibcite{fujimoto2018addressing}{{19}{2018}{{Fujimoto et~al.}}{{Fujimoto, Hoof, and Meger}}}
 \bibcite{Gal2016Dropout}{{20}{2016}{{Gal \& Ghahramani}}{{Gal and Ghahramani}}}
-\bibcite{Gal2016ImprovingPILCO}{{21}{2016{a}}{{Gal et~al.}}{{Gal, McAllister, and Rasmussen}}}
-\bibcite{gal2017concrete}{{22}{2017}{{Gal et~al.}}{{Gal, Hron, and Kendall}}}
-\bibcite{gal2016uncertainty}{{23}{2016{b}}{{Gal et~al.}}{{}}}
-\bibcite{haarnoja2017reinforcement}{{24}{2017}{{Haarnoja et~al.}}{{Haarnoja, Tang, Abbeel, and Levine}}}
-\bibcite{haarnoja2018soft}{{25}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Hartikainen, Tucker, Ha, Tan, Kumar, Zhu, Gupta, Abbeel, et~al.}}}
-\bibcite{he2021mepg}{{26}{2021}{{He et~al.}}{{He, Su, Gong, and Hou}}}
-\bibcite{hiraoka2021dropout}{{27}{2021}{{Hiraoka et~al.}}{{Hiraoka, Imagawa, Hashimoto, Onishi, and Tsuruoka}}}
-\bibcite{janner2019trust}{{28}{2019}{{Janner et~al.}}{{Janner, Fu, Zhang, and Levine}}}
-\bibcite{jaques2019way}{{29}{2019}{{Jaques et~al.}}{{Jaques, Ghandeharioun, Shen, Ferguson, Lapedriza, Jones, Gu, and Picard}}}
-\bibcite{kahn2017uncertainty}{{30}{2017}{{Kahn et~al.}}{{Kahn, Villaflor, Pong, Abbeel, and Levine}}}
-\bibcite{kendall2017uncertainties}{{31}{2017}{{Kendall \& Gal}}{{Kendall and Gal}}}
-\bibcite{kim2022efficient}{{32}{2022}{{Kim \& Oh}}{{Kim and Oh}}}
-\bibcite{kingma2014adam}{{33}{2014}{{Kingma \& Ba}}{{Kingma and Ba}}}
-\bibcite{kocsis2006bandit}{{34}{2006}{{Kocsis \& Szepesv{\'a}ri}}{{Kocsis and Szepesv{\'a}ri}}}
-\bibcite{kuznetsov2020controlling}{{35}{2020}{{Kuznetsov et~al.}}{{Kuznetsov, Shvechikov, Grishin, and Vetrov}}}
-\bibcite{lakshminarayanan2017simple}{{36}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
-\bibcite{lan2020maxmin}{{37}{2020}{{Lan et~al.}}{{Lan, Pan, Fyshe, and White}}}
-\bibcite{li2023realistic}{{38}{2023}{{Li et~al.}}{{Li, Tang, Pang, Ma, and Wang}}}
-\bibcite{lillicrap2015continuous}{{39}{2015}{{Lillicrap et~al.}}{{Lillicrap, Hunt, Pritzel, Heess, Erez, Tassa, Silver, and Wierstra}}}
-\bibcite{ma2025dsac}{{40}{2025}{{Ma et~al.}}{{Ma, Chen, Xia, Yang, Zhao, and Zhou}}}
-\bibcite{ma2021conservative}{{41}{2021}{{Ma et~al.}}{{Ma, Jayaraman, and Bastani}}}
-\bibcite{mnih2013playing}{{42}{2013}{{Mnih et~al.}}{{Mnih, Kavukcuoglu, Silver, Graves, Antonoglou, Wierstra, and Riedmiller}}}
-\bibcite{moerland2017efficient}{{43}{2017}{{Moerland et~al.}}{{Moerland, Broekens, and Jonker}}}
-\bibcite{moskovitz2021tactical}{{44}{2021}{{Moskovitz et~al.}}{{Moskovitz, Parker-Holder, Pacchiano, Arbel, and Jordan}}}
-\bibcite{nauman2024overestimation}{{45}{2024}{{Nauman et~al.}}{{Nauman, Bortkiewicz, Mi{\l }o{\'s}, Trzci{\'n}ski, Ostaszewski, and Cygan}}}
-\bibcite{o2023efficient}{{46}{2023}{{O'Donoghue}}{{}}}
-\bibcite{paszke2019pytorch}{{47}{2019}{{Paszke et~al.}}{{Paszke, Gross, Massa, Lerer, Bradbury, Chanan, Killeen, Lin, Gimelshein, Antiga, et~al.}}}
-\bibcite{srivastava2014dropout}{{48}{2014}{{Srivastava et~al.}}{{Srivastava, Hinton, Krizhevsky, Sutskever, and Salakhutdinov}}}
-\bibcite{sutton2018reinforcement}{{49}{2018}{{Sutton \& Barto}}{{Sutton and Barto}}}
-\bibcite{tang2019worst}{{50}{2019}{{Tang et~al.}}{{Tang, Zhang, and Salakhutdinov}}}
-\bibcite{theate2023risk}{{51}{2023}{{Th{\'e}ate \& Ernst}}{{Th{\'e}ate and Ernst}}}
-\bibcite{thrun2014issues}{{52}{2014}{{Thrun \& Schwartz}}{{Thrun and Schwartz}}}
-\bibcite{towers_gymnasium_2023}{{53}{2023}{{Towers et~al.}}{{Towers, Terry, Kwiatkowski, Balis, Cola, Deleu, Goulão, Kallinteris, KG, Krimmel, Perez-Vicente, Pierré, Schulhoff, Tai, Shen, and Younis}}}
-\bibcite{van2018deep}{{54}{2018}{{Van~Hasselt et~al.}}{{Van~Hasselt, Doron, Strub, Hessel, Sonnerat, and Modayil}}}
-\bibcite{wu2023uncertainty}{{55}{2023}{{Wu et~al.}}{{Wu, El-Shamouty, Nitsche, and Huber}}}
-\bibcite{yang2021wcsac}{{56}{2021}{{Yang et~al.}}{{Yang, Sim{\~a}o, Tindemans, and Spaan}}}
-\bibcite{zhang2024explorer}{{57}{2024}{{Zhang et~al.}}{{Zhang, Han, Xiong, Zhu, and L{\"u}}}}
+\bibcite{gal2016uncertainty}{{21}{2016}{{Gal et~al.}}{{}}}
+\bibcite{greenberg2022efficient}{{22}{2022}{{Greenberg et~al.}}{{Greenberg, Chow, Ghavamzadeh, and Mannor}}}
+\bibcite{haarnoja2017reinforcement}{{23}{2017}{{Haarnoja et~al.}}{{Haarnoja, Tang, Abbeel, and Levine}}}
+\bibcite{haarnoja2018soft}{{24}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Hartikainen, Tucker, Ha, Tan, Kumar, Zhu, Gupta, Abbeel, et~al.}}}
+\bibcite{hiraoka2021dropout}{{25}{2021}{{Hiraoka et~al.}}{{Hiraoka, Imagawa, Hashimoto, Onishi, and Tsuruoka}}}
+\bibcite{janner2019trust}{{26}{2019}{{Janner et~al.}}{{Janner, Fu, Zhang, and Levine}}}
+\bibcite{kendall2017uncertainties}{{27}{2017}{{Kendall \& Gal}}{{Kendall and Gal}}}
+\bibcite{kim2022efficient}{{28}{2022}{{Kim \& Oh}}{{Kim and Oh}}}
+\bibcite{kingma2014adam}{{29}{2014}{{Kingma \& Ba}}{{Kingma and Ba}}}
+\bibcite{kocsis2006bandit}{{30}{2006}{{Kocsis \& Szepesv{\'a}ri}}{{Kocsis and Szepesv{\'a}ri}}}
+\bibcite{kuznetsov2020controlling}{{31}{2020}{{Kuznetsov et~al.}}{{Kuznetsov, Shvechikov, Grishin, and Vetrov}}}
+\bibcite{lakshminarayanan2017simple}{{32}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
+\bibcite{lan2020maxmin}{{33}{2020}{{Lan et~al.}}{{Lan, Pan, Fyshe, and White}}}
+\bibcite{li2023realistic}{{34}{2023}{{Li et~al.}}{{Li, Tang, Pang, Ma, and Wang}}}
+\bibcite{lillicrap2015continuous}{{35}{2015}{{Lillicrap et~al.}}{{Lillicrap, Hunt, Pritzel, Heess, Erez, Tassa, Silver, and Wierstra}}}
+\bibcite{lim2022distributional}{{36}{2022}{{Lim \& Malik}}{{Lim and Malik}}}
+\bibcite{ma2025dsac}{{37}{2025}{{Ma et~al.}}{{Ma, Chen, Xia, Yang, Zhao, and Zhou}}}
+\bibcite{ma2021conservative}{{38}{2021}{{Ma et~al.}}{{Ma, Jayaraman, and Bastani}}}
+\bibcite{mnih2013playing}{{39}{2013}{{Mnih et~al.}}{{Mnih, Kavukcuoglu, Silver, Graves, Antonoglou, Wierstra, and Riedmiller}}}
+\bibcite{moskovitz2021tactical}{{40}{2021}{{Moskovitz et~al.}}{{Moskovitz, Parker-Holder, Pacchiano, Arbel, and Jordan}}}
+\bibcite{nauman2024overestimation}{{41}{2024}{{Nauman et~al.}}{{Nauman, Bortkiewicz, Mi{\l }o{\'s}, Trzci{\'n}ski, Ostaszewski, and Cygan}}}
+\bibcite{o2023efficient}{{42}{2023}{{O'Donoghue}}{{}}}
+\bibcite{paszke2019pytorch}{{43}{2019}{{Paszke et~al.}}{{Paszke, Gross, Massa, Lerer, Bradbury, Chanan, Killeen, Lin, Gimelshein, Antiga, et~al.}}}
+\bibcite{srivastava2014dropout}{{44}{2014}{{Srivastava et~al.}}{{Srivastava, Hinton, Krizhevsky, Sutskever, and Salakhutdinov}}}
+\bibcite{sutton2018reinforcement}{{45}{2018}{{Sutton \& Barto}}{{Sutton and Barto}}}
+\bibcite{tang2019worst}{{46}{2019}{{Tang et~al.}}{{Tang, Zhang, and Salakhutdinov}}}
+\bibcite{theate2023risk}{{47}{2023}{{Th{\'e}ate \& Ernst}}{{Th{\'e}ate and Ernst}}}
+\bibcite{thrun2014issues}{{48}{2014}{{Thrun \& Schwartz}}{{Thrun and Schwartz}}}
+\bibcite{towers_gymnasium_2023}{{49}{2023}{{Towers et~al.}}{{Towers, Terry, Kwiatkowski, Balis, Cola, Deleu, Goulão, Kallinteris, KG, Krimmel, Perez-Vicente, Pierré, Schulhoff, Tai, Shen, and Younis}}}
+\bibcite{van2018deep}{{50}{2018}{{Van~Hasselt et~al.}}{{Van~Hasselt, Doron, Strub, Hessel, Sonnerat, and Modayil}}}
+\bibcite{wu2023uncertainty}{{51}{2023}{{Wu et~al.}}{{Wu, El-Shamouty, Nitsche, and Huber}}}
+\bibcite{yang2021wcsac}{{52}{2021}{{Yang et~al.}}{{Yang, Sim{\~a}o, Tindemans, and Spaan}}}
+\bibcite{zhang2024explorer}{{53}{2024}{{Zhang et~al.}}{{Zhang, Han, Xiong, Zhu, and L{\"u}}}}
 \bibstyle{tmlr}
 \@writefile{toc}{\contentsline {section}{\numberline {A}Proofs}{17}{appendix.1.A}\protected@file@percent }
 \newlabel{app:proofs}{{A}{17}{Proofs}{appendix.1.A}{}}
