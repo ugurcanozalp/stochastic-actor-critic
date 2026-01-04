@@ -1,2 +1,2 @@
 # stochastic-actor-critic
-Results regarind Stochastic Actor-Critic paper. 
+Results of Stochastic Actor-Critic paper. 
